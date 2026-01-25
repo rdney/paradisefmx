@@ -489,10 +489,10 @@ class CostOverviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             first_day = date(year, month, 1)
             last_day = date(year, month, calendar.monthrange(year, month)[1])
 
-            # Aggregate costs for requests completed in this month
+            # Aggregate costs for requests created in this month
             agg = RepairRequest.objects.filter(
-                Q(closed_at__date__gte=first_day, closed_at__date__lte=last_day) |
-                Q(status=RepairRequest.Status.COMPLETED, updated_at__date__gte=first_day, updated_at__date__lte=last_day)
+                created_at__date__gte=first_day,
+                created_at__date__lte=last_day
             ).aggregate(
                 estimated=Sum('estimated_cost'),
                 actual=Sum('actual_cost'),
@@ -503,8 +503,8 @@ class CostOverviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
             # Count requests
             count = RepairRequest.objects.filter(
-                Q(closed_at__date__gte=first_day, closed_at__date__lte=last_day) |
-                Q(status=RepairRequest.Status.COMPLETED, updated_at__date__gte=first_day, updated_at__date__lte=last_day)
+                created_at__date__gte=first_day,
+                created_at__date__lte=last_day
             ).count()
 
             months_data.append({
