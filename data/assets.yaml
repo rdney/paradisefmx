@@ -1,0 +1,49 @@
+# Paradijskerk assets
+---
+- name: CV-ketel
+  category: hvac
+  location: Kelder
+  status: operational
+  criticality: high
+  manufacturer: Remeha
+  model: Calenta 40c
+  description: Centrale verwarming kerkgebouw
+
+- name: Geluidsinstallatie
+  category: av
+  location: Kerkzaal
+  status: operational
+  criticality: high
+  manufacturer: Bose
+  description: Versterker, mengpaneel en luidsprekers
+
+- name: Beamer
+  category: av
+  location: Kerkzaal
+  status: operational
+  criticality: medium
+  manufacturer: Epson
+  model: EB-FH52
+  description: Projectie liederen en mededelingen
+
+- name: Orgel
+  category: other
+  location: Kerkzaal
+  status: operational
+  criticality: high
+  manufacturer: Verschueren
+  description: Pijporgel
+
+- name: Klokkenluidinstallatie
+  category: electrical
+  location: Toren
+  status: operational
+  criticality: medium
+  description: Automatische klokkenluidinstallatie
+
+- name: Koelkast
+  category: electrical
+  location: Keuken
+  status: operational
+  criticality: low
+  manufacturer: Liebherr

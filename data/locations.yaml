@@ -1,0 +1,55 @@
+# Paradijskerk locations
+---
+- name: Kerkzaal
+  notes: Hoofdzaal voor erediensten
+
+- name: Balkon
+  notes: Hal en garderobe
+
+- name: Consistorie
+  parent: Kerkzaal
+  notes: Kosterruimte achter de kerkzaal
+
+- name: Kelder
+  notes: Technische ruimte
+
+- name: Entree
+  notes: Hal en garderobe
+
+- name: Keuken
+  notes: Keuken in de Ark
+
+- name: Orgel
+  notes: Orgel op balkon
+
+- name: Toiletten Ark
+  notes: Sanitaire voorzieningen
+
+- name: Toiletten Kerk
+  notes: Sanitaire voorzieningen
+
+- name: Kantoor (Bibliotheek)
+  notes: Administratie en secretariaat
+
+- name: Toren Petrus
+  notes: Kerktoren
+
+- name: Toren Paulus
+  notes: Kerktoren
+
+- name: Sacristie
+  notes: Ruimte achter het altaar
+
+- name: Ark
+  notes: Bijgebouw
+
+- name: Koor
+  notes: Koorgedeelte kerk
+
+- name: Orgelzolder
+  notes: Zolder bij het orgel
+
+- name: Kluis
+  notes: Kluis voor erfgoed
+
+

@@ -1,0 +1,161 @@
+# Paradijskerk repair requests
+---
+# URGENT
+- title: Sluiting buitendeur sacristie
+  description: |
+    Hier is ingebroken ruim een jaar terug en nu alleen een noodoplossing.
+    Dit is een nooduitgang die nu niet meer gebruikt kan worden.
+  location: Sacristie
+  priority: high
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Verlichting kerk defect
+  description: |
+    Niet enkel wat 110volt is, is stuk.
+    Hebben we het al over gehad.
+  location: Kerkzaal
+  priority: normal
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Tegels vloer hoofdingang laten los
+  description: Tegeltjes vloer hoofdingang laten steeds meer los.
+  location: Entree
+  priority: normal
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Kabels veilig wegwerken
+  description: |
+    Kabels her en der van de kussentjes opladen, betaalpaal, geluid etc.
+    Veilig wegwerken - ook vanuit het perspectief van (brand)veiligheid.
+  location: Kerkzaal
+  priority: high
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Opruimen spullen verhuur
+  description: |
+    Her en der door de kerk, ark, torens en sacristie heen staan spullen,
+    vooral van verhuur, die nooit worden opgehaald.
+    Kan allemaal weg lijkt mij? Misschien een middag plannen om met een groepje op te ruimen.
+  location: Kerkzaal
+  priority: low
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Kerkbanken diverse gebreken
+  description: |
+    Vele kleine gebreken, maar de banken worden slechter en slechter.
+    Vraag Jan-Willem voor meer uitleg en voorbeelden.
+  location: Kerkzaal
+  priority: normal
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Ventilatierooster ontbreekt bij fietsen/Ark
+  description: |
+    Hennie liet een ontbrekend ventilatierooster zien bij de fietsen/ingang Ark,
+    waardoor o.a. ratten vrij toegang hebben tot de ruimtes onder de kerk.
+  location: Ark
+  priority: high
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+# NIET URGENT
+- title: Paraplubakken stuk
+  description: Paraplubakken in de kerk zijn stuk. Eentje staat nu in de linkertoren.
+  location: Kerkzaal
+  priority: low
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Stoelen naast livestream kapot
+  description: Die "stoelen" naast de livestream zijn kapot. Bewaren/repareren of weg?
+  location: Kerkzaal
+  priority: low
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Preekstoel en communiebank in de was
+  description: Preekstoel en communiebank in de was zetten. Organiseer ik met Hennie.
+  location: Kerkzaal
+  priority: low
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Vloer koor/orgelzolder laat los
+  description: Vloer bij koor/orgelzolder laat los.
+  location: Orgelzolder
+  priority: normal
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Kastdeur sacristie repareren
+  description: Reparatie van de kastdeur in de sacristie.
+  location: Sacristie
+  priority: low
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Verwarmingsknop sacristie
+  description: Reparatie van verwarmingsknop sacristie.
+  location: Sacristie
+  priority: low
+  status: completed
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+# MONUMENTAAL/INGEWIKKELD
+- title: Vleugels engelen communiebank los
+  description: |
+    Vleugels engelen communiebank zitten "los".
+    Dit hoort bij monumentzorg/monumentale status volgens Bruce.
+  location: Kerkzaal
+  priority: normal
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Preekstoel beschadigd
+  description: |
+    Preekstoel heeft enkele beschadigingen en is niet meer zo heel sterk/veilig volgens Jan-Willem.
+    Monumentale status.
+  location: Kerkzaal
+  priority: high
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Communiebank scheuren
+  description: |
+    De Communiebank laat scheuren zien die toenemen.
+    Ook monument.
+  location: Kerkzaal
+  priority: normal
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
+
+- title: Vochtproblemen erfgoed
+  description: |
+    Vochtproblemen in de kerk, kluis en sacristie.
+    Ons erfgoed (zoals gewaden) raakt meer en meer beschadigd.
+  location: Kluis
+  priority: high
+  status: new
+  requester_name: Arjen Oosterlee
+  requester_email: arjenoosterlee@gmail.com
