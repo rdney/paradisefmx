@@ -754,3 +754,38 @@ msgstr "Home"
 
 msgid "Terug naar home"
 msgstr "Back to home"
+
+# Day view
+msgid "Vandaag"
+msgstr "Today"
+
+msgid "Taken voor deze dag"
+msgstr "Tasks for this day"
+
+msgid "Geen taken voor deze dag"
+msgstr "No tasks for this day"
+
+msgid "Terug naar maand"
+msgstr "Back to month"
+
+# Weekday names
+msgid "Maandag"
+msgstr "Monday"
+
+msgid "Dinsdag"
+msgstr "Tuesday"
+
+msgid "Woensdag"
+msgstr "Wednesday"
+
+msgid "Donderdag"
+msgstr "Thursday"
+
+msgid "Vrijdag"
+msgstr "Friday"
+
+msgid "Zaterdag"
+msgstr "Saturday"
+
+msgid "Zondag"
+msgstr "Sunday"

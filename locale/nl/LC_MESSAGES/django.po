@@ -517,4 +517,39 @@ msgstr "Home"
 msgid "Terug naar home"
 msgstr "Terug naar home"
 
+# Day view
+msgid "Vandaag"
+msgstr "Vandaag"
+
+msgid "Taken voor deze dag"
+msgstr "Taken voor deze dag"
+
+msgid "Geen taken voor deze dag"
+msgstr "Geen taken voor deze dag"
+
+msgid "Terug naar maand"
+msgstr "Terug naar maand"
+
+# Weekday names
+msgid "Maandag"
+msgstr "Maandag"
+
+msgid "Dinsdag"
+msgstr "Dinsdag"
+
+msgid "Woensdag"
+msgstr "Woensdag"
+
+msgid "Donderdag"
+msgstr "Donderdag"
+
+msgid "Vrijdag"
+msgstr "Vrijdag"
+
+msgid "Zaterdag"
+msgstr "Zaterdag"
+
+msgid "Zondag"
+msgstr "Zondag"
+
 # Model fields (already in Dutch in models.py)

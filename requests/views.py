@@ -483,6 +483,8 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             ctx.update(self._get_week_context(today, year, month))
         elif view_mode == 'list':
             ctx.update(self._get_list_context(today))
+        elif view_mode == 'day':
+            ctx.update(self._get_day_context(today, year, month))
         else:
             ctx.update(self._get_month_context(today, year, month))
 
@@ -612,6 +614,56 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         ).select_related('location', 'assigned_to').order_by('due_date', 'priority')
 
         ctx['upcoming_requests'] = upcoming
+        return ctx
+
+    def _get_day_context(self, today, year, month):
+        """Build context for day view."""
+        from datetime import timedelta
+        ctx = {}
+
+        # Get day from params or use today
+        try:
+            day = int(self.request.GET.get('day', today.day))
+        except (ValueError, TypeError):
+            day = today.day
+
+        # Validate day
+        max_day = calendar.monthrange(year, month)[1]
+        if day < 1:
+            day = 1
+        elif day > max_day:
+            day = max_day
+
+        selected_date = date(year, month, day)
+        ctx['selected_date'] = selected_date
+        ctx['day'] = day
+
+        # Weekday name
+        weekday_names = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag']
+        ctx['weekday_name'] = weekday_names[selected_date.weekday()]
+        ctx['is_today'] = selected_date == today
+
+        # Get requests for this day
+        day_requests = RepairRequest.objects.filter(
+            due_date=selected_date
+        ).exclude(
+            status__in=[RepairRequest.Status.CLOSED]
+        ).select_related('location', 'assigned_to').order_by('priority', 'created_at')
+
+        ctx['day_requests'] = day_requests
+
+        # Day navigation
+        prev_date = selected_date - timedelta(days=1)
+        next_date = selected_date + timedelta(days=1)
+
+        ctx['prev_day'] = prev_date.day
+        ctx['prev_day_month'] = prev_date.month
+        ctx['prev_day_year'] = prev_date.year
+
+        ctx['next_day'] = next_date.day
+        ctx['next_day_month'] = next_date.month
+        ctx['next_day_year'] = next_date.year
+
         return ctx
 
 
