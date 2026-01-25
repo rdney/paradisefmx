@@ -1,0 +1,28 @@
+# Example repair requests
+# Copy to requests.yaml and edit for historical data
+# Priority: low, normal, high, urgent
+# Status: new, triaged, in_progress, waiting, completed, closed
+---
+- title: Lamp kapot in consistorie
+  description: TL-buis in consistorie doet het niet meer
+  location: Consistorie
+  priority: normal
+  status: closed
+  requester_name: Jan de Vries
+  requester_email: jan@example.com
+
+- title: Lekkage bij raam
+  description: Bij regen komt er water binnen bij het raam rechts vooraan
+  location: Kerkzaal
+  priority: high
+  status: completed
+  requester_name: Piet Jansen
+
+- title: Verwarming maakt geluid
+  description: De verwarming maakt een tikkend geluid in de kerkzaal
+  location: Kerkzaal
+  asset: CV-ketel
+  priority: normal
+  status: new
+  requester_name: Koster
+  requester_phone: "0612345678"

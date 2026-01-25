@@ -27,6 +27,10 @@ staticfiles/
 .env
 .env.local
 
+# Import data (keep examples)
+data/*.yaml
+!data/*.example.yaml
+
 # OS
 .DS_Store
 Thumbs.db

@@ -1,0 +1,27 @@
+# Example locations for Paradijskerk
+# Copy to locations.yaml and edit for your data
+---
+- name: Kerkzaal
+  notes: Hoofdzaal voor erediensten (300 zitplaatsen)
+
+- name: Consistorie
+  parent: Kerkzaal
+  notes: Vergaderruimte achter de kerkzaal
+
+- name: Kelder
+  notes: Technische ruimte
+
+- name: Entree
+  notes: Hal en garderobe
+
+- name: Keuken
+  notes: Keuken bij de kerkzaal
+
+- name: Toiletten
+  notes: Sanitaire voorzieningen
+
+- name: Kantoor
+  notes: Administratie en secretariaat
+
+- name: Toren
+  notes: Kerktoren
