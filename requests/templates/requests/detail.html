@@ -271,22 +271,27 @@
 <style>
     .mention-dropdown {
         position: absolute;
+        left: 0;
         background: white;
         border: 1px solid #ddd;
         border-radius: 4px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         max-height: 200px;
+        min-width: 200px;
         overflow-y: auto;
         z-index: 1000;
         display: none;
     }
     .mention-dropdown.show { display: block; }
+    .mention-dropdown.above { bottom: 100%; margin-bottom: 4px; }
+    .mention-dropdown.below { top: 100%; margin-top: 4px; }
     .mention-item {
-        padding: 8px 12px;
+        padding: 10px 14px;
         cursor: pointer;
+        font-size: 1rem;
     }
     .mention-item:hover, .mention-item.active {
-        background: #f0f0f0;
+        background: #e9ecef;
     }
     .mention-item strong { color: #0d6efd; }
 </style>
@@ -367,6 +372,12 @@
                 dropdown.querySelectorAll('.mention-item').forEach(item => {
                     item.addEventListener('click', () => selectUser(item.dataset.username));
                 });
+
+                // Position above or below based on available space
+                const rect = textarea.getBoundingClientRect();
+                const spaceBelow = window.innerHeight - rect.bottom;
+                dropdown.classList.remove('above', 'below');
+                dropdown.classList.add(spaceBelow < 250 ? 'above' : 'below');
 
                 dropdown.classList.add('show');
             });

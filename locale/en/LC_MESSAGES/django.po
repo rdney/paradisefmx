@@ -768,6 +768,9 @@ msgstr "No tasks for this day"
 msgid "Terug naar maand"
 msgstr "Back to month"
 
+msgid "Terug naar week"
+msgstr "Back to week"
+
 # Weekday names
 msgid "Maandag"
 msgstr "Monday"

@@ -83,9 +83,12 @@
     </div>
 </div>
 
-<div class="mt-3">
+<div class="mt-3 d-flex gap-2">
     <a href="?view=month&year={{ year }}&month={{ month }}" class="btn btn-outline-secondary">
         <i class="bi bi-calendar3"></i> {% trans "Terug naar maand" %}
+    </a>
+    <a href="?view=week&year={{ year }}&month={{ month }}&week={{ selected_date.isocalendar.1 }}" class="btn btn-outline-secondary">
+        <i class="bi bi-calendar-week"></i> {% trans "Terug naar week" %}
     </a>
 </div>
 

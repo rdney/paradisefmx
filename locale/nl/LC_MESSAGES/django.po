@@ -530,6 +530,9 @@ msgstr "Geen taken voor deze dag"
 msgid "Terug naar maand"
 msgstr "Terug naar maand"
 
+msgid "Terug naar week"
+msgstr "Terug naar week"
+
 # Weekday names
 msgid "Maandag"
 msgstr "Maandag"
