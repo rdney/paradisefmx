@@ -35,16 +35,29 @@ requests.yaml:
   priority: normal
   requester_name: Jan de Vries
   requester_email: jan@example.com
+
+accounts.yaml:
+---
+- username: arjen
+  email: arjen@example.com
+  first_name: Arjen
+  last_name: Oosterlee
+  password: Welcome123!
+  is_staff: true
 """
 import os
 from pathlib import Path
 
 import yaml
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
+from accounts.models import UserProfile
 from core.models import Asset, Location
 from requests.models import RepairRequest
+
+User = get_user_model()
 
 
 class Command(BaseCommand):
@@ -67,9 +80,14 @@ class Command(BaseCommand):
             help='Path to repair requests YAML file'
         )
         parser.add_argument(
+            '--accounts',
+            type=str,
+            help='Path to accounts YAML file'
+        )
+        parser.add_argument(
             '--all',
             type=str,
-            help='Path to directory containing locations.yaml, assets.yaml, requests.yaml'
+            help='Path to directory containing locations.yaml, assets.yaml, requests.yaml, accounts.yaml'
         )
         parser.add_argument(
             '--dry-run',
@@ -88,7 +106,10 @@ class Command(BaseCommand):
             locations_file = base_path / 'locations.yaml'
             assets_file = base_path / 'assets.yaml'
             requests_file = base_path / 'requests.yaml'
+            accounts_file = base_path / 'accounts.yaml'
 
+            if accounts_file.exists():
+                self.import_accounts(accounts_file, dry_run)
             if locations_file.exists():
                 self.import_locations(locations_file, dry_run)
             if assets_file.exists():
@@ -96,6 +117,8 @@ class Command(BaseCommand):
             if requests_file.exists():
                 self.import_requests(requests_file, dry_run)
         else:
+            if options['accounts']:
+                self.import_accounts(Path(options['accounts']), dry_run)
             if options['locations']:
                 self.import_locations(Path(options['locations']), dry_run)
             if options['assets']:
@@ -238,3 +261,47 @@ class Command(BaseCommand):
             self.stdout.write(f"  {status}: #{request.id} {title}")
 
         self.stdout.write(self.style.SUCCESS(f"Requests import complete"))
+
+    @transaction.atomic
+    def import_accounts(self, path, dry_run=False):
+        data = self.load_yaml(path)
+        self.stdout.write(f"Importing {len(data)} accounts from {path}")
+
+        for item in data:
+            username = item.get('username')
+            email = item.get('email')
+            if not username or not email:
+                self.stderr.write(f"  Skipping account without username/email: {item}")
+                continue
+
+            if dry_run:
+                self.stdout.write(f"  [DRY-RUN] Would create account: {username}")
+                continue
+
+            if User.objects.filter(username=username).exists():
+                self.stdout.write(f"  Exists: {username}")
+                continue
+
+            if User.objects.filter(email=email).exists():
+                self.stdout.write(f"  Email exists: {email}")
+                continue
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=item.get('password', 'Welcome123!'),
+            )
+            user.first_name = item.get('first_name', '')
+            user.last_name = item.get('last_name', '')
+            user.is_staff = item.get('is_staff', False)
+            user.is_superuser = item.get('is_superuser', False)
+            user.save()
+
+            # Set must_change_password flag
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.must_change_password = True
+            profile.save()
+
+            self.stdout.write(f"  Created: {username} ({email})")
+
+        self.stdout.write(self.style.SUCCESS(f"Accounts import complete"))

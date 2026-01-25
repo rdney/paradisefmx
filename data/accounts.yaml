@@ -1,0 +1,24 @@
+# Paradijskerk user accounts
+# Users will be prompted to change password on first login
+---
+- username: arjen
+  email: arjenoosterlee@gmail.com
+  first_name: Arjen
+  last_name: Oosterlee
+  password: Welcome123!
+  is_staff: true
+
+- username: matthijs
+  email: matthijsvanderwilt@gmail.com
+  first_name: Matthijs
+  last_name: Van Der Wilt
+  password: Welcome123!
+  is_staff: true
+
+- username: rodney
+  email: rrramdas@gmail.com
+  first_name: Rodney
+  last_name: Ramdas
+  password: Welcome123!
+  is_staff: true
+  is_superuser: true
