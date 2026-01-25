@@ -37,6 +37,11 @@
                                     <i class="bi bi-speedometer2"></i> {% trans "Dashboard" %}
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link fs-5" href="{% url 'requests:costs' %}">
+                                    <i class="bi bi-currency-euro"></i> {% trans "Kosten" %}
+                                </a>
+                            </li>
                         {% endif %}
                         <li class="nav-item">
                             <a class="nav-link fs-5" href="{% url 'requests:list' %}">

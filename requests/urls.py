@@ -13,4 +13,5 @@ urlpatterns = [
     path('<int:pk>/attachment/', views.add_attachment, name='add_attachment'),
     path('<int:pk>/update/', views.update_request, name='update'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
+    path('kosten/', views.CostOverviewView.as_view(), name='costs'),
 ]
