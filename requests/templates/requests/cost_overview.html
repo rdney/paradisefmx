@@ -75,34 +75,28 @@
                     {% for m in months_data %}
                         <tr class="{% if m.is_current %}table-primary{% endif %}">
                             <td>
-                                <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}" class="text-decoration-none">
-                                    {{ m.month_name }}
-                                </a>
+                                {{ m.month_name }}
                                 {% if m.is_current %}
                                     <span class="badge bg-primary ms-2">{% trans "Huidig" %}</span>
                                 {% endif %}
                             </td>
-                            <td class="text-end">
-                                <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}" class="text-decoration-none">
-                                    {{ m.count }}
-                                </a>
-                            </td>
+                            <td class="text-end">{{ m.count }}</td>
                             <td class="text-end">
                                 {% if m.estimated > 0 %}
-                                    <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}&has_estimated=1" class="text-decoration-none">
-                                        € {{ m.estimated|floatformat:2 }}
+                                    <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}&has_estimated=1" class="text-decoration-none fw-bold">
+                                        € {{ m.estimated|floatformat:2 }} <i class="bi bi-box-arrow-up-right small"></i>
                                     </a>
                                 {% else %}
-                                    € {{ m.estimated|floatformat:2 }}
+                                    <span class="text-muted">€ 0,00</span>
                                 {% endif %}
                             </td>
                             <td class="text-end">
                                 {% if m.actual > 0 %}
-                                    <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}&has_actual=1" class="text-decoration-none">
-                                        € {{ m.actual|floatformat:2 }}
+                                    <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}&has_actual=1" class="text-decoration-none fw-bold">
+                                        € {{ m.actual|floatformat:2 }} <i class="bi bi-box-arrow-up-right small"></i>
                                     </a>
                                 {% else %}
-                                    € {{ m.actual|floatformat:2 }}
+                                    <span class="text-muted">€ 0,00</span>
                                 {% endif %}
                             </td>
                             <td class="text-end {% if m.difference > 0 %}text-danger{% elif m.difference < 0 %}text-success{% endif %}">
@@ -144,8 +138,22 @@
                         <small class="text-muted">{{ m.count }} {% trans "verzoeken" %}</small>
                     </div>
                     <div class="text-end">
-                        <div><small class="text-muted">{% trans "Geschat" %}:</small> € {{ m.estimated|floatformat:0 }}</div>
-                        <div><small class="text-muted">{% trans "Werkelijk" %}:</small> € {{ m.actual|floatformat:0 }}</div>
+                        <div>
+                            <small class="text-muted">{% trans "Geschat" %}:</small>
+                            {% if m.estimated > 0 %}
+                                <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}&has_estimated=1">€ {{ m.estimated|floatformat:0 }}</a>
+                            {% else %}
+                                <span class="text-muted">€ 0</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <small class="text-muted">{% trans "Werkelijk" %}:</small>
+                            {% if m.actual > 0 %}
+                                <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}&has_actual=1">€ {{ m.actual|floatformat:0 }}</a>
+                            {% else %}
+                                <span class="text-muted">€ 0</span>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
-from django.db.models import Q, Sum
+from django.db.models import Case, Q, Sum, When, IntegerField
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -172,6 +172,18 @@ class RequestListView(LoginRequiredMixin, ListView):
         if self.request.GET.get('has_actual') == '1':
             qs = qs.filter(actual_cost__isnull=False, actual_cost__gt=0)
 
+        # Order by priority (highest first), then by created date (newest first)
+        qs = qs.annotate(
+            priority_order=Case(
+                When(priority=RepairRequest.Priority.URGENT, then=0),
+                When(priority=RepairRequest.Priority.HIGH, then=1),
+                When(priority=RepairRequest.Priority.NORMAL, then=2),
+                When(priority=RepairRequest.Priority.LOW, then=3),
+                default=4,
+                output_field=IntegerField(),
+            )
+        ).order_by('priority_order', '-created_at')
+
         return qs
 
     def get_context_data(self, **kwargs):
@@ -213,10 +225,16 @@ class DashboardView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             'location', 'asset', 'assigned_to'
         ).exclude(
             status__in=[RepairRequest.Status.COMPLETED, RepairRequest.Status.CLOSED]
-        ).order_by(
-            # Urgent first, then by created date
-            '-priority', 'created_at'
-        )
+        ).annotate(
+            priority_order=Case(
+                When(priority=RepairRequest.Priority.URGENT, then=0),
+                When(priority=RepairRequest.Priority.HIGH, then=1),
+                When(priority=RepairRequest.Priority.NORMAL, then=2),
+                When(priority=RepairRequest.Priority.LOW, then=3),
+                default=4,
+                output_field=IntegerField(),
+            )
+        ).order_by('priority_order', '-created_at')
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)

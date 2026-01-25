@@ -8,6 +8,13 @@
     <div>
         <h1 class="h3 mb-0">{% trans "Verzoeken" %}</h1>
         {% if current_filters.month and current_filters.year %}
+            <p class="mb-1">
+                {% if current_filters.has_estimated %}
+                    <span class="badge bg-info">{% trans "Geschatte kosten" %}</span>
+                {% elif current_filters.has_actual %}
+                    <span class="badge bg-success">{% trans "Werkelijke kosten" %}</span>
+                {% endif %}
+            </p>
             <small class="text-muted">
                 <a href="{% url 'requests:costs' %}?year={{ current_filters.year }}" class="text-decoration-none">
                     <i class="bi bi-arrow-left"></i> {% trans "Terug naar kostenoverzicht" %}
@@ -30,10 +37,10 @@
     </div>
     <div class="collapse d-md-block" id="filterCollapse">
         <div class="card-body">
-            <form method="get">
+            <form method="get" id="filterForm">
                 <div class="row g-2">
                     <div class="col-6 col-md-3">
-                        <select name="status" class="form-select" aria-label="{% trans 'Status' %}">
+                        <select name="status" class="form-select filter-auto-submit" aria-label="{% trans 'Status' %}">
                             <option value="">{% trans "Status" %}</option>
                             {% for value, label in status_choices %}
                                 <option value="{{ value }}" {% if current_filters.status == value %}selected{% endif %}>{{ label }}</option>
@@ -41,7 +48,7 @@
                         </select>
                     </div>
                     <div class="col-6 col-md-3">
-                        <select name="priority" class="form-select" aria-label="{% trans 'Prioriteit' %}">
+                        <select name="priority" class="form-select filter-auto-submit" aria-label="{% trans 'Prioriteit' %}">
                             <option value="">{% trans "Prioriteit" %}</option>
                             {% for value, label in priority_choices %}
                                 <option value="{{ value }}" {% if current_filters.priority == value %}selected{% endif %}>{{ label }}</option>
@@ -49,7 +56,7 @@
                         </select>
                     </div>
                     <div class="col-6 col-md-3">
-                        <select name="location" class="form-select" aria-label="{% trans 'Locatie' %}">
+                        <select name="location" class="form-select filter-auto-submit" aria-label="{% trans 'Locatie' %}">
                             <option value="">{% trans "Locatie" %}</option>
                             {% for loc in locations %}
                                 <option value="{{ loc.id }}" {% if current_filters.location == loc.id|stringformat:"d" %}selected{% endif %}>{{ loc.name }}</option>
@@ -165,4 +172,14 @@
         transition: background-color 0.15s;
     }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.filter-auto-submit').forEach(function(el) {
+        el.addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+    });
+</script>
 {% endblock %}
