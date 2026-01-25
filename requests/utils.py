@@ -37,10 +37,6 @@ def send_mention_notifications(worklog, mentioned_users, request_url=''):
         if not user.email:
             continue
 
-        # Don't notify the author of their own mention
-        if worklog.author and user.id == worklog.author.id:
-            continue
-
         message = _(
             'Hallo %(name)s,\n\n'
             '%(author)s heeft je genoemd in een notitie bij verzoek #%(id)s: %(title)s\n\n'

@@ -137,7 +137,7 @@
                                     </div>
                                     <small class="text-muted">{{ log.created_at|date:"d-m-Y H:i" }}</small>
                                 </div>
-                                <p class="mb-1">{{ log.note|highlight_mentions }}</p>
+                                <p class="mb-1">{{ log.note|highlight_mentions|safe }}</p>
                                 {% if log.minutes_spent %}
                                     <small class="text-muted">
                                         <i class="bi bi-clock"></i>
