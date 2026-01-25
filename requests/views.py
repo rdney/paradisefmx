@@ -13,7 +13,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 
 from .forms import AttachmentForm, RepairRequestForm, TriageForm, WorkLogForm
 from .models import Attachment, RepairRequest, WorkLog
@@ -528,3 +529,17 @@ class CostOverviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         ctx['next_year'] = year + 1
 
         return ctx
+
+
+class RequestDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """Delete a repair request (staff only)."""
+    model = RepairRequest
+    template_name = 'requests/request_confirm_delete.html'
+    success_url = reverse_lazy('requests:list')
+
+    def test_func(self):
+        return self.request.user.is_staff or self.request.user.is_superuser
+
+    def form_valid(self, form):
+        messages.success(self.request, _('Verzoek verwijderd.'))
+        return super().form_valid(form)
