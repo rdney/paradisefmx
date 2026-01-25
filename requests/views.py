@@ -50,7 +50,7 @@ class CreateRequestView(CreateView):
         # Create initial work log
         WorkLog.objects.create(
             repair_request=self.object,
-            entry_type=WorkLog.EntryType.NOTE,
+            entry_type=WorkLog.EntryType.CREATED,
             note=_('Reparatieverzoek ingediend'),
             author=self.request.user if self.request.user.is_authenticated else None,
         )
@@ -319,6 +319,16 @@ def add_worklog(request, pk):
             if worklog.minutes_spent:
                 worklog.entry_type = WorkLog.EntryType.TIME_SPENT
             worklog.save()
+
+            # Handle @mentions
+            from .utils import extract_mentions, send_mention_notifications
+            mentioned_users = extract_mentions(worklog.note)
+            if mentioned_users:
+                request_url = request.build_absolute_uri(
+                    reverse('requests:detail', kwargs={'pk': pk})
+                )
+                send_mention_notifications(worklog, mentioned_users, request_url)
+
             messages.success(request, _('Notitie toegevoegd.'))
 
     return redirect('requests:detail', pk=pk)
@@ -376,9 +386,11 @@ def update_request(request, pk):
             changes = []
 
             if old_status != repair_request.status:
+                # Get translated display names for statuses
+                old_status_display = str(dict(RepairRequest.Status.choices).get(old_status, old_status))
                 changes.append(
                     _('Status gewijzigd van %(old)s naar %(new)s') % {
-                        'old': dict(RepairRequest.Status.choices).get(old_status),
+                        'old': old_status_display,
                         'new': repair_request.get_status_display(),
                     }
                 )

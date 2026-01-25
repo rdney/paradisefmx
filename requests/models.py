@@ -204,6 +204,7 @@ class WorkLog(models.Model):
     """Activity log entry for a repair request."""
 
     class EntryType(models.TextChoices):
+        CREATED = 'created', _('Nieuw')
         NOTE = 'note', _('Notitie')
         STATUS_CHANGE = 'status_change', _('Statuswijziging')
         ASSIGNMENT = 'assignment', _('Toewijzing')

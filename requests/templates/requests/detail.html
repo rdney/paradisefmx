@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n mention_tags %}
 
 {% block title %}#{{ request.id }} {{ request.title }} - Paradise FMX{% endblock %}
 
@@ -48,15 +48,7 @@
                     {% endif %}
 
                     <dt class="col-sm-4">{% trans "Melder" %}</dt>
-                    <dd class="col-sm-8">
-                        {{ request.requester_name }}
-                        {% if request.requester_email %}
-                            <br><a href="mailto:{{ request.requester_email }}">{{ request.requester_email }}</a>
-                        {% endif %}
-                        {% if request.requester_phone %}
-                            <br><a href="tel:{{ request.requester_phone }}">{{ request.requester_phone }}</a>
-                        {% endif %}
-                    </dd>
+                    <dd class="col-sm-8">{{ request.requester_name }}</dd>
 
                     {% if request.assigned_to %}
                         <dt class="col-sm-4">{% trans "Toegewezen aan" %}</dt>
@@ -131,16 +123,21 @@
                         {% for log in work_logs %}
                             <div class="timeline-item {{ log.entry_type }}">
                                 <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <strong>
-                                        {% if log.author %}
-                                            {{ log.author.get_full_name|default:log.author.username }}
-                                        {% else %}
-                                            {% trans "Systeem" %}
-                                        {% endif %}
-                                    </strong>
+                                    <div>
+                                        <strong>
+                                            {% if log.author %}
+                                                {{ log.author.get_full_name|default:log.author.username }}
+                                            {% else %}
+                                                {% trans "Systeem" %}
+                                            {% endif %}
+                                        </strong>
+                                        <span class="badge {% if log.entry_type == 'created' %}bg-success{% elif log.entry_type == 'status_change' %}bg-primary{% elif log.entry_type == 'assignment' %}bg-info{% elif log.entry_type == 'time_spent' %}bg-secondary{% else %}bg-light text-dark{% endif %} ms-2">
+                                            {{ log.get_entry_type_display }}
+                                        </span>
+                                    </div>
                                     <small class="text-muted">{{ log.created_at|date:"d-m-Y H:i" }}</small>
                                 </div>
-                                <p class="mb-1">{{ log.note }}</p>
+                                <p class="mb-1">{{ log.note|highlight_mentions }}</p>
                                 {% if log.minutes_spent %}
                                     <small class="text-muted">
                                         <i class="bi bi-clock"></i>
