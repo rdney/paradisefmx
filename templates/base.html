@@ -31,7 +31,7 @@
                         </a>
                     </li>
                     {% if user.is_authenticated %}
-                        {% if user.is_staff or user.groups.all %}
+                        {% if (user.is_staff or user.is_superuser) or user.groups.all %}
                             <li class="nav-item">
                                 <a class="nav-link fs-5" href="{% url 'requests:dashboard' %}">
                                     <i class="bi bi-speedometer2"></i> {% trans "Dashboard" %}
@@ -96,7 +96,7 @@
                                 <i class="bi bi-person-circle"></i> {{ user.get_short_name|default:user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                {% if user.is_staff %}
+                                {% if (user.is_staff or user.is_superuser) %}
                                     <li><a class="dropdown-item fs-5" href="{% url 'admin:index' %}">{% trans "Beheer" %}</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                 {% endif %}
@@ -150,7 +150,7 @@
                 <i class="bi bi-list-ul"></i>
                 <span>{% trans "Lijst" %}</span>
             </a>
-            {% if user.is_staff %}
+            {% if (user.is_staff or user.is_superuser) %}
                 <a href="{% url 'requests:dashboard' %}" class="btn btn-outline-primary">
                     <i class="bi bi-speedometer2"></i>
                     <span>{% trans "Overzicht" %}</span>

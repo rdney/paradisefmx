@@ -12,7 +12,7 @@ from .models import Asset, Location
 
 class AdminRequiredMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.is_staff
+        return self.request.user.is_staff or self.request.user.is_superuser
 
 
 class HomeView(TemplateView):

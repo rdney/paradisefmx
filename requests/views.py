@@ -119,7 +119,7 @@ class RequestListView(LoginRequiredMixin, ListView):
         qs = RepairRequest.objects.select_related('location', 'asset', 'assigned_to')
 
         # Non-staff users only see their own requests
-        if not user.is_staff and not user.groups.filter(name='Facilitair').exists():
+        if not (user.is_staff or user.is_superuser) and not user.groups.filter(name='Facilitair').exists():
             qs = qs.filter(
                 Q(requester_user=user) |
                 Q(requester_email=user.email)
@@ -178,7 +178,7 @@ class DashboardView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def test_func(self):
         return (
-            self.request.user.is_staff or
+            (self.request.user.is_staff or self.request.user.is_superuser) or
             self.request.user.groups.filter(name__in=['Facilitair', 'Beheerders']).exists()
         )
 
@@ -224,7 +224,7 @@ class RequestDetailView(LoginRequiredMixin, DetailView):
         qs = RepairRequest.objects.select_related('location', 'asset', 'assigned_to', 'triaged_by')
 
         # Non-staff users only see their own requests
-        if not user.is_staff and not user.groups.filter(name='Facilitair').exists():
+        if not (user.is_staff or user.is_superuser) and not user.groups.filter(name='Facilitair').exists():
             qs = qs.filter(
                 Q(requester_user=user) |
                 Q(requester_email=user.email)
@@ -239,7 +239,7 @@ class RequestDetailView(LoginRequiredMixin, DetailView):
         ctx['attachment_form'] = AttachmentForm()
 
         # Triage form for staff
-        if self.request.user.is_staff or self.request.user.groups.filter(name='Facilitair').exists():
+        if (self.request.user.is_staff or self.request.user.is_superuser) or self.request.user.groups.filter(name='Facilitair').exists():
             ctx['triage_form'] = TriageForm(instance=self.object)
             ctx['staff_users'] = User.objects.filter(
                 Q(is_staff=True) | Q(groups__name='Facilitair')
@@ -255,7 +255,7 @@ def add_worklog(request, pk):
 
     # Permission check
     user = request.user
-    is_staff = user.is_staff or user.groups.filter(name='Facilitair').exists()
+    is_staff = (user.is_staff or user.is_superuser) or user.groups.filter(name='Facilitair').exists()
     is_owner = (
         repair_request.requester_user == user or
         repair_request.requester_email == user.email
@@ -287,7 +287,7 @@ def add_attachment(request, pk):
 
     # Permission check
     user = request.user
-    is_staff = user.is_staff or user.groups.filter(name='Facilitair').exists()
+    is_staff = (user.is_staff or user.is_superuser) or user.groups.filter(name='Facilitair').exists()
     is_owner = (
         repair_request.requester_user == user or
         repair_request.requester_email == user.email
@@ -316,7 +316,7 @@ def update_request(request, pk):
 
     # Permission check
     user = request.user
-    if not user.is_staff and not user.groups.filter(name='Facilitair').exists():
+    if not (user.is_staff or user.is_superuser) and not user.groups.filter(name='Facilitair').exists():
         messages.error(request, _('U heeft geen toegang tot deze actie.'))
         return redirect('requests:detail', pk=pk)
 
@@ -372,7 +372,7 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def test_func(self):
         return (
-            self.request.user.is_staff or
+            (self.request.user.is_staff or self.request.user.is_superuser) or
             self.request.user.groups.filter(name__in=['Facilitair', 'Beheerders']).exists()
         )
 
@@ -465,7 +465,7 @@ class CostOverviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def test_func(self):
         return (
-            self.request.user.is_staff or
+            (self.request.user.is_staff or self.request.user.is_superuser) or
             self.request.user.groups.filter(name__in=['Facilitair', 'Beheerders']).exists()
         )
 

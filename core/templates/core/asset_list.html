@@ -6,7 +6,7 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>{% trans "Objecten" %}</h1>
-    {% if user.is_staff %}
+    {% if (user.is_staff or user.is_superuser) %}
         <div>
             <a href="{% url 'core:location_list' %}" class="btn btn-outline-primary btn-lg">
                 <i class="bi bi-geo-alt"></i> {% trans "Locaties" %}
