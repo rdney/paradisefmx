@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Onderhoudsschema verwijderen" %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h1 class="h4 mb-0">{% trans "Onderhoudsschema verwijderen" %}</h1>
+            </div>
+            <div class="card-body">
+                <p class="lead">{% blocktrans with name=object.name asset=asset.asset_tag %}Weet u zeker dat u het onderhoudsschema "{{ name }}" voor {{ asset }} wilt verwijderen?{% endblocktrans %}</p>
+
+                <form method="post" data-no-warn>
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'assets:detail' asset.pk %}" class="btn btn-outline-secondary btn-lg">{% trans "Annuleren" %}</a>
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="bi bi-trash"></i> {% trans "Verwijderen" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

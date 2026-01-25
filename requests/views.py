@@ -423,6 +423,27 @@ def update_request(request, pk):
     return redirect('requests:detail', pk=pk)
 
 
+@login_required
+def update_description(request, pk):
+    """Update request description inline (staff only)."""
+    repair_request = get_object_or_404(RepairRequest, pk=pk)
+
+    # Permission check
+    user = request.user
+    if not (user.is_staff or user.is_superuser) and not user.groups.filter(name='Facilitair').exists():
+        messages.error(request, _('U heeft geen toegang tot deze actie.'))
+        return redirect('requests:detail', pk=pk)
+
+    if request.method == 'POST':
+        description = request.POST.get('description', '').strip()
+        if description:
+            repair_request.description = description
+            repair_request.save(update_fields=['description'])
+            messages.success(request, _('Omschrijving bijgewerkt.'))
+
+    return redirect('requests:detail', pk=pk)
+
+
 class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     """Planner view with month, week, and list modes."""
     template_name = 'requests/planner.html'
@@ -492,6 +513,8 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def _get_month_context(self, today, year, month):
         """Build context for month view."""
+        from datetime import timedelta
+        from core.models import Asset, MaintenanceSchedule
         ctx = {}
 
         cal = calendar.Calendar(firstweekday=0)  # Monday first
@@ -514,16 +537,59 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 requests_by_day[day] = []
             requests_by_day[day].append(req)
 
+        # Get maintenance schedules - show on all applicable days
+        maintenance_by_day = {}
+        schedules = MaintenanceSchedule.objects.filter(
+            asset__status__in=[Asset.Status.OPERATIONAL, Asset.Status.ATTENTION]
+        ).select_related('asset', 'asset__location')
+
+        for schedule in schedules:
+            interval = schedule.interval_days
+            next_maint = schedule.next_due_date
+            if not next_maint:
+                continue
+
+            check_date = next_maint
+            if check_date < first_day:
+                days_diff = (first_day - check_date).days
+                intervals_to_skip = (days_diff // interval)
+                check_date = check_date + timedelta(days=intervals_to_skip * interval)
+                if check_date < first_day:
+                    check_date += timedelta(days=interval)
+
+            while check_date <= last_day:
+                day = check_date.day
+                if day not in maintenance_by_day:
+                    maintenance_by_day[day] = []
+                if schedule not in maintenance_by_day[day]:
+                    maintenance_by_day[day].append(schedule)
+                check_date += timedelta(days=interval)
+
+        # Get assets with replacement dates in this month
+        replacements_by_day = {}
+        assets_with_replacement = Asset.objects.filter(
+            replacement_date__gte=first_day,
+            replacement_date__lte=last_day
+        ).exclude(status=Asset.Status.DISPOSED).select_related('location')
+
+        for asset in assets_with_replacement:
+            day = asset.replacement_date.day
+            if day not in replacements_by_day:
+                replacements_by_day[day] = []
+            replacements_by_day[day].append(asset)
+
         weeks = []
         for week in month_days:
             week_data = []
             for day in week:
                 if day == 0:
-                    week_data.append({'day': 0, 'requests': []})
+                    week_data.append({'day': 0, 'requests': [], 'maintenance': [], 'replacements': []})
                 else:
                     week_data.append({
                         'day': day,
                         'requests': requests_by_day.get(day, []),
+                        'maintenance': maintenance_by_day.get(day, []),
+                        'replacements': replacements_by_day.get(day, []),
                         'is_today': day == today.day and month == today.month and year == today.year,
                     })
             weeks.append(week_data)
@@ -535,6 +601,7 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def _get_week_context(self, today, year, month):
         """Build context for week view."""
         from datetime import timedelta
+        from core.models import Asset, MaintenanceSchedule
         ctx = {}
 
         # Get week number from params or current week
@@ -573,6 +640,33 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 requests_by_date[req.due_date] = []
             requests_by_date[req.due_date].append(req)
 
+        # Get maintenance schedules - show on all applicable days
+        maintenance_by_date = {}
+        schedules = MaintenanceSchedule.objects.filter(
+            asset__status__in=[Asset.Status.OPERATIONAL, Asset.Status.ATTENTION]
+        ).select_related('asset', 'asset__location')
+
+        for schedule in schedules:
+            interval = schedule.interval_days
+            next_maint = schedule.next_due_date
+            if not next_maint:
+                continue
+
+            check_date = next_maint
+            if check_date < week_monday:
+                days_diff = (week_monday - check_date).days
+                intervals_to_skip = (days_diff // interval)
+                check_date = check_date + timedelta(days=intervals_to_skip * interval)
+                if check_date < week_monday:
+                    check_date += timedelta(days=interval)
+
+            while check_date <= week_sunday:
+                if check_date not in maintenance_by_date:
+                    maintenance_by_date[check_date] = []
+                if schedule not in maintenance_by_date[check_date]:
+                    maintenance_by_date[check_date].append(schedule)
+                check_date += timedelta(days=interval)
+
         for i in range(7):
             day_date = week_monday + timedelta(days=i)
             week_days.append({
@@ -580,6 +674,7 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 'weekday': weekday_names[i],
                 'is_today': day_date == today,
                 'requests': requests_by_date.get(day_date, []),
+                'maintenance': maintenance_by_date.get(day_date, []),
             })
 
         ctx['week_days'] = week_days
@@ -600,10 +695,11 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def _get_list_context(self, today):
         """Build context for list view."""
+        from datetime import timedelta
+        from core.models import Asset, MaintenanceSchedule
         ctx = {}
 
         # Get upcoming requests with due_date (next 60 days)
-        from datetime import timedelta
         end_date = today + timedelta(days=60)
 
         upcoming = RepairRequest.objects.filter(
@@ -614,11 +710,57 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         ).select_related('location', 'assigned_to').order_by('due_date', 'priority')
 
         ctx['upcoming_requests'] = upcoming
+
+        # Get all upcoming maintenance occurrences in next 60 days
+        upcoming_maintenance = []
+        schedules = MaintenanceSchedule.objects.filter(
+            asset__status__in=[Asset.Status.OPERATIONAL, Asset.Status.ATTENTION]
+        ).select_related('asset', 'asset__location')
+
+        for schedule in schedules:
+            interval = schedule.interval_days
+            next_maint = schedule.next_due_date
+            if not next_maint:
+                continue
+
+            check_date = next_maint
+            if check_date < today:
+                days_diff = (today - check_date).days
+                intervals_to_skip = (days_diff // interval)
+                check_date = check_date + timedelta(days=intervals_to_skip * interval)
+                if check_date < today:
+                    check_date += timedelta(days=interval)
+
+            # Add all occurrences within the range (max 10 per schedule to avoid spam)
+            count = 0
+            while check_date <= end_date and count < 10:
+                upcoming_maintenance.append({
+                    'schedule': schedule,
+                    'asset': schedule.asset,
+                    'date': check_date,
+                    'is_overdue': check_date < today,
+                })
+                check_date += timedelta(days=interval)
+                count += 1
+
+        # Sort by date
+        upcoming_maintenance.sort(key=lambda m: m['date'])
+        ctx['upcoming_maintenance'] = upcoming_maintenance
+
+        # Get upcoming replacements
+        upcoming_replacements = Asset.objects.filter(
+            replacement_date__gte=today,
+            replacement_date__lte=end_date
+        ).exclude(status=Asset.Status.DISPOSED).select_related('location').order_by('replacement_date')
+
+        ctx['upcoming_replacements'] = upcoming_replacements
+
         return ctx
 
     def _get_day_context(self, today, year, month):
         """Build context for day view."""
         from datetime import timedelta
+        from core.models import Asset, MaintenanceSchedule
         ctx = {}
 
         # Get day from params or use today
@@ -651,6 +793,28 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         ).select_related('location', 'assigned_to').order_by('priority', 'created_at')
 
         ctx['day_requests'] = day_requests
+
+        # Get maintenance schedules for this day
+        day_maintenance = []
+        schedules = MaintenanceSchedule.objects.filter(
+            asset__status__in=[Asset.Status.OPERATIONAL, Asset.Status.ATTENTION]
+        ).select_related('asset', 'asset__location')
+
+        for schedule in schedules:
+            interval = schedule.interval_days
+            next_maint = schedule.next_due_date
+            if not next_maint:
+                continue
+
+            # Check if selected_date falls on a maintenance day
+            if selected_date >= next_maint:
+                days_since = (selected_date - next_maint).days
+                if days_since % interval == 0:
+                    day_maintenance.append(schedule)
+            elif selected_date == next_maint:
+                day_maintenance.append(schedule)
+
+        ctx['day_maintenance'] = day_maintenance
 
         # Day navigation
         prev_date = selected_date - timedelta(days=1)

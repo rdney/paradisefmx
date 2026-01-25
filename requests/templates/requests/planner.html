@@ -48,7 +48,7 @@
         <h3 class="h5 mb-0">{% trans "Taken voor deze dag" %}</h3>
     </div>
     <div class="card-body p-0">
-        {% if day_requests %}
+        {% if day_requests or day_maintenance %}
             <div class="list-group list-group-flush">
                 {% for req in day_requests %}
                     <a href="{% url 'requests:detail' req.pk %}" class="list-group-item list-group-item-action">
@@ -69,6 +69,27 @@
                             </div>
                             <div class="text-end">
                                 <span class="badge bg-{{ req.status }}">{{ req.get_status_display }}</span>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+                {% for schedule in day_maintenance %}
+                    <a href="{% url 'assets:detail' schedule.asset.pk %}" class="list-group-item list-group-item-action list-group-item-info">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <span class="badge bg-info me-2"><i class="bi bi-wrench"></i></span>
+                                <strong>{{ schedule.name }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    {{ schedule.asset.asset_tag }} - {{ schedule.asset.name }}
+                                    · <i class="bi bi-geo-alt"></i> {{ schedule.asset.location|default:"-" }}
+                                </small>
+                                {% if schedule.notes %}
+                                    <p class="mb-0 mt-2 text-muted small">{{ schedule.notes|truncatechars:150 }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-info">{% trans "Onderhoud" %}</span>
                             </div>
                         </div>
                     </a>
@@ -94,44 +115,114 @@
 
 {% elif view_mode == 'list' %}
 <!-- LIST VIEW -->
+{% if upcoming_requests %}
 <div class="card mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h2 class="h4 mb-0">{% trans "Geplande werkzaamheden" %}</h2>
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h2 class="h4 mb-0"><i class="bi bi-calendar-check"></i> {% trans "Geplande werkzaamheden" %}</h2>
     </div>
     <div class="card-body p-0">
-        {% if upcoming_requests %}
-            <div class="list-group list-group-flush">
-                {% for req in upcoming_requests %}
-                    <a href="{% url 'requests:detail' req.pk %}" class="list-group-item list-group-item-action">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <span class="badge badge-{{ req.priority }} me-2">#{{ req.id }}</span>
-                                <strong>{{ req.title }}</strong>
-                                <br>
-                                <small class="text-muted">
-                                    <i class="bi bi-geo-alt"></i> {{ req.location|default:"-" }}
-                                    {% if req.assigned_to %}
-                                        · <i class="bi bi-person"></i> {{ req.assigned_to.get_full_name|default:req.assigned_to.username }}
-                                    {% endif %}
-                                </small>
-                            </div>
-                            <div class="text-end">
-                                <a href="?view=day&year={{ req.due_date.year }}&month={{ req.due_date.month }}&day={{ req.due_date.day }}" class="badge bg-secondary text-decoration-none">{{ req.due_date|date:"d M" }}</a>
-                                <br>
-                                <small class="text-muted">{{ req.due_date|date:"l" }}</small>
-                            </div>
+        <div class="list-group list-group-flush">
+            {% for req in upcoming_requests %}
+                <a href="{% url 'requests:detail' req.pk %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge badge-{{ req.priority }} me-2">#{{ req.id }}</span>
+                            <strong>{{ req.title }}</strong>
+                            <br>
+                            <small class="text-muted">
+                                <i class="bi bi-geo-alt"></i> {{ req.location|default:"-" }}
+                                {% if req.assigned_to %}
+                                    · <i class="bi bi-person"></i> {{ req.assigned_to.get_full_name|default:req.assigned_to.username }}
+                                {% endif %}
+                            </small>
+                            {% if req.description %}
+                                <p class="mb-0 mt-1 text-muted small">{{ req.description|truncatechars:80 }}</p>
+                            {% endif %}
                         </div>
-                    </a>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="p-4 text-center text-muted">
-                <i class="bi bi-calendar-check fs-1"></i>
-                <p class="mt-2">{% trans "Geen geplande werkzaamheden" %}</p>
-            </div>
-        {% endif %}
+                        <div class="text-end">
+                            <span class="badge bg-primary">{{ req.due_date|date:"d M" }}</span>
+                            <br>
+                            <small class="text-muted">{{ req.due_date|date:"l" }}</small>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
     </div>
 </div>
+{% endif %}
+
+{% if upcoming_maintenance %}
+<div class="card mb-4">
+    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+        <h2 class="h4 mb-0"><i class="bi bi-wrench"></i> {% trans "Periodiek onderhoud" %}</h2>
+    </div>
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            {% for item in upcoming_maintenance %}
+                <a href="{% url 'assets:detail' item.asset.pk %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge bg-info me-2"><i class="bi bi-wrench"></i></span>
+                            <strong>{{ item.schedule.name }}</strong>
+                            <br>
+                            <small class="text-muted">
+                                {{ item.asset.asset_tag }} - {{ item.asset.name }}
+                                · <i class="bi bi-geo-alt"></i> {{ item.asset.location|default:"-" }}
+                            </small>
+                            {% if item.schedule.notes %}
+                                <p class="mb-0 mt-1 text-muted small">{{ item.schedule.notes|truncatechars:80 }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            <span class="badge {% if item.is_overdue %}bg-danger{% else %}bg-info{% endif %}">{{ item.date|date:"d M" }}</span>
+                            {% if item.is_overdue %}
+                                <br><small class="text-danger">{% trans "Te laat" %}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if upcoming_replacements %}
+<div class="card mb-4">
+    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+        <h2 class="h4 mb-0"><i class="bi bi-arrow-repeat"></i> {% trans "Geplande vervangingen" %}</h2>
+    </div>
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            {% for asset in upcoming_replacements %}
+                <a href="{% url 'assets:detail' asset.pk %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge bg-warning text-dark me-2"><i class="bi bi-arrow-repeat"></i></span>
+                            <strong>{{ asset.name }}</strong>
+                            <span class="text-muted">({{ asset.asset_tag }})</span>
+                            <br>
+                            <small class="text-muted">
+                                <i class="bi bi-geo-alt"></i> {{ asset.location|default:"-" }}
+                            </small>
+                            {% if asset.replacement_notes %}
+                                <p class="mb-0 mt-1 text-muted small">{{ asset.replacement_notes|truncatechars:80 }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            <span class="badge {% if asset.replacement_due %}bg-danger{% else %}bg-warning text-dark{% endif %}">{{ asset.replacement_date|date:"d M" }}</span>
+                            {% if asset.replacement_due %}
+                                <br><small class="text-danger">{% trans "Te laat" %}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
 
 {% elif view_mode == 'week' %}
 <!-- WEEK VIEW -->
@@ -158,7 +249,7 @@
                     <span class="{% if day_data.is_today %}{% else %}text-muted{% endif %}">{{ day_data.date|date:"d M" }}</span>
                 </a>
                 <div class="card-body p-2">
-                    {% if day_data.requests %}
+                    {% if day_data.requests or day_data.maintenance %}
                         {% for req in day_data.requests %}
                             <a href="{% url 'requests:detail' req.pk %}" class="d-block mb-2 p-2 rounded text-decoration-none planner-item priority-{{ req.priority }}">
                                 <span class="badge badge-{{ req.priority }}">#{{ req.id }}</span>
@@ -166,6 +257,13 @@
                                 {% if req.assigned_to %}
                                     <small class="text-muted"><i class="bi bi-person"></i> {{ req.assigned_to.get_full_name|default:req.assigned_to.username }}</small>
                                 {% endif %}
+                            </a>
+                        {% endfor %}
+                        {% for schedule in day_data.maintenance %}
+                            <a href="{% url 'assets:detail' schedule.asset.pk %}" class="d-block mb-2 p-2 rounded text-decoration-none planner-item maintenance-item">
+                                <span class="badge bg-info"><i class="bi bi-wrench"></i></span>
+                                <small class="d-block mt-1">{{ schedule.name|truncatechars:30 }}</small>
+                                <small class="text-muted d-block">{{ schedule.asset.asset_tag }}</small>
                             </a>
                         {% endfor %}
                     {% else %}
@@ -212,9 +310,17 @@
                                            class="day-number text-decoration-none {% if day_data.is_today %}badge bg-primary{% else %}fw-bold text-dark{% endif %}">
                                             {{ day_data.day }}
                                         </a>
-                                        {% if day_data.requests %}
-                                            <span class="badge bg-secondary">{{ day_data.requests|length }}</span>
-                                        {% endif %}
+                                        <div>
+                                            {% if day_data.requests %}
+                                                <span class="badge bg-secondary">{{ day_data.requests|length }}</span>
+                                            {% endif %}
+                                            {% if day_data.maintenance %}
+                                                <span class="badge bg-info"><i class="bi bi-wrench"></i> {{ day_data.maintenance|length }}</span>
+                                            {% endif %}
+                                            {% if day_data.replacements %}
+                                                <span class="badge bg-warning text-dark"><i class="bi bi-arrow-repeat"></i> {{ day_data.replacements|length }}</span>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                     <div class="day-requests">
                                         {% for req in day_data.requests %}
@@ -222,6 +328,20 @@
                                                class="d-block small mb-1 text-decoration-none planner-item priority-{{ req.priority }}">
                                                 <span class="badge badge-{{ req.priority }} me-1">#{{ req.id }}</span>
                                                 <span class="text-truncate d-inline-block" style="max-width: 80px;">{{ req.title }}</span>
+                                            </a>
+                                        {% endfor %}
+                                        {% for schedule in day_data.maintenance %}
+                                            <a href="{% url 'assets:detail' schedule.asset.pk %}"
+                                               class="d-block small mb-1 text-decoration-none planner-item maintenance-item">
+                                                <span class="badge bg-info me-1"><i class="bi bi-wrench"></i></span>
+                                                <span class="text-truncate d-inline-block" style="max-width: 80px;">{{ schedule.name }}</span>
+                                            </a>
+                                        {% endfor %}
+                                        {% for asset in day_data.replacements %}
+                                            <a href="{% url 'assets:detail' asset.pk %}"
+                                               class="d-block small mb-1 text-decoration-none planner-item replacement-item">
+                                                <span class="badge bg-warning text-dark me-1"><i class="bi bi-arrow-repeat"></i></span>
+                                                <span class="text-truncate d-inline-block" style="max-width: 80px;">{{ asset.name }}</span>
                                             </a>
                                         {% endfor %}
                                     </div>
@@ -245,6 +365,8 @@
             <span><span class="badge badge-normal">{% trans "Normaal" %}</span></span>
             <span><span class="badge badge-high">{% trans "Hoog" %}</span></span>
             <span><span class="badge badge-urgent">{% trans "Spoed" %}</span></span>
+            <span><span class="badge bg-info"><i class="bi bi-wrench"></i> {% trans "Onderhoud" %}</span></span>
+            <span><span class="badge bg-warning text-dark"><i class="bi bi-arrow-repeat"></i> {% trans "Vervanging" %}</span></span>
         </div>
     </div>
 </div>
@@ -266,6 +388,12 @@
 }
 .planner-item.priority-high {
     background: #fef3c7;
+}
+.planner-item.maintenance-item {
+    background: #cff4fc;
+}
+.planner-item.replacement-item {
+    background: #fff3cd;
 }
 .day-number {
     font-size: 1.1rem;

@@ -33,7 +33,23 @@
             <div class="card-body">
                 <h2 class="h5">{% trans "Omschrijving" %}</h2>
                 <div class="mb-4">
+                    {% if triage_form %}
+                    <!-- Inline editable description for staff -->
+                    <div id="description-display" class="editable-field" onclick="showDescriptionEdit()">
+                        {{ request.description|linebreaks }}
+                        <small class="text-muted d-block mt-1"><i class="bi bi-pencil"></i> {% trans "Klik om te bewerken" %}</small>
+                    </div>
+                    <div id="description-edit" style="display: none;">
+                        <form method="post" action="{% url 'requests:update_description' request.pk %}" data-no-warn>
+                            {% csrf_token %}
+                            <textarea name="description" class="form-control form-control-lg mb-2" rows="4">{{ request.description }}</textarea>
+                            <button type="submit" class="btn btn-primary">{% trans "Opslaan" %}</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="hideDescriptionEdit()">{% trans "Annuleren" %}</button>
+                        </form>
+                    </div>
+                    {% else %}
                     {{ request.description|linebreaks }}
+                    {% endif %}
                 </div>
 
                 <dl class="row mb-0">
@@ -220,6 +236,18 @@
                         {% csrf_token %}
 
                         <div class="mb-3">
+                            <label class="form-label" for="id_location">{% trans "Locatie" %}</label>
+                            {{ triage_form.location }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="id_asset">{% trans "Object" %}</label>
+                            {{ triage_form.asset }}
+                        </div>
+
+                        <hr>
+
+                        <div class="mb-3">
                             <label class="form-label" for="id_status">{% trans "Status" %}</label>
                             {{ triage_form.status }}
                         </div>
@@ -240,6 +268,13 @@
                         </div>
 
                         <div class="mb-3">
+                            <label class="form-label" for="id_resolution_summary">{% trans "Oplossing" %}</label>
+                            {{ triage_form.resolution_summary }}
+                        </div>
+
+                        <hr>
+
+                        <div class="mb-3">
                             <label class="form-label" for="id_estimated_cost">{% trans "Geschatte kosten (€)" %}</label>
                             {{ triage_form.estimated_cost }}
                         </div>
@@ -250,34 +285,36 @@
                         </div>
 
                         <hr>
-                        <h3 class="h5 mb-3">{% trans "Inkoop" %}</h3>
-
                         <div class="mb-3">
-                            <label class="form-label" for="id_vendor">{% trans "Leverancier" %}</label>
-                            {{ triage_form.vendor }}
+                            <a class="text-decoration-none d-flex align-items-center justify-content-between" data-bs-toggle="collapse" href="#inkoopSection" role="button" aria-expanded="{% if request.vendor or request.quote_status != 'none' or request.po_number %}true{% else %}false{% endif %}">
+                                <span class="h5 mb-0">{% trans "Vergt inkoop/aannemer" %}</span>
+                                <i class="bi bi-chevron-down"></i>
+                            </a>
                         </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="id_quote_status">{% trans "Offertestatus" %}</label>
-                                {{ triage_form.quote_status }}
+                        <div class="collapse {% if request.vendor or request.quote_status != 'none' or request.po_number %}show{% endif %}" id="inkoopSection">
+                            <div class="mb-3">
+                                <label class="form-label" for="id_vendor">{% trans "Leverancier" %}</label>
+                                {{ triage_form.vendor }}
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label" for="id_quote_amount">{% trans "Offertebedrag (€)" %}</label>
-                                {{ triage_form.quote_amount }}
-                            </div>
-                        </div>
 
-                        <div class="mb-3">
-                            <label class="form-label" for="id_po_number">{% trans "PO-nummer" %}</label>
-                            {{ triage_form.po_number }}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="id_quote_status">{% trans "Offertestatus" %}</label>
+                                    {{ triage_form.quote_status }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="id_quote_amount">{% trans "Offertebedrag (€)" %}</label>
+                                    {{ triage_form.quote_amount }}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="id_po_number">{% trans "PO-nummer" %}</label>
+                                {{ triage_form.po_number }}
+                            </div>
                         </div>
 
                         <hr>
-                        <div class="mb-3">
-                            <label class="form-label" for="id_resolution_summary">{% trans "Oplossing" %}</label>
-                            {{ triage_form.resolution_summary }}
-                        </div>
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">
@@ -348,6 +385,21 @@
         background: #e9ecef;
     }
     .mention-item strong { color: #0d6efd; }
+    .editable-field {
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+    }
+    .editable-field:hover {
+        background-color: #f8f9fa;
+    }
+    [data-bs-toggle="collapse"] .bi-chevron-down {
+        transition: transform 0.2s;
+    }
+    [data-bs-toggle="collapse"][aria-expanded="true"] .bi-chevron-down {
+        transform: rotate(180deg);
+    }
 </style>
 {% endblock %}
 
@@ -462,5 +514,17 @@
         });
     }
 })();
+
+// Inline description editing
+function showDescriptionEdit() {
+    document.getElementById('description-display').style.display = 'none';
+    document.getElementById('description-edit').style.display = 'block';
+    document.querySelector('#description-edit textarea').focus();
+}
+
+function hideDescriptionEdit() {
+    document.getElementById('description-display').style.display = 'block';
+    document.getElementById('description-edit').style.display = 'none';
+}
 </script>
 {% endblock %}

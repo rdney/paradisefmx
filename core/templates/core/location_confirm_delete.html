@@ -13,13 +13,36 @@
             <div class="card-body">
                 <p class="lead">{% blocktrans with name=object.name %}Weet u zeker dat u de locatie "{{ name }}" wilt verwijderen?{% endblocktrans %}</p>
 
+                {% if not can_delete %}
+                    <div class="alert alert-warning">
+                        <strong>{% trans "Kan niet verwijderen:" %}</strong>
+                        <ul class="mb-0 mt-2">
+                            {% if asset_count > 0 %}
+                                <li>{% blocktrans count count=asset_count %}{{ count }} object gekoppeld{% plural %}{{ count }} objecten gekoppeld{% endblocktrans %}</li>
+                            {% endif %}
+                            {% if request_count > 0 %}
+                                <li>{% blocktrans count count=request_count %}{{ count }} verzoek gekoppeld{% plural %}{{ count }} verzoeken gekoppeld{% endblocktrans %}</li>
+                            {% endif %}
+                            {% if child_count > 0 %}
+                                <li>{% blocktrans count count=child_count %}{{ count }} sublocatie{% plural %}{{ count }} sublocaties{% endblocktrans %}</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+
                 <form method="post" data-no-warn>
                     {% csrf_token %}
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{% url 'core:location_list' %}" class="btn btn-outline-secondary btn-lg">{% trans "Annuleren" %}</a>
-                        <button type="submit" class="btn btn-danger btn-lg">
-                            <i class="bi bi-trash"></i> {% trans "Verwijderen" %}
-                        </button>
+                        {% if can_delete %}
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="bi bi-trash"></i> {% trans "Verwijderen" %}
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-danger btn-lg" disabled>
+                                <i class="bi bi-trash"></i> {% trans "Verwijderen" %}
+                            </button>
+                        {% endif %}
                     </div>
                 </form>
             </div>

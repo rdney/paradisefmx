@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% if object %}{% trans "Onderhoudsschema bewerken" %}{% else %}{% trans "Onderhoudsschema toevoegen" %}{% endif %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'assets:detail' asset.pk %}" class="btn btn-outline-secondary btn-lg">
+        <i class="bi bi-arrow-left"></i> {% trans "Terug naar object" %}
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="h4 mb-0">
+                    {% if object %}
+                        {% trans "Onderhoudsschema bewerken" %}
+                    {% else %}
+                        {% trans "Onderhoudsschema toevoegen" %}
+                    {% endif %}
+                </h1>
+                <small class="text-muted">{{ asset.asset_tag }} - {{ asset.name }}</small>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="id_name" class="form-label">{% trans "Onderhoudstaak" %} *</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="invalid-feedback d-block">{{ form.name.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">{% trans "bijv. Filter vervangen, Jaarlijkse inspectie" %}</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_interval_days" class="form-label">{% trans "Interval (dagen)" %} *</label>
+                        {{ form.interval_days }}
+                        {% if form.interval_days.errors %}
+                            <div class="invalid-feedback d-block">{{ form.interval_days.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-text text-muted">{% trans "Aantal dagen tussen onderhoudsbeurten" %}</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_last_performed" class="form-label">{% trans "Laatst uitgevoerd" %}</label>
+                        {{ form.last_performed }}
+                        {% if form.last_performed.errors %}
+                            <div class="invalid-feedback d-block">{{ form.last_performed.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_notes" class="form-label">{% trans "Instructies" %}</label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <div class="invalid-feedback d-block">{{ form.notes.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'assets:detail' asset.pk %}" class="btn btn-outline-secondary btn-lg">{% trans "Annuleren" %}</a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-lg"></i> {% trans "Opslaan" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

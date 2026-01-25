@@ -25,12 +25,23 @@
             <tbody>
                 {% for location in locations %}
                     <tr>
-                        <td class="fw-bold">{{ location.name }}</td>
-                        <td>{{ location.parent|default:"-" }}</td>
+                        <td class="fw-bold">
+                            <a href="{% url 'core:location_detail' location.pk %}">{{ location.name }}</a>
+                        </td>
+                        <td>
+                            {% if location.parent %}
+                                <a href="{% url 'core:location_detail' location.parent.pk %}">{{ location.parent }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
                         <td>{{ location.notes|truncatewords:10|default:"-" }}</td>
                         <td class="text-end">
+                            <a href="{% url 'core:location_detail' location.pk %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-eye"></i>
+                            </a>
                             <a href="{% url 'core:location_update' location.pk %}" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-pencil"></i> {% trans "Bewerken" %}
+                                <i class="bi bi-pencil"></i>
                             </a>
                             <a href="{% url 'core:location_delete' location.pk %}" class="btn btn-outline-danger btn-sm">
                                 <i class="bi bi-trash"></i>

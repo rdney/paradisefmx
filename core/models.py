@@ -112,6 +112,35 @@ class Asset(models.Model):
         default=False,
         help_text=_('Dit object valt onder monumentenzorg')
     )
+    # Replacement tracking
+    replacement_date = models.DateField(
+        _('geplande vervanging'),
+        null=True,
+        blank=True,
+        help_text=_('Datum waarop dit object vervangen moet worden')
+    )
+    replacement_notes = models.TextField(
+        _('vervangingsnotities'),
+        blank=True,
+        help_text=_('Reden voor vervanging, specificaties voor nieuw object, etc.')
+    )
+    # Periodic maintenance (legacy - use MaintenanceSchedule instead)
+    maintenance_interval_days = models.PositiveIntegerField(
+        _('onderhoudsinterval (dagen)'),
+        null=True,
+        blank=True,
+        help_text=_('Aantal dagen tussen onderhoudsbeurten')
+    )
+    last_maintenance_date = models.DateField(
+        _('laatste onderhoud'),
+        null=True,
+        blank=True
+    )
+    maintenance_notes = models.TextField(
+        _('onderhoudsinstructies'),
+        blank=True,
+        help_text=_('Wat moet er gedaan worden bij onderhoud?')
+    )
     created_at = models.DateTimeField(_('aangemaakt op'), auto_now_add=True)
     updated_at = models.DateTimeField(_('bijgewerkt op'), auto_now=True)
 
@@ -126,9 +155,56 @@ class Asset(models.Model):
     def get_absolute_url(self):
         return reverse('assets:detail', kwargs={'pk': self.pk})
 
+    @property
+    def next_maintenance_date(self):
+        """Calculate when next maintenance is due."""
+        if not self.maintenance_interval_days:
+            return None
+        if not self.last_maintenance_date:
+            # If never maintained, it's due now
+            from datetime import date
+            return date.today()
+        from datetime import timedelta
+        return self.last_maintenance_date + timedelta(days=self.maintenance_interval_days)
+
+    @property
+    def maintenance_due(self):
+        """Check if maintenance is due or overdue."""
+        next_date = self.next_maintenance_date
+        if not next_date:
+            return False
+        from datetime import date
+        return next_date <= date.today()
+
+    @property
+    def days_until_maintenance(self):
+        """Days until next maintenance (negative if overdue)."""
+        next_date = self.next_maintenance_date
+        if not next_date:
+            return None
+        from datetime import date
+        return (next_date - date.today()).days
+
+    @property
+    def replacement_due(self):
+        """Check if replacement is due or overdue."""
+        if not self.replacement_date:
+            return False
+        from datetime import date
+        return self.replacement_date <= date.today()
+
+    @property
+    def days_until_replacement(self):
+        """Days until replacement (negative if overdue)."""
+        if not self.replacement_date:
+            return None
+        from datetime import date
+        return (self.replacement_date - date.today()).days
+
     def save(self, *args, **kwargs):
         if not self.asset_tag:
-            # Auto-generate asset tag based on category
+            import uuid
+            # Auto-generate asset tag based on category + UUID fragment
             prefix_map = {
                 'hvac': 'HVAC',
                 'electrical': 'ELEK',
@@ -140,16 +216,66 @@ class Asset(models.Model):
                 'other': 'OBJ',
             }
             prefix = prefix_map.get(self.category, 'OBJ')
-            # Get next number for this category
-            last = Asset.objects.filter(
-                asset_tag__startswith=prefix
-            ).order_by('-asset_tag').first()
-            if last:
-                try:
-                    num = int(last.asset_tag.split('-')[-1]) + 1
-                except ValueError:
-                    num = 1
-            else:
-                num = 1
-            self.asset_tag = f"{prefix}-{num:03d}"
+            # Use first 6 chars of UUID (uppercase)
+            uid = uuid.uuid4().hex[:6].upper()
+            self.asset_tag = f"{prefix}-{uid}"
         super().save(*args, **kwargs)
+
+
+class MaintenanceSchedule(models.Model):
+    """Periodic maintenance schedule for an asset."""
+    asset = models.ForeignKey(
+        Asset,
+        on_delete=models.CASCADE,
+        related_name='maintenance_schedules',
+        verbose_name=_('object')
+    )
+    name = models.CharField(
+        _('onderhoudstaak'),
+        max_length=200,
+        help_text=_('Bijv. "Filter vervangen", "Jaarlijkse inspectie"')
+    )
+    interval_days = models.PositiveIntegerField(
+        _('interval (dagen)'),
+        help_text=_('Aantal dagen tussen onderhoudsbeurten')
+    )
+    last_performed = models.DateField(
+        _('laatst uitgevoerd'),
+        null=True,
+        blank=True
+    )
+    notes = models.TextField(
+        _('instructies'),
+        blank=True,
+        help_text=_('Wat moet er gedaan worden?')
+    )
+    created_at = models.DateTimeField(_('aangemaakt op'), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('onderhoudsschema')
+        verbose_name_plural = _("onderhoudsschema's")
+        ordering = ['asset', 'name']
+
+    def __str__(self):
+        return f"{self.asset.asset_tag} - {self.name}"
+
+    @property
+    def next_due_date(self):
+        """Calculate when this maintenance is next due."""
+        if not self.last_performed:
+            from datetime import date
+            return date.today()
+        from datetime import timedelta
+        return self.last_performed + timedelta(days=self.interval_days)
+
+    @property
+    def is_due(self):
+        """Check if maintenance is due or overdue."""
+        from datetime import date
+        return self.next_due_date <= date.today()
+
+    @property
+    def days_until_due(self):
+        """Days until due (negative if overdue)."""
+        from datetime import date
+        return (self.next_due_date - date.today()).days

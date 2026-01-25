@@ -23,10 +23,19 @@ def extract_mentions(text):
         return []
 
     usernames = MENTION_PATTERN.findall(text)
+    logger.info(f'Found mentions in text: {usernames}')
     if not usernames:
         return []
 
-    return list(User.objects.filter(username__in=usernames))
+    # Case-insensitive username lookup
+    from django.db.models import Q
+    query = Q()
+    for username in usernames:
+        query |= Q(username__iexact=username)
+
+    users = list(User.objects.filter(query))
+    logger.info(f'Matched users: {[u.username for u in users]}')
+    return users
 
 
 def send_mention_notifications(worklog, mentioned_users, request_url=''):

@@ -73,11 +73,6 @@
                             </a>
                         </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link fs-5" href="{% url 'core:help' %}">
-                            <i class="bi bi-question-circle"></i> {% trans "Help" %}
-                        </a>
-                    </li>
                     <!-- Language switcher -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle fs-5" href="#" role="button" data-bs-toggle="dropdown">
@@ -215,6 +210,12 @@
                 }
             });
         })();
+
+        // Initialize Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     </script>
     {% block extra_js %}{% endblock %}
 </body>

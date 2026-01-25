@@ -392,6 +392,95 @@ msgstr "Bijlage geüpload."
 msgid "Verzoek bijgewerkt."
 msgstr "Verzoek bijgewerkt."
 
+msgid "Omschrijving bijgewerkt."
+msgstr "Omschrijving bijgewerkt."
+
+msgid "Klik om te bewerken"
+msgstr "Klik om te bewerken"
+
+# Maintenance
+msgid "Periodiek onderhoud"
+msgstr "Periodiek onderhoud"
+
+msgid "Laatste onderhoud"
+msgstr "Laatste onderhoud"
+
+msgid "Volgend onderhoud"
+msgstr "Volgend onderhoud"
+
+msgid "Binnenkort"
+msgstr "Binnenkort"
+
+msgid "Instructies"
+msgstr "Instructies"
+
+#, python-format
+msgid "Elke %(days)s dagen"
+msgstr "Elke %(days)s dagen"
+
+msgid "Onderhoud uitgevoerd"
+msgstr "Onderhoud uitgevoerd"
+
+msgid "Onderhoud geregistreerd."
+msgstr "Onderhoud geregistreerd."
+
+msgid "Onderhoudsinterval (dagen)"
+msgstr "Onderhoudsinterval (dagen)"
+
+msgid "Bijv. 30, 90, 365"
+msgstr "Bijv. 30, 90, 365"
+
+msgid "Onderhoudsinstructies"
+msgstr "Onderhoudsinstructies"
+
+msgid "Wat moet er gedaan worden bij onderhoud?"
+msgstr "Wat moet er gedaan worden bij onderhoud?"
+
+msgid "Onderhoud"
+msgstr "Onderhoud"
+
+msgid "Nieuwe locatie"
+msgstr "Nieuwe locatie"
+
+msgid "Bovenliggende locatie"
+msgstr "Bovenliggende locatie"
+
+msgid "Toevoegen"
+msgstr "Toevoegen"
+
+msgid "Voer een naam in"
+msgstr "Voer een naam in"
+
+msgid "Kan niet verwijderen:"
+msgstr "Kan niet verwijderen:"
+
+msgid "Kan niet verwijderen: er zijn objecten gekoppeld aan deze locatie."
+msgstr "Kan niet verwijderen: er zijn objecten gekoppeld aan deze locatie."
+
+msgid "Kan niet verwijderen: er zijn verzoeken gekoppeld aan deze locatie."
+msgstr "Kan niet verwijderen: er zijn verzoeken gekoppeld aan deze locatie."
+
+msgid "Kan niet verwijderen: deze locatie heeft sublocaties."
+msgstr "Kan niet verwijderen: deze locatie heeft sublocaties."
+
+#, python-format
+msgid "%(count)s object gekoppeld"
+msgid_plural "%(count)s objecten gekoppeld"
+msgstr[0] "%(count)s object gekoppeld"
+msgstr[1] "%(count)s objecten gekoppeld"
+
+#, python-format
+msgid "%(count)s verzoek gekoppeld"
+msgid_plural "%(count)s verzoeken gekoppeld"
+msgstr[0] "%(count)s verzoek gekoppeld"
+msgstr[1] "%(count)s verzoeken gekoppeld"
+
+#, python-format
+msgid "%(count)s sublocatie"
+msgid_plural "%(count)s sublocaties"
+msgstr[0] "%(count)s sublocatie"
+msgstr[1] "%(count)s sublocaties"
+
 msgid "U heeft geen toegang tot dit verzoek."
 msgstr "U heeft geen toegang tot dit verzoek."
 

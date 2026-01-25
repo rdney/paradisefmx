@@ -35,7 +35,12 @@
 
                         <div class="col-md-6 mb-4">
                             <label for="id_location" class="form-label">{% trans "Locatie" %}</label>
-                            {{ form.location }}
+                            <div class="input-group">
+                                {{ form.location }}
+                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addLocationModal">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -111,6 +116,30 @@
                         <div class="form-text">{% trans "Vink aan als dit object onder monumentenzorg valt" %}</div>
                     </div>
 
+                    <hr class="my-4">
+                    <h3 class="h5 mb-3">{% trans "Vervanging" %}</h3>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="id_replacement_date" class="form-label">{% trans "Geplande vervanging" %}</label>
+                            {{ form.replacement_date }}
+                            <div class="form-text">{% trans "Datum waarop dit object vervangen moet worden" %}</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_replacement_notes" class="form-label">{% trans "Vervangingsnotities" %}</label>
+                        {{ form.replacement_notes }}
+                        <div class="form-text">{% trans "Reden, specificaties voor nieuw object, etc." %}</div>
+                    </div>
+
+                    {% if object %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        {% trans "Onderhoudstaken kunt u beheren op de detailpagina van dit object." %}
+                    </div>
+                    {% endif %}
+
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{% url 'assets:list' %}" class="btn btn-outline-secondary btn-lg">{% trans "Annuleren" %}</a>
                         <button type="submit" class="btn btn-primary btn-lg">
@@ -122,4 +151,80 @@
         </div>
     </div>
 </div>
+
+<!-- Add Location Modal -->
+<div class="modal fade" id="addLocationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% trans "Nieuwe locatie" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="new_location_name" class="form-label">{% trans "Naam" %} <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-lg" id="new_location_name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="new_location_parent" class="form-label">{% trans "Bovenliggende locatie" %}</label>
+                    <select class="form-select form-select-lg" id="new_location_parent">
+                        <option value="">---------</option>
+                        {% for loc in form.location.field.queryset %}
+                            <option value="{{ loc.pk }}">{{ loc }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{% trans "Annuleren" %}</button>
+                <button type="button" class="btn btn-primary" id="saveLocationBtn">
+                    <i class="bi bi-check-circle"></i> {% trans "Toevoegen" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('saveLocationBtn').addEventListener('click', function() {
+    const name = document.getElementById('new_location_name').value.trim();
+    const parent = document.getElementById('new_location_parent').value;
+
+    if (!name) {
+        alert('{% trans "Voer een naam in" %}');
+        return;
+    }
+
+    fetch('{% url "core:location_create_ajax" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ name: name, parent: parent || null })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.id) {
+            // Add to dropdown and select it
+            const select = document.getElementById('id_location');
+            const option = new Option(data.name, data.id, true, true);
+            select.add(option);
+
+            // Also add to parent dropdown in modal
+            const parentSelect = document.getElementById('new_location_parent');
+            parentSelect.add(new Option(data.name, data.id));
+
+            // Close modal and clear form
+            bootstrap.Modal.getInstance(document.getElementById('addLocationModal')).hide();
+            document.getElementById('new_location_name').value = '';
+            document.getElementById('new_location_parent').value = '';
+        } else {
+            alert(data.error || 'Error');
+        }
+    });
+});
+</script>
 {% endblock %}

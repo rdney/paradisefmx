@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from .models import Asset, Location
+from .models import Asset, Location, MaintenanceSchedule
 
 
 class LocationForm(forms.ModelForm):
@@ -23,7 +23,8 @@ class AssetForm(forms.ModelForm):
             'manufacturer', 'model', 'serial_number',
             'install_date', 'status', 'criticality',
             'warranty_end_date', 'photo', 'description',
-            'is_monument'
+            'is_monument',
+            'replacement_date', 'replacement_notes',
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
@@ -39,4 +40,18 @@ class AssetForm(forms.ModelForm):
             'photo': forms.ClearableFileInput(attrs={'class': 'form-control form-control-lg', 'accept': 'image/*'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-lg', 'rows': 3}),
             'is_monument': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'width: 1.5em; height: 1.5em;'}),
+            'replacement_date': forms.DateInput(attrs={'class': 'form-control form-control-lg', 'type': 'date'}),
+            'replacement_notes': forms.Textarea(attrs={'class': 'form-control form-control-lg', 'rows': 3, 'placeholder': _('Reden, specificaties nieuw object...')}),
+        }
+
+
+class MaintenanceScheduleForm(forms.ModelForm):
+    class Meta:
+        model = MaintenanceSchedule
+        fields = ['name', 'interval_days', 'last_performed', 'notes']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': _('bijv. Filter vervangen')}),
+            'interval_days': forms.NumberInput(attrs={'class': 'form-control form-control-lg', 'min': '1', 'placeholder': _('bijv. 30, 90, 365')}),
+            'last_performed': forms.DateInput(attrs={'class': 'form-control form-control-lg', 'type': 'date'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control form-control-lg', 'rows': 2, 'placeholder': _('Instructies...')}),
         }

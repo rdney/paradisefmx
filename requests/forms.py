@@ -160,12 +160,19 @@ class TriageForm(forms.ModelForm):
     class Meta:
         model = RepairRequest
         fields = [
+            'location', 'asset',
             'status', 'priority', 'assigned_to', 'due_date',
             'estimated_cost', 'actual_cost',
             'vendor', 'quote_amount', 'quote_status', 'po_number',
             'resolution_summary'
         ]
         widgets = {
+            'location': forms.Select(attrs={
+                'class': 'form-select form-select-lg',
+            }),
+            'asset': forms.Select(attrs={
+                'class': 'form-select form-select-lg',
+            }),
             'status': forms.Select(attrs={
                 'class': 'form-select form-select-lg',
             }),
@@ -216,6 +223,9 @@ class TriageForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Asset is optional
+        self.fields['asset'].required = False
+        self.fields['asset'].empty_label = _('(Geen)')
         # Exclude superusers (admin) from assignee list
         self.fields['assigned_to'].queryset = User.objects.filter(
             is_active=True,

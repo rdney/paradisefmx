@@ -1,13 +1,19 @@
+import json
+from datetime import date
+
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Count, Q
-from django.shortcuts import redirect, render
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 
-from .forms import AssetForm, LocationForm
-from .models import Asset, Location
+from .forms import AssetForm, LocationForm, MaintenanceScheduleForm
+from .models import Asset, Location, MaintenanceSchedule
 
 
 class AdminRequiredMixin(UserPassesTestMixin):
@@ -95,6 +101,7 @@ class AssetDetailView(LoginRequiredMixin, DetailView):
         ctx['repair_requests'] = self.object.repair_requests.select_related(
             'location', 'assigned_to'
         ).order_by('-created_at')[:10]
+        ctx['maintenance_schedules'] = self.object.maintenance_schedules.all()
         return ctx
 
 
@@ -106,6 +113,22 @@ class LocationListView(LoginRequiredMixin, AdminRequiredMixin, ListView):
 
     def get_queryset(self):
         return Location.objects.select_related('parent').order_by('name')
+
+
+class LocationDetailView(LoginRequiredMixin, DetailView):
+    """Location detail with related assets and requests."""
+    model = Location
+    template_name = 'core/location_detail.html'
+    context_object_name = 'location'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['assets'] = self.object.assets.all()
+        ctx['repair_requests'] = self.object.repair_requests.select_related(
+            'assigned_to'
+        ).order_by('-created_at')[:20]
+        ctx['children'] = self.object.children.all()
+        return ctx
 
 
 class LocationCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
@@ -135,7 +158,28 @@ class LocationDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
     template_name = 'core/location_confirm_delete.html'
     success_url = reverse_lazy('core:location_list')
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        location = self.object
+        ctx['asset_count'] = location.assets.count()
+        ctx['request_count'] = location.repair_requests.count()
+        ctx['child_count'] = location.children.count()
+        ctx['can_delete'] = (ctx['asset_count'] == 0 and ctx['request_count'] == 0 and ctx['child_count'] == 0)
+        return ctx
+
     def form_valid(self, form):
+        location = self.object
+        # Check for related objects
+        if location.assets.exists():
+            messages.error(self.request, _('Kan niet verwijderen: er zijn objecten gekoppeld aan deze locatie.'))
+            return redirect('core:location_list')
+        if location.repair_requests.exists():
+            messages.error(self.request, _('Kan niet verwijderen: er zijn verzoeken gekoppeld aan deze locatie.'))
+            return redirect('core:location_list')
+        if location.children.exists():
+            messages.error(self.request, _('Kan niet verwijderen: deze locatie heeft sublocaties.'))
+            return redirect('core:location_list')
+
         messages.success(self.request, _('Locatie verwijderd.'))
         return super().form_valid(form)
 
@@ -171,3 +215,112 @@ class AssetDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, _('Object verwijderd.'))
         return super().form_valid(form)
+
+
+@login_required
+def record_maintenance(request, pk):
+    """Record that maintenance was performed on an asset."""
+    asset = get_object_or_404(Asset, pk=pk)
+
+    if request.method == 'POST':
+        asset.last_maintenance_date = date.today()
+        asset.save(update_fields=['last_maintenance_date'])
+        messages.success(request, _('Onderhoud geregistreerd.'))
+
+    return redirect('assets:detail', pk=pk)
+
+
+@login_required
+@require_POST
+def location_create_ajax(request):
+    """Create a location via AJAX."""
+    try:
+        data = json.loads(request.body)
+        name = data.get('name', '').strip()
+        parent_id = data.get('parent')
+
+        if not name:
+            return JsonResponse({'error': 'Name is required'}, status=400)
+
+        parent = None
+        if parent_id:
+            parent = Location.objects.filter(pk=parent_id).first()
+
+        location = Location.objects.create(name=name, parent=parent)
+
+        # Return full path name for display
+        display_name = str(location)
+
+        return JsonResponse({
+            'id': location.pk,
+            'name': display_name,
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+# Maintenance Schedule views
+class MaintenanceScheduleCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
+    model = MaintenanceSchedule
+    form_class = MaintenanceScheduleForm
+    template_name = 'core/maintenance_schedule_form.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['asset'] = get_object_or_404(Asset, pk=self.kwargs['asset_pk'])
+        return ctx
+
+    def form_valid(self, form):
+        form.instance.asset = get_object_or_404(Asset, pk=self.kwargs['asset_pk'])
+        messages.success(self.request, _('Onderhoudsschema toegevoegd.'))
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('assets:detail', kwargs={'pk': self.kwargs['asset_pk']})
+
+
+class MaintenanceScheduleUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
+    model = MaintenanceSchedule
+    form_class = MaintenanceScheduleForm
+    template_name = 'core/maintenance_schedule_form.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['asset'] = self.object.asset
+        return ctx
+
+    def form_valid(self, form):
+        messages.success(self.request, _('Onderhoudsschema bijgewerkt.'))
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('assets:detail', kwargs={'pk': self.object.asset.pk})
+
+
+class MaintenanceScheduleDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
+    model = MaintenanceSchedule
+    template_name = 'core/maintenance_schedule_confirm_delete.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['asset'] = self.object.asset
+        return ctx
+
+    def form_valid(self, form):
+        asset_pk = self.object.asset.pk
+        messages.success(self.request, _('Onderhoudsschema verwijderd.'))
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('assets:detail', kwargs={'pk': self.object.asset.pk})
+
+
+@login_required
+@require_POST
+def perform_maintenance(request, pk):
+    """Record that a scheduled maintenance was performed."""
+    schedule = get_object_or_404(MaintenanceSchedule, pk=pk)
+    schedule.last_performed = date.today()
+    schedule.save(update_fields=['last_performed'])
+    messages.success(request, _('Onderhoud geregistreerd voor: %(name)s') % {'name': schedule.name})
+    return redirect('assets:detail', pk=schedule.asset.pk)
