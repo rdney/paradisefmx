@@ -365,6 +365,7 @@
 
     let mentionStart = -1;
     let activeIndex = 0;
+    let debounceTimer = null;
 
     textarea.addEventListener('input', function(e) {
         const text = this.value;
@@ -379,7 +380,9 @@
             // Check if we're in a mention (no space after @)
             if (!/\s/.test(afterAt)) {
                 mentionStart = atIndex;
-                searchUsers(afterAt);
+                // Debounce API calls
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => searchUsers(afterAt), 150);
                 return;
             }
         }
