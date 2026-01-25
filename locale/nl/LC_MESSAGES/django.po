@@ -24,6 +24,9 @@ msgid "English"
 msgstr "English"
 
 # Navigation
+msgid "Melden"
+msgstr "Melden"
+
 msgid "Reparatie melden"
 msgstr "Reparatie melden"
 
@@ -414,5 +417,104 @@ msgstr "Toewijzing verwijderd"
 #, python-format
 msgid "Nieuw reparatieverzoek #%(id)s: %(title)s"
 msgstr "Nieuw reparatieverzoek #%(id)s: %(title)s"
+
+# Planner
+msgid "Planner"
+msgstr "Planner"
+
+msgid "Maand"
+msgstr "Maand"
+
+msgid "Week"
+msgstr "Week"
+
+msgid "Lijst"
+msgstr "Lijst"
+
+msgid "Geplande werkzaamheden"
+msgstr "Geplande werkzaamheden"
+
+msgid "Geen geplande werkzaamheden"
+msgstr "Geen geplande werkzaamheden"
+
+msgid "Geen taken"
+msgstr "Geen taken"
+
+msgid "Legenda"
+msgstr "Legenda"
+
+msgid "Maandoverzicht"
+msgstr "Maandoverzicht"
+
+# Cost overview
+msgid "Kosten"
+msgstr "Kosten"
+
+msgid "Kostenoverzicht"
+msgstr "Kostenoverzicht"
+
+msgid "Geschatte kosten"
+msgstr "Geschatte kosten"
+
+msgid "Werkelijke kosten"
+msgstr "Werkelijke kosten"
+
+msgid "geschatte kosten"
+msgstr "geschatte kosten"
+
+msgid "werkelijke kosten"
+msgstr "werkelijke kosten"
+
+msgid "Verschil"
+msgstr "Verschil"
+
+msgid "Totaal"
+msgstr "Totaal"
+
+# Help page
+msgid "Handleiding"
+msgstr "Handleiding"
+
+msgid "Handleiding Paradise FMX"
+msgstr "Handleiding Paradise FMX"
+
+msgid "Inhoudsopgave"
+msgstr "Inhoudsopgave"
+
+msgid "Wat is Paradise FMX?"
+msgstr "Wat is Paradise FMX?"
+
+msgid "Een reparatieverzoek indienen"
+msgstr "Een reparatieverzoek indienen"
+
+msgid "Status van uw verzoek bekijken"
+msgstr "Status van uw verzoek bekijken"
+
+msgid "@Vermeldingen gebruiken"
+msgstr "@Vermeldingen gebruiken"
+
+msgid "Objecten bekijken"
+msgstr "Objecten bekijken"
+
+msgid "Voor medewerkers"
+msgstr "Voor medewerkers"
+
+msgid "Help"
+msgstr "Help"
+
+msgid "Hulp nodig?"
+msgstr "Hulp nodig?"
+
+msgid "Snelle acties"
+msgstr "Snelle acties"
+
+msgid "Overzicht"
+msgstr "Overzicht"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Terug naar home"
+msgstr "Terug naar home"
 
 # Model fields (already in Dutch in models.py)

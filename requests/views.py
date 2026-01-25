@@ -424,7 +424,7 @@ def update_request(request, pk):
 
 
 class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    """Monthly planner view showing scheduled repairs."""
+    """Planner view with month, week, and list modes."""
     template_name = 'requests/planner.html'
 
     def test_func(self):
@@ -435,9 +435,13 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        from datetime import timedelta
+
+        today = timezone.now().date()
+        view_mode = self.request.GET.get('view', 'month')
+        ctx['view_mode'] = view_mode
 
         # Get year and month from query params or use current
-        today = timezone.now().date()
         try:
             year = int(self.request.GET.get('year', today.year))
             month = int(self.request.GET.get('month', today.month))
@@ -452,11 +456,45 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             month = 1
             year += 1
 
-        # Get calendar data
+        ctx['year'] = year
+        ctx['month'] = month
+        ctx['today'] = today
+
+        # Month navigation (used in all views)
+        prev_month = month - 1
+        prev_year = year
+        if prev_month < 1:
+            prev_month = 12
+            prev_year -= 1
+
+        next_month = month + 1
+        next_year = year
+        if next_month > 12:
+            next_month = 1
+            next_year += 1
+
+        ctx['prev_year'] = prev_year
+        ctx['prev_month'] = prev_month
+        ctx['next_year'] = next_year
+        ctx['next_month'] = next_month
+        ctx['month_name'] = calendar.month_name[month]
+
+        if view_mode == 'week':
+            ctx.update(self._get_week_context(today, year, month))
+        elif view_mode == 'list':
+            ctx.update(self._get_list_context(today))
+        else:
+            ctx.update(self._get_month_context(today, year, month))
+
+        return ctx
+
+    def _get_month_context(self, today, year, month):
+        """Build context for month view."""
+        ctx = {}
+
         cal = calendar.Calendar(firstweekday=0)  # Monday first
         month_days = cal.monthdayscalendar(year, month)
 
-        # Get requests with due_date in this month
         first_day = date(year, month, 1)
         last_day = date(year, month, calendar.monthrange(year, month)[1])
 
@@ -474,7 +512,6 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 requests_by_day[day] = []
             requests_by_day[day].append(req)
 
-        # Build calendar weeks
         weeks = []
         for week in month_days:
             week_data = []
@@ -489,30 +526,92 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                     })
             weeks.append(week_data)
 
-        # Navigation
-        prev_month = month - 1
-        prev_year = year
-        if prev_month < 1:
-            prev_month = 12
-            prev_year -= 1
-
-        next_month = month + 1
-        next_year = year
-        if next_month > 12:
-            next_month = 1
-            next_year += 1
-
-        ctx['year'] = year
-        ctx['month'] = month
-        ctx['month_name'] = calendar.month_name[month]
         ctx['weeks'] = weeks
         ctx['weekdays'] = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo']
-        ctx['prev_year'] = prev_year
-        ctx['prev_month'] = prev_month
-        ctx['next_year'] = next_year
-        ctx['next_month'] = next_month
-        ctx['today'] = today
+        return ctx
 
+    def _get_week_context(self, today, year, month):
+        """Build context for week view."""
+        from datetime import timedelta
+        ctx = {}
+
+        # Get week number from params or current week
+        try:
+            week_num = int(self.request.GET.get('week', today.isocalendar()[1]))
+        except (ValueError, TypeError):
+            week_num = today.isocalendar()[1]
+
+        ctx['current_week'] = week_num
+
+        # Find Monday of the requested week
+        jan1 = date(year, 1, 1)
+        # ISO week 1 contains January 4th
+        jan4 = date(year, 1, 4)
+        # Monday of week 1
+        week1_monday = jan4 - timedelta(days=jan4.weekday())
+        # Monday of requested week
+        week_monday = week1_monday + timedelta(weeks=week_num - 1)
+
+        # Build 7 days
+        week_days = []
+        weekday_names = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo']
+
+        # Get requests for the week
+        week_sunday = week_monday + timedelta(days=6)
+        requests = RepairRequest.objects.filter(
+            due_date__gte=week_monday,
+            due_date__lte=week_sunday
+        ).exclude(
+            status__in=[RepairRequest.Status.CLOSED]
+        ).select_related('location', 'assigned_to').order_by('due_date', 'priority')
+
+        requests_by_date = {}
+        for req in requests:
+            if req.due_date not in requests_by_date:
+                requests_by_date[req.due_date] = []
+            requests_by_date[req.due_date].append(req)
+
+        for i in range(7):
+            day_date = week_monday + timedelta(days=i)
+            week_days.append({
+                'date': day_date,
+                'weekday': weekday_names[i],
+                'is_today': day_date == today,
+                'requests': requests_by_date.get(day_date, []),
+            })
+
+        ctx['week_days'] = week_days
+
+        # Week navigation
+        prev_week_monday = week_monday - timedelta(weeks=1)
+        next_week_monday = week_monday + timedelta(weeks=1)
+
+        ctx['prev_week'] = prev_week_monday.isocalendar()[1]
+        ctx['prev_week_year'] = prev_week_monday.year
+        ctx['prev_week_month'] = prev_week_monday.month
+
+        ctx['next_week'] = next_week_monday.isocalendar()[1]
+        ctx['next_week_year'] = next_week_monday.year
+        ctx['next_week_month'] = next_week_monday.month
+
+        return ctx
+
+    def _get_list_context(self, today):
+        """Build context for list view."""
+        ctx = {}
+
+        # Get upcoming requests with due_date (next 60 days)
+        from datetime import timedelta
+        end_date = today + timedelta(days=60)
+
+        upcoming = RepairRequest.objects.filter(
+            due_date__gte=today,
+            due_date__lte=end_date
+        ).exclude(
+            status__in=[RepairRequest.Status.COMPLETED, RepairRequest.Status.CLOSED]
+        ).select_related('location', 'assigned_to').order_by('due_date', 'priority')
+
+        ctx['upcoming_requests'] = upcoming
         return ctx
 
 

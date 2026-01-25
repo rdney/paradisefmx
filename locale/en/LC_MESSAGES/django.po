@@ -24,6 +24,9 @@ msgid "English"
 msgstr "English"
 
 # Navigation
+msgid "Melden"
+msgstr "Report"
+
 msgid "Reparatie melden"
 msgstr "Report repair"
 
@@ -652,3 +655,102 @@ msgstr "your@email.com"
 
 msgid "06-12345678"
 msgstr "+1234567890"
+
+# Planner
+msgid "Planner"
+msgstr "Planner"
+
+msgid "Maand"
+msgstr "Month"
+
+msgid "Week"
+msgstr "Week"
+
+msgid "Lijst"
+msgstr "List"
+
+msgid "Geplande werkzaamheden"
+msgstr "Scheduled work"
+
+msgid "Geen geplande werkzaamheden"
+msgstr "No scheduled work"
+
+msgid "Geen taken"
+msgstr "No tasks"
+
+msgid "Legenda"
+msgstr "Legend"
+
+msgid "Maandoverzicht"
+msgstr "Monthly overview"
+
+# Cost overview
+msgid "Kosten"
+msgstr "Costs"
+
+msgid "Kostenoverzicht"
+msgstr "Cost overview"
+
+msgid "Geschatte kosten"
+msgstr "Estimated cost"
+
+msgid "Werkelijke kosten"
+msgstr "Actual cost"
+
+msgid "geschatte kosten"
+msgstr "estimated cost"
+
+msgid "werkelijke kosten"
+msgstr "actual cost"
+
+msgid "Verschil"
+msgstr "Difference"
+
+msgid "Totaal"
+msgstr "Total"
+
+# Help page
+msgid "Handleiding"
+msgstr "User Manual"
+
+msgid "Handleiding Paradise FMX"
+msgstr "Paradise FMX User Manual"
+
+msgid "Inhoudsopgave"
+msgstr "Table of Contents"
+
+msgid "Wat is Paradise FMX?"
+msgstr "What is Paradise FMX?"
+
+msgid "Een reparatieverzoek indienen"
+msgstr "Submit a repair request"
+
+msgid "Status van uw verzoek bekijken"
+msgstr "Check the status of your request"
+
+msgid "@Vermeldingen gebruiken"
+msgstr "Using @mentions"
+
+msgid "Objecten bekijken"
+msgstr "View assets"
+
+msgid "Voor medewerkers"
+msgstr "For staff"
+
+msgid "Help"
+msgstr "Help"
+
+msgid "Hulp nodig?"
+msgstr "Need help?"
+
+msgid "Snelle acties"
+msgstr "Quick actions"
+
+msgid "Overzicht"
+msgstr "Overview"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "Terug naar home"
+msgstr "Back to home"
