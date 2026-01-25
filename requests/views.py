@@ -444,6 +444,26 @@ def update_description(request, pk):
     return redirect('requests:detail', pk=pk)
 
 
+@login_required
+def update_resolution(request, pk):
+    """Update request resolution inline (staff only)."""
+    repair_request = get_object_or_404(RepairRequest, pk=pk)
+
+    # Permission check
+    user = request.user
+    if not (user.is_staff or user.is_superuser) and not user.groups.filter(name='Facilitair').exists():
+        messages.error(request, _('U heeft geen toegang tot deze actie.'))
+        return redirect('requests:detail', pk=pk)
+
+    if request.method == 'POST':
+        resolution = request.POST.get('resolution_summary', '').strip()
+        repair_request.resolution_summary = resolution
+        repair_request.save(update_fields=['resolution_summary'])
+        messages.success(request, _('Oplossing bijgewerkt.'))
+
+    return redirect('requests:detail', pk=pk)
+
+
 class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     """Planner view with month, week, and list modes."""
     template_name = 'requests/planner.html'

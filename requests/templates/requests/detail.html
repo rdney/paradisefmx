@@ -52,6 +52,35 @@
                     {% endif %}
                 </div>
 
+                <h2 class="h5">{% trans "Oplossing" %}</h2>
+                <div class="mb-4">
+                    {% if triage_form %}
+                    <!-- Inline editable resolution for staff -->
+                    <div id="resolution-display" class="editable-field" onclick="showResolutionEdit()">
+                        {% if request.resolution_summary %}
+                            {{ request.resolution_summary|linebreaks }}
+                        {% else %}
+                            <span class="text-muted">{% trans "Nog niet ingevuld" %}</span>
+                        {% endif %}
+                        <small class="text-muted d-block mt-1"><i class="bi bi-pencil"></i> {% trans "Klik om te bewerken" %}</small>
+                    </div>
+                    <div id="resolution-edit" style="display: none;">
+                        <form method="post" action="{% url 'requests:update_resolution' request.pk %}" data-no-warn>
+                            {% csrf_token %}
+                            <textarea name="resolution_summary" class="form-control form-control-lg mb-2" rows="3" placeholder="{% trans 'Beschrijf hoe het probleem is opgelost...' %}">{{ request.resolution_summary }}</textarea>
+                            <button type="submit" class="btn btn-primary">{% trans "Opslaan" %}</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="hideResolutionEdit()">{% trans "Annuleren" %}</button>
+                        </form>
+                    </div>
+                    {% else %}
+                        {% if request.resolution_summary %}
+                            {{ request.resolution_summary|linebreaks }}
+                        {% else %}
+                            <span class="text-muted">{% trans "Nog niet ingevuld" %}</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
                 <dl class="row mb-0">
                     <dt class="col-sm-4">{% trans "Locatie" %}</dt>
                     <dd class="col-sm-8">{{ request.location|default:"-" }}</dd>
@@ -120,11 +149,6 @@
 
                     <dt class="col-sm-4">{% trans "Ingediend" %}</dt>
                     <dd class="col-sm-8">{{ request.created_at|date:"d-m-Y H:i" }}</dd>
-
-                    {% if request.resolution_summary %}
-                        <dt class="col-sm-4">{% trans "Oplossing" %}</dt>
-                        <dd class="col-sm-8">{{ request.resolution_summary|linebreaks }}</dd>
-                    {% endif %}
                 </dl>
             </div>
         </div>
@@ -265,11 +289,6 @@
                         <div class="mb-3">
                             <label class="form-label" for="id_due_date">{% trans "Streefdatum" %}</label>
                             {{ triage_form.due_date }}
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label" for="id_resolution_summary">{% trans "Oplossing" %}</label>
-                            {{ triage_form.resolution_summary }}
                         </div>
 
                         <hr>
@@ -525,6 +544,18 @@ function showDescriptionEdit() {
 function hideDescriptionEdit() {
     document.getElementById('description-display').style.display = 'block';
     document.getElementById('description-edit').style.display = 'none';
+}
+
+// Inline resolution editing
+function showResolutionEdit() {
+    document.getElementById('resolution-display').style.display = 'none';
+    document.getElementById('resolution-edit').style.display = 'block';
+    document.querySelector('#resolution-edit textarea').focus();
+}
+
+function hideResolutionEdit() {
+    document.getElementById('resolution-display').style.display = 'block';
+    document.getElementById('resolution-edit').style.display = 'none';
 }
 </script>
 {% endblock %}
