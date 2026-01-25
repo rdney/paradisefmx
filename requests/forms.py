@@ -1,8 +1,11 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from django.forms.widgets import FileInput
 from django.utils.translation import gettext_lazy as _
 
 from core.models import Asset, Location
+
+User = get_user_model()
 
 from .models import Attachment, RepairRequest, WorkLog
 
@@ -188,3 +191,11 @@ class TriageForm(forms.ModelForm):
                 'rows': 3,
             }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Exclude superusers (admin) from assignee list
+        self.fields['assigned_to'].queryset = User.objects.filter(
+            is_active=True,
+            is_superuser=False
+        ).order_by('first_name', 'last_name')
