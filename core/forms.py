@@ -22,7 +22,8 @@ class AssetForm(forms.ModelForm):
             'name', 'category', 'location',
             'manufacturer', 'model', 'serial_number',
             'install_date', 'status', 'criticality',
-            'warranty_end_date', 'photo', 'description'
+            'warranty_end_date', 'photo', 'description',
+            'is_monument'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
@@ -37,4 +38,5 @@ class AssetForm(forms.ModelForm):
             'warranty_end_date': forms.DateInput(attrs={'class': 'form-control form-control-lg', 'type': 'date'}),
             'photo': forms.ClearableFileInput(attrs={'class': 'form-control form-control-lg', 'accept': 'image/*'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-lg', 'rows': 3}),
+            'is_monument': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'width: 1.5em; height: 1.5em;'}),
         }

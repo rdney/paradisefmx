@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120">
+  <!-- Dutch Rijksmonument shield -->
+  <path d="M0,0 L50,50 L100,0 L100,70 L50,120 L0,70 Z" fill="#355E8D"/>
+  <path d="M0,0 L50,50 L100,0 L50,0 Z" fill="#355E8D"/>
+  <path d="M0,0 L0,70 L50,50 Z" fill="white"/>
+  <path d="M100,0 L100,70 L50,50 Z" fill="white"/>
+</svg>

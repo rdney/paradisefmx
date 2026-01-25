@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{{ asset.asset_tag }} - Paradise FMX{% endblock %}
 
@@ -17,8 +17,17 @@
     <div class="col-lg-8">
         <div class="card mb-4">
             <div class="card-header">
-                <h1 class="h3 mb-0">{{ asset.asset_tag }}</h1>
-                <span class="text-muted">{{ asset.name }}</span>
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 class="h3 mb-0">{{ asset.asset_tag }}</h1>
+                        <span class="text-muted">{{ asset.name }}</span>
+                    </div>
+                    {% if asset.is_monument %}
+                        <div class="monument-badge" title="{% trans 'Rijksmonument' %}">
+                            <img src="{% static 'img/monument.svg' %}" alt="{% trans 'Rijksmonument' %}" style="height: 50px;">
+                        </div>
+                    {% endif %}
+                </div>
             </div>
             <div class="card-body">
                 <dl class="row mb-0">

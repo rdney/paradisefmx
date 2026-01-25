@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% trans "Objecten" %} - Paradise FMX{% endblock %}
 
@@ -83,6 +83,9 @@
                             <a href="{% url 'assets:detail' asset.pk %}" class="fw-bold">
                                 {{ asset.asset_tag }}
                             </a>
+                            {% if asset.is_monument %}
+                                <img src="{% static 'img/monument.svg' %}" alt="{% trans 'Rijksmonument' %}" title="{% trans 'Rijksmonument' %}" style="height: 20px; margin-left: 5px;">
+                            {% endif %}
                             <br>
                             <span class="text-muted">{{ asset.name }}</span>
                         </td>

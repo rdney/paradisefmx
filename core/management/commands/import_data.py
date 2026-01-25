@@ -202,6 +202,7 @@ class Command(BaseCommand):
                 'model': item.get('model', ''),
                 'serial_number': item.get('serial_number', ''),
                 'description': item.get('description', ''),
+                'is_monument': item.get('is_monument', False),
             }
 
             asset, was_created = Asset.objects.get_or_create(

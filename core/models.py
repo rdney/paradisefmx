@@ -107,6 +107,11 @@ class Asset(models.Model):
         blank=True
     )
     description = models.TextField(_('omschrijving'), blank=True)
+    is_monument = models.BooleanField(
+        _('rijksmonument'),
+        default=False,
+        help_text=_('Dit object valt onder monumentenzorg')
+    )
     created_at = models.DateTimeField(_('aangemaakt op'), auto_now_add=True)
     updated_at = models.DateTimeField(_('bijgewerkt op'), auto_now=True)
 

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% if object %}{% trans "Object bewerken" %}{% else %}{% trans "Nieuw object" %}{% endif %} - Paradise FMX{% endblock %}
 
@@ -98,6 +98,17 @@
                         {% endif %}
                         {{ form.photo }}
                         <div class="form-text">{% trans "Optioneel: voeg een foto toe" %}</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check d-flex align-items-center gap-3 p-3 border rounded bg-light">
+                            {{ form.is_monument }}
+                            <label for="id_is_monument" class="form-check-label fs-5 d-flex align-items-center gap-2">
+                                <img src="{% static 'img/monument.svg' %}" alt="" style="height: 30px;">
+                                {% trans "Rijksmonument" %}
+                            </label>
+                        </div>
+                        <div class="form-text">{% trans "Vink aan als dit object onder monumentenzorg valt" %}</div>
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
