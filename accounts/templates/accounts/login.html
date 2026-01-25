@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Inloggen" %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-header text-center">
+                <h1 class="h3 mb-0">{% trans "Inloggen" %}</h1>
+            </div>
+            <div class="card-body">
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% trans "Ongeldige gebruikersnaam of wachtwoord." %}
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label for="id_username" class="form-label">{% trans "Gebruikersnaam" %}</label>
+                        <input type="text" name="username" id="id_username" class="form-control form-control-lg" required autofocus>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label">{% trans "Wachtwoord" %}</label>
+                        <input type="password" name="password" id="id_password" class="form-control form-control-lg" required>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right"></i> {% trans "Inloggen" %}
+                        </button>
+                    </div>
+
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'core:home' %}" class="btn btn-outline-secondary btn-lg">
+                <i class="bi bi-arrow-left"></i> {% trans "Terug naar start" %}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

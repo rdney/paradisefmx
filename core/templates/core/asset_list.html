@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Objecten" %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{% trans "Objecten" %}</h1>
+    {% if user.is_staff %}
+        <div>
+            <a href="{% url 'core:location_list' %}" class="btn btn-outline-primary btn-lg">
+                <i class="bi bi-geo-alt"></i> {% trans "Locaties" %}
+            </a>
+            <a href="{% url 'assets:create' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle"></i> {% trans "Nieuw object" %}
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label" for="status">{% trans "Status" %}</label>
+                <select name="status" id="status" class="form-select form-select-lg">
+                    <option value="">{% trans "Alle" %}</option>
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if current_filters.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="category">{% trans "Categorie" %}</label>
+                <select name="category" id="category" class="form-select form-select-lg">
+                    <option value="">{% trans "Alle" %}</option>
+                    {% for value, label in category_choices %}
+                        <option value="{{ value }}" {% if current_filters.category == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="location">{% trans "Locatie" %}</label>
+                <select name="location" id="location" class="form-select form-select-lg">
+                    <option value="">{% trans "Alle" %}</option>
+                    {% for loc in locations %}
+                        <option value="{{ loc.id }}" {% if current_filters.location == loc.id|stringformat:"d" %}selected{% endif %}>{{ loc.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="q">{% trans "Zoeken" %}</label>
+                <input type="text" name="q" id="q" value="{{ current_filters.q }}" class="form-control form-control-lg" placeholder="{% trans 'Zoeken...' %}">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-search"></i> {% trans "Filteren" %}
+                </button>
+                <a href="{% url 'assets:list' %}" class="btn btn-outline-secondary btn-lg">{% trans "Reset" %}</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Asset list -->
+{% if assets %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>{% trans "Object" %}</th>
+                    <th>{% trans "Categorie" %}</th>
+                    <th>{% trans "Locatie" %}</th>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Kritiekheid" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asset in assets %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'assets:detail' asset.pk %}" class="fw-bold">
+                                {{ asset.asset_tag }}
+                            </a>
+                            <br>
+                            <span class="text-muted">{{ asset.name }}</span>
+                        </td>
+                        <td>{{ asset.get_category_display }}</td>
+                        <td>{{ asset.location|default:"-" }}</td>
+                        <td>
+                            <span class="badge badge-{{ asset.status }}">
+                                {{ asset.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {% if asset.criticality == 'high' %}bg-danger{% elif asset.criticality == 'medium' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                {{ asset.get_criticality_display }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <nav aria-label="{% trans 'Paginering' %}">
+            <ul class="pagination pagination-lg justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in current_filters.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            {% trans "Vorige" %}
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        {% blocktrans with current=page_obj.number total=page_obj.paginator.num_pages %}
+                            Pagina {{ current }} van {{ total }}
+                        {% endblocktrans %}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in current_filters.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            {% trans "Volgende" %}
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <div class="empty-state">
+        <i class="bi bi-box-seam"></i>
+        <h3>{% trans "Geen objecten gevonden" %}</h3>
+        <p>{% trans "Pas de filters aan of neem contact op met de beheerder." %}</p>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ asset.asset_tag }} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'assets:list' %}" class="btn btn-outline-secondary btn-lg">
+        <i class="bi bi-arrow-left"></i> {% trans "Terug naar objecten" %}
+    </a>
+    <button onclick="window.print()" class="btn btn-outline-secondary btn-lg no-print">
+        <i class="bi bi-printer"></i> {% trans "Afdrukken" %}
+    </button>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h1 class="h3 mb-0">{{ asset.asset_tag }}</h1>
+                <span class="text-muted">{{ asset.name }}</span>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">{% trans "Categorie" %}</dt>
+                    <dd class="col-sm-8">{{ asset.get_category_display }}</dd>
+
+                    <dt class="col-sm-4">{% trans "Locatie" %}</dt>
+                    <dd class="col-sm-8">{{ asset.location|default:"-" }}</dd>
+
+                    <dt class="col-sm-4">{% trans "Status" %}</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge badge-{{ asset.status }}">{{ asset.get_status_display }}</span>
+                    </dd>
+
+                    <dt class="col-sm-4">{% trans "Kritiekheid" %}</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge {% if asset.criticality == 'high' %}bg-danger{% elif asset.criticality == 'medium' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                            {{ asset.get_criticality_display }}
+                        </span>
+                    </dd>
+
+                    {% if asset.manufacturer %}
+                        <dt class="col-sm-4">{% trans "Fabrikant" %}</dt>
+                        <dd class="col-sm-8">{{ asset.manufacturer }}</dd>
+                    {% endif %}
+
+                    {% if asset.model %}
+                        <dt class="col-sm-4">{% trans "Model" %}</dt>
+                        <dd class="col-sm-8">{{ asset.model }}</dd>
+                    {% endif %}
+
+                    {% if asset.serial_number %}
+                        <dt class="col-sm-4">{% trans "Serienummer" %}</dt>
+                        <dd class="col-sm-8">{{ asset.serial_number }}</dd>
+                    {% endif %}
+
+                    {% if asset.install_date %}
+                        <dt class="col-sm-4">{% trans "Installatiedatum" %}</dt>
+                        <dd class="col-sm-8">{{ asset.install_date }}</dd>
+                    {% endif %}
+
+                    {% if asset.warranty_end_date %}
+                        <dt class="col-sm-4">{% trans "Garantie tot" %}</dt>
+                        <dd class="col-sm-8">{{ asset.warranty_end_date }}</dd>
+                    {% endif %}
+
+                    {% if asset.description %}
+                        <dt class="col-sm-4">{% trans "Omschrijving" %}</dt>
+                        <dd class="col-sm-8">{{ asset.description|linebreaks }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+
+        <!-- Related repair requests -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "Recente reparatieverzoeken" %}</h2>
+            </div>
+            <div class="card-body">
+                {% if repair_requests %}
+                    <ul class="list-group list-group-flush">
+                        {% for req in repair_requests %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <a href="{% url 'requests:detail' req.pk %}" class="fw-bold">#{{ req.id }}</a>
+                                    {{ req.title }}
+                                    <br>
+                                    <small class="text-muted">{{ req.created_at|date:"d-m-Y" }}</small>
+                                </div>
+                                <span class="badge badge-{{ req.status }}">{{ req.get_status_display }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">{% trans "Geen recente verzoeken voor dit object." %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        {% if asset.photo %}
+            <div class="card mb-4">
+                <img src="{{ asset.photo.url }}" class="card-img-top" alt="{{ asset.name }}">
+            </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-body">
+                <a href="{% url 'requests:create' %}?asset={{ asset.pk }}" class="btn btn-primary btn-lg w-100">
+                    <i class="bi bi-tools"></i> {% trans "Reparatie melden" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

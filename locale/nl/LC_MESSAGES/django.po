@@ -1,0 +1,418 @@
+# Dutch translations for Paradise FMX
+# Copyright (C) 2024
+# This file is distributed under the same license as the Paradise FMX package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Paradise FMX 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Dutch\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Language names
+msgid "Nederlands"
+msgstr "Nederlands"
+
+msgid "English"
+msgstr "English"
+
+# Navigation
+msgid "Reparatie melden"
+msgstr "Reparatie melden"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Verzoeken"
+msgstr "Verzoeken"
+
+msgid "Objecten"
+msgstr "Objecten"
+
+msgid "Inloggen"
+msgstr "Inloggen"
+
+msgid "Uitloggen"
+msgstr "Uitloggen"
+
+msgid "Beheer"
+msgstr "Beheer"
+
+msgid "Sluiten"
+msgstr "Sluiten"
+
+# Home page
+msgid "Welkom"
+msgstr "Welkom"
+
+msgid "Facilitair beheer"
+msgstr "Facilitair beheer"
+
+msgid "Meld een reparatie of bekijk de status van uw verzoeken."
+msgstr "Meld een reparatie of bekijk de status van uw verzoeken."
+
+msgid "Meld een probleem of defect"
+msgstr "Meld een probleem of defect"
+
+msgid "Beheer alle verzoeken"
+msgstr "Beheer alle verzoeken"
+
+msgid "Mijn verzoeken"
+msgstr "Mijn verzoeken"
+
+msgid "Bekijk uw ingediende verzoeken"
+msgstr "Bekijk uw ingediende verzoeken"
+
+msgid "Bekijk uw verzoeken"
+msgstr "Bekijk uw verzoeken"
+
+# Repair request form
+msgid "Wat is het probleem?"
+msgstr "Wat is het probleem?"
+
+msgid "Kort omschrijven wat er aan de hand is"
+msgstr "Kort omschrijven wat er aan de hand is"
+
+msgid "Beschrijf in het kort wat er aan de hand is"
+msgstr "Beschrijf in het kort wat er aan de hand is"
+
+msgid "Meer details"
+msgstr "Meer details"
+
+msgid "Geef meer details over het probleem"
+msgstr "Geef meer details over het probleem"
+
+msgid "Waar is het probleem?"
+msgstr "Waar is het probleem?"
+
+msgid "Kies een locatie"
+msgstr "Kies een locatie"
+
+msgid "Welk object/installatie?"
+msgstr "Welk object/installatie?"
+
+msgid "(Niet van toepassing)"
+msgstr "(Niet van toepassing)"
+
+msgid "Optioneel: selecteer als het om een specifiek apparaat gaat"
+msgstr "Optioneel: selecteer als het om een specifiek apparaat gaat"
+
+msgid "Hoe dringend is het?"
+msgstr "Hoe dringend is het?"
+
+msgid "Uw gegevens"
+msgstr "Uw gegevens"
+
+msgid "Uw naam"
+msgstr "Uw naam"
+
+msgid "E-mailadres"
+msgstr "E-mailadres"
+
+msgid "Telefoonnummer"
+msgstr "Telefoonnummer"
+
+msgid "Hoe kunnen we u bereiken?"
+msgstr "Hoe kunnen we u bereiken?"
+
+msgid "Annuleren"
+msgstr "Annuleren"
+
+msgid "Verzoek indienen"
+msgstr "Verzoek indienen"
+
+# Confirmation
+msgid "Verzoek ingediend!"
+msgstr "Verzoek ingediend!"
+
+msgid "Uw werkbonnummer is:"
+msgstr "Uw werkbonnummer is:"
+
+msgid "Bewaar dit nummer om de status van uw verzoek te kunnen volgen."
+msgstr "Bewaar dit nummer om de status van uw verzoek te kunnen volgen."
+
+msgid "Samenvatting"
+msgstr "Samenvatting"
+
+msgid "Titel"
+msgstr "Titel"
+
+msgid "Locatie"
+msgstr "Locatie"
+
+msgid "Prioriteit"
+msgstr "Prioriteit"
+
+msgid "Ingediend"
+msgstr "Ingediend"
+
+msgid "Wat nu?"
+msgstr "Wat nu?"
+
+msgid "Ons team bekijkt uw verzoek en neemt indien nodig contact met u op. U ontvangt een bevestiging per e-mail."
+msgstr "Ons team bekijkt uw verzoek en neemt indien nodig contact met u op. U ontvangt een bevestiging per e-mail."
+
+msgid "Terug naar start"
+msgstr "Terug naar start"
+
+msgid "Nog een verzoek indienen"
+msgstr "Nog een verzoek indienen"
+
+# Status and priority labels
+msgid "Nieuw"
+msgstr "Nieuw"
+
+msgid "Getriageerd"
+msgstr "Getriageerd"
+
+msgid "Bezig"
+msgstr "Bezig"
+
+msgid "Wacht"
+msgstr "Wacht"
+
+msgid "Gereed"
+msgstr "Gereed"
+
+msgid "Gesloten"
+msgstr "Gesloten"
+
+msgid "Laag"
+msgstr "Laag"
+
+msgid "Normaal"
+msgstr "Normaal"
+
+msgid "Hoog"
+msgstr "Hoog"
+
+msgid "Spoed"
+msgstr "Spoed"
+
+msgid "Te laat"
+msgstr "Te laat"
+
+# Dashboard
+msgid "Openstaande verzoeken"
+msgstr "Openstaande verzoeken"
+
+msgid "Alle verzoeken"
+msgstr "Alle verzoeken"
+
+msgid "Alles afgehandeld!"
+msgstr "Alles afgehandeld!"
+
+msgid "Er zijn geen openstaande verzoeken."
+msgstr "Er zijn geen openstaande verzoeken."
+
+msgid "Toegewezen aan"
+msgstr "Toegewezen aan"
+
+msgid "Bekijk"
+msgstr "Bekijk"
+
+# Filters
+msgid "Status"
+msgstr "Status"
+
+msgid "Alle"
+msgstr "Alle"
+
+msgid "Zoeken"
+msgstr "Zoeken"
+
+msgid "Zoeken..."
+msgstr "Zoeken..."
+
+msgid "Filteren"
+msgstr "Filteren"
+
+msgid "Reset"
+msgstr "Reset"
+
+# Request detail
+msgid "Terug"
+msgstr "Terug"
+
+msgid "Afdrukken"
+msgstr "Afdrukken"
+
+msgid "Omschrijving"
+msgstr "Omschrijving"
+
+msgid "Object"
+msgstr "Object"
+
+msgid "Melder"
+msgstr "Melder"
+
+msgid "Streefdatum"
+msgstr "Streefdatum"
+
+msgid "Oplossing"
+msgstr "Oplossing"
+
+msgid "Bijlagen"
+msgstr "Bijlagen"
+
+msgid "Logboek"
+msgstr "Logboek"
+
+msgid "Systeem"
+msgstr "Systeem"
+
+msgid "minuten"
+msgstr "minuten"
+
+msgid "Nog geen logboekregels."
+msgstr "Nog geen logboekregels."
+
+msgid "Notitie toevoegen"
+msgstr "Notitie toevoegen"
+
+msgid "Tijd besteed (minuten)"
+msgstr "Tijd besteed (minuten)"
+
+msgid "Toevoegen"
+msgstr "Toevoegen"
+
+msgid "Bewerken"
+msgstr "Bewerken"
+
+msgid "Toewijzen aan"
+msgstr "Toewijzen aan"
+
+msgid "Opslaan"
+msgstr "Opslaan"
+
+msgid "Bijlage uploaden"
+msgstr "Bijlage uploaden"
+
+msgid "Uploaden"
+msgstr "Uploaden"
+
+msgid "Toegestaan: afbeeldingen en PDF (max 10MB)"
+msgstr "Toegestaan: afbeeldingen en PDF (max 10MB)"
+
+# Request list
+msgid "Reparatieverzoeken"
+msgstr "Reparatieverzoeken"
+
+msgid "Nieuw verzoek"
+msgstr "Nieuw verzoek"
+
+msgid "Geen verzoeken gevonden"
+msgstr "Geen verzoeken gevonden"
+
+msgid "Pas de filters aan of dien een nieuw verzoek in."
+msgstr "Pas de filters aan of dien een nieuw verzoek in."
+
+# Assets
+msgid "Terug naar objecten"
+msgstr "Terug naar objecten"
+
+msgid "Categorie"
+msgstr "Categorie"
+
+msgid "Kritiekheid"
+msgstr "Kritiekheid"
+
+msgid "Fabrikant"
+msgstr "Fabrikant"
+
+msgid "Model"
+msgstr "Model"
+
+msgid "Serienummer"
+msgstr "Serienummer"
+
+msgid "Installatiedatum"
+msgstr "Installatiedatum"
+
+msgid "Garantie tot"
+msgstr "Garantie tot"
+
+msgid "Recente reparatieverzoeken"
+msgstr "Recente reparatieverzoeken"
+
+msgid "Geen recente verzoeken voor dit object."
+msgstr "Geen recente verzoeken voor dit object."
+
+msgid "Geen objecten gevonden"
+msgstr "Geen objecten gevonden"
+
+msgid "Pas de filters aan of neem contact op met de beheerder."
+msgstr "Pas de filters aan of neem contact op met de beheerder."
+
+# Login
+msgid "Gebruikersnaam"
+msgstr "Gebruikersnaam"
+
+msgid "Wachtwoord"
+msgstr "Wachtwoord"
+
+msgid "Ongeldige gebruikersnaam of wachtwoord."
+msgstr "Ongeldige gebruikersnaam of wachtwoord."
+
+# Pagination
+msgid "Paginering"
+msgstr "Paginering"
+
+msgid "Vorige"
+msgstr "Vorige"
+
+msgid "Volgende"
+msgstr "Volgende"
+
+#, python-format
+msgid "Pagina %(current)s van %(total)s"
+msgstr "Pagina %(current)s van %(total)s"
+
+# Messages
+#, python-format
+msgid "Uw verzoek is ingediend. Het werkbonnummer is #%(id)s."
+msgstr "Uw verzoek is ingediend. Het werkbonnummer is #%(id)s."
+
+msgid "Notitie toegevoegd."
+msgstr "Notitie toegevoegd."
+
+msgid "Bijlage geüpload."
+msgstr "Bijlage geüpload."
+
+msgid "Verzoek bijgewerkt."
+msgstr "Verzoek bijgewerkt."
+
+msgid "U heeft geen toegang tot dit verzoek."
+msgstr "U heeft geen toegang tot dit verzoek."
+
+msgid "U heeft geen toegang tot deze actie."
+msgstr "U heeft geen toegang tot deze actie."
+
+# Work log
+msgid "Reparatieverzoek ingediend"
+msgstr "Reparatieverzoek ingediend"
+
+#, python-format
+msgid "Status gewijzigd van %(old)s naar %(new)s"
+msgstr "Status gewijzigd van %(old)s naar %(new)s"
+
+#, python-format
+msgid "Toegewezen aan %(user)s"
+msgstr "Toegewezen aan %(user)s"
+
+msgid "Toewijzing verwijderd"
+msgstr "Toewijzing verwijderd"
+
+# Email
+#, python-format
+msgid "Nieuw reparatieverzoek #%(id)s: %(title)s"
+msgstr "Nieuw reparatieverzoek #%(id)s: %(title)s"
+
+# Model fields (already in Dutch in models.py)

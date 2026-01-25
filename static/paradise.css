@@ -1,0 +1,153 @@
+/* Paradise FMX - Paradijskerk house style */
+
+:root {
+    --paradise-charcoal: #32373c;
+    --paradise-charcoal-hover: #23272a;
+    --paradise-light-gray: #f7f7f7;
+    --paradise-border: #ddd;
+}
+
+/* Typography - Georgia throughout */
+html, body, h1, h2, h3, h4, h5, h6, p, ul, li, form, input, button, .btn, .nav-link, .navbar-brand {
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+body {
+    line-height: 1.6;
+    font-size: 18px;
+    color: #222;
+    background: #fff;
+}
+
+/* Navbar - charcoal background */
+.navbar {
+    background: var(--paradise-charcoal) !important;
+}
+
+.navbar-brand,
+.nav-link {
+    color: #fff !important;
+}
+
+.nav-link:hover {
+    color: #ddd !important;
+}
+
+/* Primary buttons - charcoal with large radius */
+.btn-primary {
+    background-color: var(--paradise-charcoal);
+    border-color: var(--paradise-charcoal);
+    border-radius: 9999px;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--paradise-charcoal-hover);
+    border-color: var(--paradise-charcoal-hover);
+}
+
+/* Outline primary buttons */
+.btn-outline-primary {
+    color: var(--paradise-charcoal);
+    border-color: var(--paradise-charcoal);
+    border-radius: 9999px;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: var(--paradise-charcoal);
+    border-color: var(--paradise-charcoal);
+    color: #fff;
+}
+
+/* Secondary buttons */
+.btn-outline-secondary {
+    border-radius: 9999px;
+}
+
+/* Large buttons keep consistent styling */
+.btn-lg {
+    border-radius: 9999px;
+    padding: 0.875rem 2rem;
+}
+
+/* Form controls */
+input, select, textarea, .form-control, .form-select {
+    border-radius: 4px;
+}
+
+/* Cards - subtle shadow */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Links */
+a {
+    color: var(--paradise-charcoal);
+}
+
+a:hover {
+    color: var(--paradise-charcoal-hover);
+}
+
+/* Focus states - charcoal */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(50, 55, 60, 0.25);
+    outline: 2px solid var(--paradise-charcoal);
+    outline-offset: 2px;
+}
+
+/* Badges - status colors with charcoal accents */
+.badge-new {
+    background-color: var(--paradise-charcoal);
+}
+
+/* Mobile action bar styling */
+@media (max-width: 576px) {
+    .mobile-action-bar .btn-primary {
+        background: var(--paradise-charcoal);
+        border-color: var(--paradise-charcoal);
+    }
+
+    .mobile-action-bar .btn-outline-primary {
+        color: var(--paradise-charcoal);
+        border-color: var(--paradise-charcoal);
+    }
+
+    .mobile-action-bar .btn-outline-primary:hover {
+        background: var(--paradise-charcoal);
+        color: #fff;
+    }
+}
+
+/* Action cards on home */
+.action-card .btn-primary {
+    background: var(--paradise-charcoal);
+    border-color: var(--paradise-charcoal);
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.dropdown-item:hover {
+    background-color: var(--paradise-light-gray);
+}
+
+/* Timeline dots */
+.timeline-item::before {
+    background-color: var(--paradise-charcoal);
+}
+
+/* Print - clean look */
+@media print {
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}

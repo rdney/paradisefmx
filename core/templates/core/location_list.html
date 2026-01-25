@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Locaties beheren" %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{% trans "Locaties beheren" %}</h1>
+    <a href="{% url 'core:location_create' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle"></i> {% trans "Nieuwe locatie" %}
+    </a>
+</div>
+
+{% if locations %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>{% trans "Naam" %}</th>
+                    <th>{% trans "Bovenliggende locatie" %}</th>
+                    <th>{% trans "Notities" %}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for location in locations %}
+                    <tr>
+                        <td class="fw-bold">{{ location.name }}</td>
+                        <td>{{ location.parent|default:"-" }}</td>
+                        <td>{{ location.notes|truncatewords:10|default:"-" }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'core:location_update' location.pk %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-pencil"></i> {% trans "Bewerken" %}
+                            </a>
+                            <a href="{% url 'core:location_delete' location.pk %}" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="empty-state">
+        <i class="bi bi-geo-alt"></i>
+        <h3>{% trans "Geen locaties" %}</h3>
+        <p>{% trans "Voeg een locatie toe om te beginnen." %}</p>
+    </div>
+{% endif %}
+{% endblock %}

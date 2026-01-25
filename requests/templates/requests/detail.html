@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}#{{ request.id }} {{ request.title }} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="mb-4 no-print">
+    <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary btn-lg">
+        <i class="bi bi-arrow-left"></i> {% trans "Terug" %}
+    </a>
+    <button onclick="window.print()" class="btn btn-outline-secondary btn-lg">
+        <i class="bi bi-printer"></i> {% trans "Afdrukken" %}
+    </button>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Main info -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-start">
+                <div>
+                    <h1 class="h3 mb-1">
+                        <span class="text-muted">#{{ request.id }}</span>
+                        {{ request.title }}
+                    </h1>
+                    <span class="badge badge-{{ request.status }} me-2">{{ request.get_status_display }}</span>
+                    <span class="badge badge-{{ request.priority }}">{{ request.get_priority_display }}</span>
+                    {% if request.is_overdue %}
+                        <span class="badge bg-danger">{% trans "Te laat" %}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <h2 class="h5">{% trans "Omschrijving" %}</h2>
+                <div class="mb-4">
+                    {{ request.description|linebreaks }}
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">{% trans "Locatie" %}</dt>
+                    <dd class="col-sm-8">{{ request.location|default:"-" }}</dd>
+
+                    {% if request.asset %}
+                        <dt class="col-sm-4">{% trans "Object" %}</dt>
+                        <dd class="col-sm-8">
+                            <a href="{% url 'assets:detail' request.asset.pk %}">{{ request.asset }}</a>
+                        </dd>
+                    {% endif %}
+
+                    <dt class="col-sm-4">{% trans "Melder" %}</dt>
+                    <dd class="col-sm-8">
+                        {{ request.requester_name }}
+                        {% if request.requester_email %}
+                            <br><a href="mailto:{{ request.requester_email }}">{{ request.requester_email }}</a>
+                        {% endif %}
+                        {% if request.requester_phone %}
+                            <br><a href="tel:{{ request.requester_phone }}">{{ request.requester_phone }}</a>
+                        {% endif %}
+                    </dd>
+
+                    {% if request.assigned_to %}
+                        <dt class="col-sm-4">{% trans "Toegewezen aan" %}</dt>
+                        <dd class="col-sm-8">{{ request.assigned_to.get_full_name|default:request.assigned_to.username }}</dd>
+                    {% endif %}
+
+                    {% if request.due_date %}
+                        <dt class="col-sm-4">{% trans "Streefdatum" %}</dt>
+                        <dd class="col-sm-8">
+                            {{ request.due_date }}
+                            {% if request.is_overdue %}
+                                <span class="badge bg-danger">{% trans "Te laat" %}</span>
+                            {% endif %}
+                        </dd>
+                    {% endif %}
+
+                    {% if request.estimated_cost %}
+                        <dt class="col-sm-4">{% trans "Geschatte kosten" %}</dt>
+                        <dd class="col-sm-8">€ {{ request.estimated_cost }}</dd>
+                    {% endif %}
+
+                    <dt class="col-sm-4">{% trans "Ingediend" %}</dt>
+                    <dd class="col-sm-8">{{ request.created_at|date:"d-m-Y H:i" }}</dd>
+
+                    {% if request.resolution_summary %}
+                        <dt class="col-sm-4">{% trans "Oplossing" %}</dt>
+                        <dd class="col-sm-8">{{ request.resolution_summary|linebreaks }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+
+        <!-- Attachments -->
+        {% if attachments %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="h4 mb-0">{% trans "Bijlagen" %}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for attachment in attachments %}
+                            <div class="col-md-4">
+                                {% if attachment.is_image %}
+                                    <a href="{{ attachment.file.url }}" target="_blank">
+                                        <img src="{{ attachment.file.url }}" class="img-thumbnail" alt="{{ attachment.filename }}">
+                                    </a>
+                                {% else %}
+                                    <a href="{{ attachment.file.url }}" class="btn btn-outline-secondary w-100" target="_blank">
+                                        <i class="bi bi-file-pdf"></i> {{ attachment.filename }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Work log / Timeline -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "Logboek" %}</h2>
+            </div>
+            <div class="card-body">
+                {% if work_logs %}
+                    <div class="timeline">
+                        {% for log in work_logs %}
+                            <div class="timeline-item {{ log.entry_type }}">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <strong>
+                                        {% if log.author %}
+                                            {{ log.author.get_full_name|default:log.author.username }}
+                                        {% else %}
+                                            {% trans "Systeem" %}
+                                        {% endif %}
+                                    </strong>
+                                    <small class="text-muted">{{ log.created_at|date:"d-m-Y H:i" }}</small>
+                                </div>
+                                <p class="mb-1">{{ log.note }}</p>
+                                {% if log.minutes_spent %}
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i>
+                                        {{ log.minutes_spent }} {% trans "minuten" %}
+                                    </small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">{% trans "Nog geen logboekregels." %}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Add note form -->
+        <div class="card no-print">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "Notitie toevoegen" %}</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'requests:add_worklog' request.pk %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ worklog_form.note }}
+                    </div>
+                    <div class="row align-items-end">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <label class="form-label" for="id_minutes_spent">{% trans "Tijd besteed (minuten)" %}</label>
+                            {{ worklog_form.minutes_spent }}
+                        </div>
+                        <div class="col-md-8 text-end">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-plus-circle"></i> {% trans "Toevoegen" %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Triage form (staff only) -->
+        {% if triage_form %}
+            <div class="card mb-4 no-print">
+                <div class="card-header">
+                    <h2 class="h4 mb-0">{% trans "Bewerken" %}</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'requests:update' request.pk %}">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label" for="id_status">{% trans "Status" %}</label>
+                            {{ triage_form.status }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="id_priority">{% trans "Prioriteit" %}</label>
+                            {{ triage_form.priority }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="id_assigned_to">{% trans "Toewijzen aan" %}</label>
+                            {{ triage_form.assigned_to }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="id_due_date">{% trans "Streefdatum" %}</label>
+                            {{ triage_form.due_date }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="id_estimated_cost">{% trans "Geschatte kosten (€)" %}</label>
+                            {{ triage_form.estimated_cost }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="id_resolution_summary">{% trans "Oplossing" %}</label>
+                            {{ triage_form.resolution_summary }}
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> {% trans "Opslaan" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Upload attachment -->
+        <div class="card no-print">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "Bijlage uploaden" %}</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'requests:add_attachment' request.pk %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ attachment_form.file }}
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-outline-primary btn-lg">
+                            <i class="bi bi-upload"></i> {% trans "Uploaden" %}
+                        </button>
+                    </div>
+                </form>
+                <small class="text-muted d-block mt-2">
+                    {% trans "Toegestaan: afbeeldingen en PDF (max 10MB)" %}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

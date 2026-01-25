@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% if object %}{% trans "Object bewerken" %}{% else %}{% trans "Nieuw object" %}{% endif %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="mb-4">{% if object %}{% trans "Object bewerken" %}{% else %}{% trans "Nieuw object" %}{% endif %}</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% if object %}
+                    <div class="alert alert-secondary mb-4">
+                        <strong>{% trans "Objectnummer" %}:</strong> {{ object.asset_tag }}
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <label for="id_name" class="form-label">{% trans "Naam" %} <span class="text-danger">*</span></label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="invalid-feedback d-block">{{ form.name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="id_category" class="form-label">{% trans "Categorie" %}</label>
+                            {{ form.category }}
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="id_location" class="form-label">{% trans "Locatie" %}</label>
+                            {{ form.location }}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <label for="id_manufacturer" class="form-label">{% trans "Fabrikant" %}</label>
+                            {{ form.manufacturer }}
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <label for="id_model" class="form-label">{% trans "Model" %}</label>
+                            {{ form.model }}
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <label for="id_serial_number" class="form-label">{% trans "Serienummer" %}</label>
+                            {{ form.serial_number }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="id_install_date" class="form-label">{% trans "Installatiedatum" %}</label>
+                            {{ form.install_date }}
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="id_warranty_end_date" class="form-label">{% trans "Garantie tot" %}</label>
+                            {{ form.warranty_end_date }}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="id_status" class="form-label">{% trans "Status" %}</label>
+                            {{ form.status }}
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="id_criticality" class="form-label">{% trans "Kritiekheid" %}</label>
+                            {{ form.criticality }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_description" class="form-label">{% trans "Omschrijving" %}</label>
+                        {{ form.description }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_photo" class="form-label">{% trans "Foto" %}</label>
+                        {% if object.photo %}
+                            <div class="mb-2">
+                                <img src="{{ object.photo.url }}" alt="{{ object.name }}" class="img-thumbnail" style="max-height: 200px;">
+                            </div>
+                        {% endif %}
+                        {{ form.photo }}
+                        <div class="form-text">{% trans "Optioneel: voeg een foto toe" %}</div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'assets:list' %}" class="btn btn-outline-secondary btn-lg">{% trans "Annuleren" %}</a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i> {% trans "Opslaan" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

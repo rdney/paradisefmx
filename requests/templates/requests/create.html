@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Reparatie melden" %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="mb-4">{% trans "Reparatie melden" %}</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Title -->
+                    <div class="mb-4">
+                        <label for="id_title" class="form-label">
+                            {% trans "Wat is het probleem?" %} <span class="text-danger">*</span>
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="invalid-feedback d-block">{{ form.title.errors.0 }}</div>
+                        {% endif %}
+                        <div class="form-text">{% trans "Beschrijf in het kort wat er aan de hand is" %}</div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <label for="id_description" class="form-label">
+                            {% trans "Meer details" %} <span class="text-danger">*</span>
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">{{ form.description.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Location -->
+                    <div class="mb-4">
+                        <label for="id_location" class="form-label">
+                            {% trans "Waar is het probleem?" %} <span class="text-danger">*</span>
+                        </label>
+                        {{ form.location }}
+                        {% if form.location.errors %}
+                            <div class="invalid-feedback d-block">{{ form.location.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Asset (optional) -->
+                    <div class="mb-4">
+                        <label for="id_asset" class="form-label">{% trans "Welk object/installatie?" %}</label>
+                        {{ form.asset }}
+                        {% if form.asset.errors %}
+                            <div class="invalid-feedback d-block">{{ form.asset.errors.0 }}</div>
+                        {% endif %}
+                        <div class="form-text">{% trans "Optioneel: selecteer als het om een specifiek apparaat gaat" %}</div>
+                    </div>
+
+                    <!-- Priority -->
+                    <div class="mb-4">
+                        <label for="id_priority" class="form-label">{% trans "Hoe dringend is het?" %}</label>
+                        {{ form.priority }}
+                        {% if form.priority.errors %}
+                            <div class="invalid-feedback d-block">{{ form.priority.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Photos -->
+                    <div class="mb-4">
+                        <label for="id_photos" class="form-label">
+                            <i class="bi bi-camera"></i> {% trans "Foto's toevoegen" %}
+                        </label>
+                        {{ form.photos }}
+                        {% if form.photos.errors %}
+                            <div class="invalid-feedback d-block">{{ form.photos.errors.0 }}</div>
+                        {% endif %}
+                        <div class="form-text">{% trans "Optioneel: voeg foto's toe van het probleem (max 10MB per bestand)" %}</div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h2 class="h4 mb-3">{% trans "Uw gegevens" %}</h2>
+
+                    <!-- Requester name -->
+                    <div class="mb-4">
+                        <label for="id_requester_name" class="form-label">
+                            {% trans "Uw naam" %} <span class="text-danger">*</span>
+                        </label>
+                        {{ form.requester_name }}
+                        {% if form.requester_name.errors %}
+                            <div class="invalid-feedback d-block">{{ form.requester_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <!-- Email -->
+                        <div class="col-md-6 mb-4">
+                            <label for="id_requester_email" class="form-label">{% trans "E-mailadres" %}</label>
+                            {{ form.requester_email }}
+                            {% if form.requester_email.errors %}
+                                <div class="invalid-feedback d-block">{{ form.requester_email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="col-md-6 mb-4">
+                            <label for="id_requester_phone" class="form-label">{% trans "Telefoonnummer" %}</label>
+                            {{ form.requester_phone }}
+                            {% if form.requester_phone.errors %}
+                                <div class="invalid-feedback d-block">{{ form.requester_phone.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Preferred contact -->
+                    <div class="mb-4">
+                        <label for="id_preferred_contact_method" class="form-label">{% trans "Hoe kunnen we u bereiken?" %}</label>
+                        {{ form.preferred_contact_method }}
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
+                        <a href="{% url 'core:home' %}" class="btn btn-outline-secondary btn-lg">{% trans "Annuleren" %}</a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-send"></i> {% trans "Verzoek indienen" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

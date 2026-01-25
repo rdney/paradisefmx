@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Verzoek ingediend" %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6 text-center">
+        <div class="card">
+            <div class="card-body py-5">
+                <i class="bi bi-check-circle text-success" style="font-size: 5rem;"></i>
+
+                <h1 class="h2 mt-4 mb-3">{% trans "Verzoek ingediend!" %}</h1>
+
+                <p class="lead mb-4">
+                    {% trans "Uw werkbonnummer is:" %}
+                </p>
+
+                <div class="display-3 fw-bold text-primary mb-4">
+                    #{{ request.id }}
+                </div>
+
+                <p class="text-muted mb-4">
+                    {% trans "Bewaar dit nummer om de status van uw verzoek te kunnen volgen." %}
+                </p>
+
+                <hr class="my-4">
+
+                <div class="text-start">
+                    <h2 class="h5 mb-3">{% trans "Samenvatting" %}</h2>
+                    <dl class="row">
+                        <dt class="col-sm-4">{% trans "Titel" %}</dt>
+                        <dd class="col-sm-8">{{ request.title }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Locatie" %}</dt>
+                        <dd class="col-sm-8">{{ request.location }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Prioriteit" %}</dt>
+                        <dd class="col-sm-8">{{ request.get_priority_display }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Ingediend" %}</dt>
+                        <dd class="col-sm-8">{{ request.created_at|date:"d-m-Y H:i" }}</dd>
+                    </dl>
+                </div>
+
+                <hr class="my-4">
+
+                <h2 class="h5 mb-3">{% trans "Wat nu?" %}</h2>
+                <p class="text-muted">
+                    {% trans "Ons team bekijkt uw verzoek en neemt indien nodig contact met u op. U ontvangt een bevestiging per e-mail." %}
+                </p>
+
+                <div class="d-grid gap-2 mt-4">
+                    <a href="{% url 'core:home' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-house"></i> {% trans "Terug naar start" %}
+                    </a>
+                    <a href="{% url 'requests:create' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-plus-circle"></i> {% trans "Nog een verzoek indienen" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

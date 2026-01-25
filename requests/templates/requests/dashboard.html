@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Dashboard" %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">{% trans "Dashboard" %}</h1>
+
+<!-- Stats - scrollable on mobile -->
+<div class="stats-row mb-4">
+    <div class="stats-item">
+        <div class="card text-center h-100 border-primary">
+            <div class="card-body py-3">
+                <div class="fs-1 fw-bold text-primary">{{ counts.new }}</div>
+                <small>{% trans "Nieuw" %}</small>
+            </div>
+        </div>
+    </div>
+    <div class="stats-item">
+        <div class="card text-center h-100">
+            <div class="card-body py-3">
+                <div class="fs-1 fw-bold text-info">{{ counts.triaged }}</div>
+                <small>{% trans "Getriageerd" %}</small>
+            </div>
+        </div>
+    </div>
+    <div class="stats-item">
+        <div class="card text-center h-100">
+            <div class="card-body py-3">
+                <div class="fs-1 fw-bold text-warning">{{ counts.in_progress }}</div>
+                <small>{% trans "Bezig" %}</small>
+            </div>
+        </div>
+    </div>
+    <div class="stats-item">
+        <div class="card text-center h-100">
+            <div class="card-body py-3">
+                <div class="fs-1 fw-bold text-secondary">{{ counts.waiting }}</div>
+                <small>{% trans "Wacht" %}</small>
+            </div>
+        </div>
+    </div>
+    <div class="stats-item">
+        <div class="card text-center h-100 {% if counts.overdue > 0 %}border-danger{% endif %}">
+            <div class="card-body py-3">
+                <div class="fs-1 fw-bold text-danger">{{ counts.overdue }}</div>
+                <small>{% trans "Te laat" %}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Open requests -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h4 mb-0">{% trans "Openstaande verzoeken" %}</h2>
+    <a href="{% url 'requests:list' %}" class="btn btn-outline-primary btn-sm">{% trans "Alle" %}</a>
+</div>
+
+{% if requests %}
+    <!-- Card layout for all screen sizes -->
+    <div class="request-list">
+        {% for req in requests %}
+            <a href="{% url 'requests:detail' req.pk %}" class="card mb-2 text-decoration-none {% if req.is_urgent %}border-danger border-2{% elif req.is_overdue %}border-warning{% endif %}">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="flex-grow-1 me-2">
+                            <span class="text-muted small">#{{ req.id }}</span>
+                            <h3 class="h6 mb-1 text-dark">{{ req.title }}</h3>
+                            <div class="text-muted small">
+                                <i class="bi bi-geo-alt"></i> {{ req.location|default:"-" }}
+                                {% if req.assigned_to %}
+                                    · <i class="bi bi-person"></i> {{ req.assigned_to.get_full_name|default:req.assigned_to.username }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge badge-{{ req.priority }} mb-1">{{ req.get_priority_display }}</span>
+                            <br>
+                            <span class="badge badge-{{ req.status }}">{{ req.get_status_display }}</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">{{ req.created_at|date:"d-m-Y" }}</small>
+                        {% if req.is_overdue %}
+                            <span class="badge bg-danger">{% trans "Te laat" %}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <i class="bi bi-check-circle text-success"></i>
+        <h3>{% trans "Alles afgehandeld!" %}</h3>
+        <p>{% trans "Er zijn geen openstaande verzoeken." %}</p>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-row {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+    }
+    .stats-item {
+        flex: 0 0 auto;
+        min-width: 90px;
+    }
+    .request-list .card:hover {
+        background-color: #f8f9fa;
+    }
+    .request-list .card {
+        transition: background-color 0.15s;
+    }
+</style>
+{% endblock %}

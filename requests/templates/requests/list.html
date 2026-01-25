@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Reparatieverzoeken" %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">{% trans "Verzoeken" %}</h1>
+    <a href="{% url 'requests:create' %}" class="btn btn-primary d-none d-md-inline-flex">
+        <i class="bi bi-plus-circle"></i> {% trans "Nieuw" %}
+    </a>
+</div>
+
+<!-- Filters - collapsible on mobile -->
+<div class="card mb-3">
+    <div class="card-header d-md-none">
+        <button class="btn btn-link text-decoration-none p-0 w-100 d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+            <span><i class="bi bi-funnel"></i> {% trans "Filters" %}</span>
+            <i class="bi bi-chevron-down"></i>
+        </button>
+    </div>
+    <div class="collapse d-md-block" id="filterCollapse">
+        <div class="card-body">
+            <form method="get">
+                <div class="row g-2">
+                    <div class="col-6 col-md-3">
+                        <select name="status" class="form-select" aria-label="{% trans 'Status' %}">
+                            <option value="">{% trans "Status" %}</option>
+                            {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if current_filters.status == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <select name="priority" class="form-select" aria-label="{% trans 'Prioriteit' %}">
+                            <option value="">{% trans "Prioriteit" %}</option>
+                            {% for value, label in priority_choices %}
+                                <option value="{{ value }}" {% if current_filters.priority == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <select name="location" class="form-select" aria-label="{% trans 'Locatie' %}">
+                            <option value="">{% trans "Locatie" %}</option>
+                            {% for loc in locations %}
+                                <option value="{{ loc.id }}" {% if current_filters.location == loc.id|stringformat:"d" %}selected{% endif %}>{{ loc.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="input-group">
+                            <input type="text" name="q" value="{{ current_filters.q }}" class="form-control" placeholder="{% trans 'Zoeken' %}">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% if current_filters.status or current_filters.priority or current_filters.location or current_filters.q %}
+                    <div class="mt-2">
+                        <a href="{% url 'requests:list' %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-x"></i> {% trans "Reset" %}
+                        </a>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Request list -->
+{% if requests %}
+    <div class="request-list">
+        {% for req in requests %}
+            <a href="{% url 'requests:detail' req.pk %}" class="card mb-2 text-decoration-none {% if req.is_urgent %}border-danger border-2{% elif req.is_overdue %}border-warning{% endif %}">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1 me-2">
+                            <span class="text-muted small">#{{ req.id }}</span>
+                            <h2 class="h6 mb-1 text-dark">{{ req.title }}</h2>
+                            <div class="text-muted small">
+                                <i class="bi bi-geo-alt"></i> {{ req.location|default:"-" }}
+                                {% if req.asset %}
+                                    · {{ req.asset.asset_tag }}
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">{{ req.requester_name }} · {{ req.created_at|date:"d-m-Y" }}</small>
+                        </div>
+                        <div class="text-end flex-shrink-0">
+                            <span class="badge badge-{{ req.priority }} mb-1">{{ req.get_priority_display }}</span>
+                            <br>
+                            <span class="badge badge-{{ req.status }}">{{ req.get_status_display }}</span>
+                            {% if req.is_overdue %}
+                                <br><span class="badge bg-danger mt-1">{% trans "Te laat" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <nav aria-label="{% trans 'Paginering' %}" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in current_filters.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in current_filters.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <h3>{% trans "Geen verzoeken gevonden" %}</h3>
+        <p>{% trans "Pas de filters aan of dien een nieuw verzoek in." %}</p>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .request-list .card:hover {
+        background-color: #f8f9fa;
+    }
+    .request-list .card {
+        transition: background-color 0.15s;
+    }
+</style>
+{% endblock %}

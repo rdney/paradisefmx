@@ -1,0 +1,491 @@
+/* Paradise FMX - Senior-friendly styles */
+
+:root {
+    --bs-body-font-size: 1.125rem; /* 18px base */
+    --bs-primary: #0d6efd;
+    --bs-primary-rgb: 13, 110, 253;
+}
+
+body {
+    font-size: 1.125rem;
+    line-height: 1.6;
+}
+
+/* Large clickable areas */
+.btn {
+    min-height: 44px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+}
+
+.btn-lg {
+    min-height: 56px;
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+}
+
+/* Form controls */
+.form-control,
+.form-select {
+    min-height: 48px;
+    font-size: 1.125rem;
+    padding: 0.75rem 1rem;
+}
+
+.form-control-lg,
+.form-select-lg {
+    min-height: 56px;
+    font-size: 1.25rem;
+}
+
+.form-label {
+    font-size: 1.125rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* High contrast focus states */
+.btn:focus,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.5);
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+/* Links */
+a {
+    text-decoration: underline;
+}
+
+.nav-link,
+.navbar-brand,
+.btn {
+    text-decoration: none;
+}
+
+/* Cards with good spacing */
+.card {
+    margin-bottom: 1.5rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.375rem;
+    font-weight: 600;
+}
+
+/* Tables */
+.table {
+    font-size: 1.125rem;
+}
+
+.table th,
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* Badges */
+.badge {
+    font-size: 0.9375rem;
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+}
+
+/* Status colors with good contrast */
+.badge-new {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.badge-triaged {
+    background-color: #6f42c1;
+    color: #fff;
+}
+
+.badge-in-progress {
+    background-color: #fd7e14;
+    color: #000;
+}
+
+.badge-waiting {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.badge-completed {
+    background-color: #198754;
+    color: #fff;
+}
+
+.badge-closed {
+    background-color: #212529;
+    color: #fff;
+}
+
+/* Priority colors */
+.badge-low {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.badge-normal {
+    background-color: #0dcaf0;
+    color: #000;
+}
+
+.badge-high {
+    background-color: #fd7e14;
+    color: #000;
+}
+
+.badge-urgent {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Overdue highlight */
+.overdue {
+    border-left: 4px solid #dc3545;
+}
+
+.urgent {
+    border-left: 4px solid #dc3545;
+    background-color: #fff5f5;
+}
+
+/* Big action buttons on home */
+.action-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.action-card .bi {
+    font-size: 3rem;
+}
+
+/* Timeline / Work log */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -1.625rem;
+    top: 0.25rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--bs-primary);
+    border: 2px solid #fff;
+}
+
+.timeline-item.status-change::before {
+    background-color: #198754;
+}
+
+.timeline-item.assignment::before {
+    background-color: #6f42c1;
+}
+
+/* Print styles */
+@media print {
+    .navbar,
+    .btn,
+    footer,
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        font-size: 12pt;
+    }
+
+    .container {
+        max-width: 100%;
+    }
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .card {
+        border: 1px solid #000;
+        page-break-inside: avoid;
+    }
+}
+
+/* Accessibility */
+.visually-hidden-focusable:focus {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0.5rem 1rem !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+}
+
+/* Skip link */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--bs-primary);
+    color: #fff;
+    padding: 8px;
+    z-index: 100;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
+
+.empty-state .bi {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+/* Responsive tables */
+@media (max-width: 768px) {
+    .table-responsive-stack tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+    }
+
+    .table-responsive-stack td {
+        display: block;
+        text-align: right;
+        padding: 0.75rem;
+        border: none;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .table-responsive-stack td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: 600;
+    }
+
+    .table-responsive-stack td:last-child {
+        border-bottom: none;
+    }
+
+    .table-responsive-stack thead {
+        display: none;
+    }
+}
+
+/* Mobile optimizations */
+@media (max-width: 576px) {
+    /* Larger touch targets */
+    .btn {
+        min-height: 48px;
+        padding: 0.875rem 1.25rem;
+    }
+
+    .btn-lg {
+        min-height: 56px;
+        width: 100%;
+    }
+
+    /* Full-width buttons on mobile */
+    .d-md-flex .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Better spacing */
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    /* Navbar improvements */
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    .nav-link {
+        padding: 0.75rem 0;
+        font-size: 1.125rem;
+    }
+
+    /* Action cards full width */
+    .action-card .bi {
+        font-size: 2.5rem;
+    }
+
+    .action-card .card-body {
+        padding: 1.5rem 1rem;
+    }
+
+    /* Form improvements */
+    .form-control-lg,
+    .form-select-lg {
+        font-size: 1rem;
+    }
+
+    /* Dashboard stats */
+    .display-4 {
+        font-size: 2rem;
+    }
+
+    /* List items more tappable */
+    .list-group-item {
+        padding: 1rem;
+    }
+
+    /* Timeline on mobile */
+    .timeline {
+        padding-left: 1.5rem;
+    }
+
+    /* Hide some table columns on mobile */
+    .table .d-none-mobile {
+        display: none;
+    }
+}
+
+/* Tablet optimizations */
+@media (min-width: 577px) and (max-width: 991px) {
+    .container {
+        max-width: 100%;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+    /* Two-column layout for action cards */
+    .action-card .bi {
+        font-size: 2.5rem;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices */
+    .action-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Larger tap targets */
+    .dropdown-item {
+        padding: 0.75rem 1.5rem;
+    }
+
+    /* Better select styling */
+    select.form-select {
+        background-size: 24px;
+    }
+}
+
+/* Bottom action bar for mobile */
+.mobile-action-bar {
+    display: none;
+}
+
+@media (max-width: 576px) {
+    .mobile-action-bar {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border-top: 2px solid #dee2e6;
+        padding: 0.5rem;
+        z-index: 1050;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+        gap: 0.5rem;
+    }
+
+    .mobile-action-bar .btn {
+        flex: 1;
+        padding: 0.875rem 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        border-radius: 0.5rem;
+    }
+
+    .mobile-action-bar .btn i {
+        font-size: 1.25rem;
+    }
+
+    .mobile-action-bar .btn-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        border: none;
+    }
+
+    /* Add padding to body to account for fixed bar */
+    body.has-mobile-bar {
+        padding-bottom: 90px;
+    }
+
+    /* Hide footer on mobile when action bar is present */
+    footer {
+        display: none;
+    }
+}
+
+/* Swipe-friendly list items */
+.list-group-item-action {
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+}
+
+/* Better file input on mobile */
+input[type="file"] {
+    cursor: pointer;
+}
+
+@media (max-width: 576px) {
+    input[type="file"] {
+        font-size: 0.9rem;
+    }
+}

@@ -1,0 +1,654 @@
+# English translations for Paradise FMX
+# Copyright (C) 2024
+# This file is distributed under the same license as the Paradise FMX package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Paradise FMX 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Language names
+msgid "Nederlands"
+msgstr "Nederlands"
+
+msgid "English"
+msgstr "English"
+
+# Navigation
+msgid "Reparatie melden"
+msgstr "Report repair"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Verzoeken"
+msgstr "Requests"
+
+msgid "Objecten"
+msgstr "Assets"
+
+msgid "Inloggen"
+msgstr "Log in"
+
+msgid "Uitloggen"
+msgstr "Log out"
+
+msgid "Beheer"
+msgstr "Admin"
+
+msgid "Sluiten"
+msgstr "Close"
+
+# Home page
+msgid "Welkom"
+msgstr "Welcome"
+
+msgid "Facilitair beheer"
+msgstr "Facility management"
+
+msgid "Meld een reparatie of bekijk de status van uw verzoeken."
+msgstr "Report a repair or check the status of your requests."
+
+msgid "Meld een probleem of defect"
+msgstr "Report a problem or defect"
+
+msgid "Beheer alle verzoeken"
+msgstr "Manage all requests"
+
+msgid "Mijn verzoeken"
+msgstr "My requests"
+
+msgid "Bekijk uw ingediende verzoeken"
+msgstr "View your submitted requests"
+
+msgid "Bekijk uw verzoeken"
+msgstr "View your requests"
+
+# Repair request form
+msgid "Wat is het probleem?"
+msgstr "What is the problem?"
+
+msgid "Kort omschrijven wat er aan de hand is"
+msgstr "Briefly describe the issue"
+
+msgid "Beschrijf in het kort wat er aan de hand is"
+msgstr "Briefly describe the issue"
+
+msgid "Meer details"
+msgstr "More details"
+
+msgid "Geef meer details over het probleem"
+msgstr "Provide more details about the problem"
+
+msgid "Waar is het probleem?"
+msgstr "Where is the problem?"
+
+msgid "Kies een locatie"
+msgstr "Select a location"
+
+msgid "Welk object/installatie?"
+msgstr "Which asset/equipment?"
+
+msgid "(Niet van toepassing)"
+msgstr "(Not applicable)"
+
+msgid "Optioneel: selecteer als het om een specifiek apparaat gaat"
+msgstr "Optional: select if it concerns specific equipment"
+
+msgid "Hoe dringend is het?"
+msgstr "How urgent is it?"
+
+msgid "Uw gegevens"
+msgstr "Your details"
+
+msgid "Uw naam"
+msgstr "Your name"
+
+msgid "E-mailadres"
+msgstr "Email address"
+
+msgid "Telefoonnummer"
+msgstr "Phone number"
+
+msgid "Hoe kunnen we u bereiken?"
+msgstr "How can we reach you?"
+
+msgid "Annuleren"
+msgstr "Cancel"
+
+msgid "Verzoek indienen"
+msgstr "Submit request"
+
+# Confirmation
+msgid "Verzoek ingediend!"
+msgstr "Request submitted!"
+
+msgid "Uw werkbonnummer is:"
+msgstr "Your work order number is:"
+
+msgid "Bewaar dit nummer om de status van uw verzoek te kunnen volgen."
+msgstr "Save this number to track the status of your request."
+
+msgid "Samenvatting"
+msgstr "Summary"
+
+msgid "Titel"
+msgstr "Title"
+
+msgid "Locatie"
+msgstr "Location"
+
+msgid "Prioriteit"
+msgstr "Priority"
+
+msgid "Ingediend"
+msgstr "Submitted"
+
+msgid "Wat nu?"
+msgstr "What's next?"
+
+msgid "Ons team bekijkt uw verzoek en neemt indien nodig contact met u op. U ontvangt een bevestiging per e-mail."
+msgstr "Our team will review your request and contact you if needed. You will receive a confirmation by email."
+
+msgid "Terug naar start"
+msgstr "Back to home"
+
+msgid "Nog een verzoek indienen"
+msgstr "Submit another request"
+
+# Status and priority labels
+msgid "Nieuw"
+msgstr "New"
+
+msgid "Getriageerd"
+msgstr "Triaged"
+
+msgid "Bezig"
+msgstr "In progress"
+
+msgid "Wacht"
+msgstr "Waiting"
+
+msgid "Gereed"
+msgstr "Completed"
+
+msgid "Gesloten"
+msgstr "Closed"
+
+msgid "Laag"
+msgstr "Low"
+
+msgid "Normaal"
+msgstr "Normal"
+
+msgid "Hoog"
+msgstr "High"
+
+msgid "Spoed"
+msgstr "Urgent"
+
+msgid "Te laat"
+msgstr "Overdue"
+
+# Dashboard
+msgid "Openstaande verzoeken"
+msgstr "Open requests"
+
+msgid "Alle verzoeken"
+msgstr "All requests"
+
+msgid "Alles afgehandeld!"
+msgstr "All done!"
+
+msgid "Er zijn geen openstaande verzoeken."
+msgstr "There are no open requests."
+
+msgid "Toegewezen aan"
+msgstr "Assigned to"
+
+msgid "Bekijk"
+msgstr "View"
+
+# Filters
+msgid "Status"
+msgstr "Status"
+
+msgid "Alle"
+msgstr "All"
+
+msgid "Zoeken"
+msgstr "Search"
+
+msgid "Zoeken..."
+msgstr "Search..."
+
+msgid "Filteren"
+msgstr "Filter"
+
+msgid "Reset"
+msgstr "Reset"
+
+# Request detail
+msgid "Terug"
+msgstr "Back"
+
+msgid "Afdrukken"
+msgstr "Print"
+
+msgid "Omschrijving"
+msgstr "Description"
+
+msgid "Object"
+msgstr "Asset"
+
+msgid "Melder"
+msgstr "Requester"
+
+msgid "Streefdatum"
+msgstr "Due date"
+
+msgid "Oplossing"
+msgstr "Resolution"
+
+msgid "Bijlagen"
+msgstr "Attachments"
+
+msgid "Logboek"
+msgstr "Work log"
+
+msgid "Systeem"
+msgstr "System"
+
+msgid "minuten"
+msgstr "minutes"
+
+msgid "Nog geen logboekregels."
+msgstr "No log entries yet."
+
+msgid "Notitie toevoegen"
+msgstr "Add note"
+
+msgid "Tijd besteed (minuten)"
+msgstr "Time spent (minutes)"
+
+msgid "Toevoegen"
+msgstr "Add"
+
+msgid "Bewerken"
+msgstr "Edit"
+
+msgid "Toewijzen aan"
+msgstr "Assign to"
+
+msgid "Opslaan"
+msgstr "Save"
+
+msgid "Bijlage uploaden"
+msgstr "Upload attachment"
+
+msgid "Uploaden"
+msgstr "Upload"
+
+msgid "Toegestaan: afbeeldingen en PDF (max 10MB)"
+msgstr "Allowed: images and PDF (max 10MB)"
+
+# Request list
+msgid "Reparatieverzoeken"
+msgstr "Repair requests"
+
+msgid "Nieuw verzoek"
+msgstr "New request"
+
+msgid "Geen verzoeken gevonden"
+msgstr "No requests found"
+
+msgid "Pas de filters aan of dien een nieuw verzoek in."
+msgstr "Adjust the filters or submit a new request."
+
+# Assets
+msgid "Terug naar objecten"
+msgstr "Back to assets"
+
+msgid "Categorie"
+msgstr "Category"
+
+msgid "Kritiekheid"
+msgstr "Criticality"
+
+msgid "Fabrikant"
+msgstr "Manufacturer"
+
+msgid "Model"
+msgstr "Model"
+
+msgid "Serienummer"
+msgstr "Serial number"
+
+msgid "Installatiedatum"
+msgstr "Install date"
+
+msgid "Garantie tot"
+msgstr "Warranty until"
+
+msgid "Recente reparatieverzoeken"
+msgstr "Recent repair requests"
+
+msgid "Geen recente verzoeken voor dit object."
+msgstr "No recent requests for this asset."
+
+msgid "Geen objecten gevonden"
+msgstr "No assets found"
+
+msgid "Pas de filters aan of neem contact op met de beheerder."
+msgstr "Adjust the filters or contact the administrator."
+
+# Login
+msgid "Gebruikersnaam"
+msgstr "Username"
+
+msgid "Wachtwoord"
+msgstr "Password"
+
+msgid "Ongeldige gebruikersnaam of wachtwoord."
+msgstr "Invalid username or password."
+
+# Pagination
+msgid "Paginering"
+msgstr "Pagination"
+
+msgid "Vorige"
+msgstr "Previous"
+
+msgid "Volgende"
+msgstr "Next"
+
+#, python-format
+msgid "Pagina %(current)s van %(total)s"
+msgstr "Page %(current)s of %(total)s"
+
+# Messages
+#, python-format
+msgid "Uw verzoek is ingediend. Het werkbonnummer is #%(id)s."
+msgstr "Your request has been submitted. The work order number is #%(id)s."
+
+msgid "Notitie toegevoegd."
+msgstr "Note added."
+
+msgid "Bijlage geüpload."
+msgstr "Attachment uploaded."
+
+msgid "Verzoek bijgewerkt."
+msgstr "Request updated."
+
+msgid "U heeft geen toegang tot dit verzoek."
+msgstr "You do not have access to this request."
+
+msgid "U heeft geen toegang tot deze actie."
+msgstr "You do not have access to this action."
+
+# Work log
+msgid "Reparatieverzoek ingediend"
+msgstr "Repair request submitted"
+
+#, python-format
+msgid "Status gewijzigd van %(old)s naar %(new)s"
+msgstr "Status changed from %(old)s to %(new)s"
+
+#, python-format
+msgid "Toegewezen aan %(user)s"
+msgstr "Assigned to %(user)s"
+
+msgid "Toewijzing verwijderd"
+msgstr "Assignment removed"
+
+# Email
+#, python-format
+msgid "Nieuw reparatieverzoek #%(id)s: %(title)s"
+msgstr "New repair request #%(id)s: %(title)s"
+
+# Model field labels (translated from Dutch originals)
+msgid "naam"
+msgstr "name"
+
+msgid "bovenliggende locatie"
+msgstr "parent location"
+
+msgid "notities"
+msgstr "notes"
+
+msgid "aangemaakt op"
+msgstr "created at"
+
+msgid "bijgewerkt op"
+msgstr "updated at"
+
+msgid "locatie"
+msgstr "location"
+
+msgid "locaties"
+msgstr "locations"
+
+msgid "objectnummer"
+msgstr "asset tag"
+
+msgid "Uniek identificatienummer, bijv. HVAC-01"
+msgstr "Unique identifier, e.g. HVAC-01"
+
+msgid "categorie"
+msgstr "category"
+
+msgid "fabrikant"
+msgstr "manufacturer"
+
+msgid "model"
+msgstr "model"
+
+msgid "serienummer"
+msgstr "serial number"
+
+msgid "installatiedatum"
+msgstr "install date"
+
+msgid "status"
+msgstr "status"
+
+msgid "kritiekheid"
+msgstr "criticality"
+
+msgid "garantie tot"
+msgstr "warranty until"
+
+msgid "foto"
+msgstr "photo"
+
+msgid "omschrijving"
+msgstr "description"
+
+msgid "object"
+msgstr "asset"
+
+msgid "objecten"
+msgstr "assets"
+
+msgid "Operationeel"
+msgstr "Operational"
+
+msgid "Aandacht Nodig"
+msgstr "Needs Attention"
+
+msgid "Buiten Gebruik"
+msgstr "Out of Service"
+
+msgid "Afgevoerd"
+msgstr "Disposed"
+
+msgid "Middel"
+msgstr "Medium"
+
+msgid "HVAC / Klimaat"
+msgstr "HVAC / Climate"
+
+msgid "Elektrisch"
+msgstr "Electrical"
+
+msgid "Sanitair"
+msgstr "Plumbing"
+
+msgid "Veiligheid"
+msgstr "Safety"
+
+msgid "Audio/Video"
+msgstr "Audio/Video"
+
+msgid "Meubilair"
+msgstr "Furniture"
+
+msgid "Gebouw"
+msgstr "Building"
+
+msgid "Overig"
+msgstr "Other"
+
+msgid "titel"
+msgstr "title"
+
+msgid "object/installatie"
+msgstr "asset/equipment"
+
+msgid "prioriteit"
+msgstr "priority"
+
+msgid "naam melder"
+msgstr "requester name"
+
+msgid "e-mailadres"
+msgstr "email address"
+
+msgid "telefoonnummer"
+msgstr "phone number"
+
+msgid "voorkeur contact"
+msgstr "preferred contact"
+
+msgid "E-mail"
+msgstr "Email"
+
+msgid "Telefoon"
+msgstr "Phone"
+
+msgid "ingediend door"
+msgstr "submitted by"
+
+msgid "toegewezen aan"
+msgstr "assigned to"
+
+msgid "getriageerd door"
+msgstr "triaged by"
+
+msgid "streefdatum"
+msgstr "due date"
+
+msgid "oplossing"
+msgstr "resolution"
+
+msgid "afgesloten op"
+msgstr "closed at"
+
+msgid "reparatieverzoek"
+msgstr "repair request"
+
+msgid "reparatieverzoeken"
+msgstr "repair requests"
+
+msgid "Kan verzoeken triageren"
+msgstr "Can triage requests"
+
+msgid "Kan verzoeken toewijzen"
+msgstr "Can assign requests"
+
+msgid "bestand"
+msgstr "file"
+
+msgid "geüpload op"
+msgstr "uploaded at"
+
+msgid "geüpload door"
+msgstr "uploaded by"
+
+msgid "bijlage"
+msgstr "attachment"
+
+msgid "bijlagen"
+msgstr "attachments"
+
+msgid "auteur"
+msgstr "author"
+
+msgid "type"
+msgstr "type"
+
+msgid "notitie"
+msgstr "note"
+
+msgid "minuten besteed"
+msgstr "minutes spent"
+
+msgid "logboekregel"
+msgstr "log entry"
+
+msgid "logboekregels"
+msgstr "log entries"
+
+msgid "Notitie"
+msgstr "Note"
+
+msgid "Statuswijziging"
+msgstr "Status change"
+
+msgid "Toewijzing"
+msgstr "Assignment"
+
+msgid "Tijdsbesteding"
+msgstr "Time spent"
+
+msgid "Kern"
+msgstr "Core"
+
+msgid "Accounts"
+msgstr "Accounts"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Media"
+msgstr "Media"
+
+msgid "Afronding"
+msgstr "Resolution"
+
+msgid "Bestand is te groot (max 10MB)."
+msgstr "File is too large (max 10MB)."
+
+msgid "Alleen afbeeldingen en PDF-bestanden zijn toegestaan."
+msgstr "Only images and PDF files are allowed."
+
+msgid "Voeg een notitie toe..."
+msgstr "Add a note..."
+
+msgid "Optioneel"
+msgstr "Optional"
+
+msgid "uw@email.nl"
+msgstr "your@email.com"
+
+msgid "06-12345678"
+msgstr "+1234567890"

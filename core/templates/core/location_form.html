@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% if object %}{% trans "Locatie bewerken" %}{% else %}{% trans "Nieuwe locatie" %}{% endif %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <h1 class="mb-4">{% if object %}{% trans "Locatie bewerken" %}{% else %}{% trans "Nieuwe locatie" %}{% endif %}</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label for="id_name" class="form-label">{% trans "Naam" %} <span class="text-danger">*</span></label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="invalid-feedback d-block">{{ form.name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_parent" class="form-label">{% trans "Bovenliggende locatie" %}</label>
+                        {{ form.parent }}
+                        <div class="form-text">{% trans "Optioneel: selecteer als deze locatie onderdeel is van een andere" %}</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_notes" class="form-label">{% trans "Notities" %}</label>
+                        {{ form.notes }}
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'core:location_list' %}" class="btn btn-outline-secondary btn-lg">{% trans "Annuleren" %}</a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i> {% trans "Opslaan" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

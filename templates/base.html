@@ -1,0 +1,168 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    <meta name="theme-color" content="#32373c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>{% block title %}Paradise FMX{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'paradise.css' %}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="has-mobile-bar">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fs-4 fw-bold" href="{% url 'core:home' %}">
+                <i class="bi bi-building"></i> Paradise FMX
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link fs-5" href="{% url 'requests:create' %}">
+                            <i class="bi bi-plus-circle"></i> {% trans "Reparatie melden" %}
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff or user.groups.all %}
+                            <li class="nav-item">
+                                <a class="nav-link fs-5" href="{% url 'requests:dashboard' %}">
+                                    <i class="bi bi-speedometer2"></i> {% trans "Dashboard" %}
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link fs-5" href="{% url 'requests:list' %}">
+                                <i class="bi bi-list-ul"></i> {% trans "Verzoeken" %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fs-5" href="{% url 'assets:list' %}">
+                                <i class="bi bi-box-seam"></i> {% trans "Objecten" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    <!-- Language switcher -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle fs-5" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-globe"></i>
+                            {% if LANGUAGE_CODE == 'nl' %}NL{% else %}EN{% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <form action="{% url 'set_language' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="language" value="nl">
+                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                    <button type="submit" class="dropdown-item fs-5 {% if LANGUAGE_CODE == 'nl' %}active{% endif %}">
+                                        Nederlands
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <form action="{% url 'set_language' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="language" value="en">
+                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                    <button type="submit" class="dropdown-item fs-5 {% if LANGUAGE_CODE == 'en' %}active{% endif %}">
+                                        English
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fs-5" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> {{ user.get_short_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% if user.is_staff %}
+                                    <li><a class="dropdown-item fs-5" href="{% url 'admin:index' %}">{% trans "Beheer" %}</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                <li>
+                                    <form action="{% url 'accounts:logout' %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item fs-5">{% trans "Uitloggen" %}</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link fs-5" href="{% url 'accounts:login' %}">
+                                <i class="bi bi-box-arrow-in-right"></i> {% trans "Inloggen" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show fs-5" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Sluiten' %}"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-light py-4 mt-5 border-top">
+        <div class="container text-center text-muted fs-6">
+            <p class="mb-0">&copy; {% now "Y" %} Paradise FMX</p>
+        </div>
+    </footer>
+
+    <!-- Mobile action bar -->
+    <nav class="mobile-action-bar" aria-label="{% trans 'Snelle acties' %}">
+        <a href="{% url 'requests:create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i>
+            <span>{% trans "Melden" %}</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'requests:list' %}" class="btn btn-outline-primary">
+                <i class="bi bi-list-ul"></i>
+                <span>{% trans "Lijst" %}</span>
+            </a>
+            {% if user.is_staff %}
+                <a href="{% url 'requests:dashboard' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>{% trans "Overzicht" %}</span>
+                </a>
+            {% endif %}
+            <a href="{% url 'core:home' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-house"></i>
+                <span>{% trans "Home" %}</span>
+            </a>
+        {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary">
+                <i class="bi bi-person"></i>
+                <span>{% trans "Inloggen" %}</span>
+            </a>
+            <a href="{% url 'core:home' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-house"></i>
+                <span>{% trans "Home" %}</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
