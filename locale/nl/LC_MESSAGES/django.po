@@ -555,4 +555,50 @@ msgstr "Zaterdag"
 msgid "Zondag"
 msgstr "Zondag"
 
+# Procurement
+msgid "Inkoop"
+msgstr "Inkoop"
+
+msgid "Leverancier"
+msgstr "Leverancier"
+
+msgid "leverancier"
+msgstr "leverancier"
+
+msgid "Offertestatus"
+msgstr "Offertestatus"
+
+msgid "offertestatus"
+msgstr "offertestatus"
+
+msgid "Offertebedrag"
+msgstr "Offertebedrag"
+
+msgid "offertebedrag"
+msgstr "offertebedrag"
+
+msgid "Offertebedrag (€)"
+msgstr "Offertebedrag (€)"
+
+msgid "PO-nummer"
+msgstr "PO-nummer"
+
+msgid "inkoopordernummer"
+msgstr "inkoopordernummer"
+
+msgid "Naam leverancier"
+msgstr "Naam leverancier"
+
+msgid "Geen"
+msgstr "Geen"
+
+msgid "Aangevraagd"
+msgstr "Aangevraagd"
+
+msgid "Ontvangen"
+msgstr "Ontvangen"
+
+msgid "Goedgekeurd"
+msgstr "Goedgekeurd"
+
 # Model fields (already in Dutch in models.py)

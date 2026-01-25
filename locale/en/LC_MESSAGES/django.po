@@ -792,3 +792,49 @@ msgstr "Saturday"
 
 msgid "Zondag"
 msgstr "Sunday"
+
+# Procurement
+msgid "Inkoop"
+msgstr "Procurement"
+
+msgid "Leverancier"
+msgstr "Vendor"
+
+msgid "leverancier"
+msgstr "vendor"
+
+msgid "Offertestatus"
+msgstr "Quote status"
+
+msgid "offertestatus"
+msgstr "quote status"
+
+msgid "Offertebedrag"
+msgstr "Quote amount"
+
+msgid "offertebedrag"
+msgstr "quote amount"
+
+msgid "Offertebedrag (€)"
+msgstr "Quote amount (€)"
+
+msgid "PO-nummer"
+msgstr "PO number"
+
+msgid "inkoopordernummer"
+msgstr "purchase order number"
+
+msgid "Naam leverancier"
+msgstr "Vendor name"
+
+msgid "Geen"
+msgstr "None"
+
+msgid "Aangevraagd"
+msgstr "Requested"
+
+msgid "Ontvangen"
+msgstr "Received"
+
+msgid "Goedgekeurd"
+msgstr "Approved"

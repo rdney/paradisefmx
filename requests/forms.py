@@ -159,7 +159,12 @@ class TriageForm(forms.ModelForm):
 
     class Meta:
         model = RepairRequest
-        fields = ['status', 'priority', 'assigned_to', 'due_date', 'estimated_cost', 'actual_cost', 'resolution_summary']
+        fields = [
+            'status', 'priority', 'assigned_to', 'due_date',
+            'estimated_cost', 'actual_cost',
+            'vendor', 'quote_amount', 'quote_status', 'po_number',
+            'resolution_summary'
+        ]
         widgets = {
             'status': forms.Select(attrs={
                 'class': 'form-select form-select-lg',
@@ -185,6 +190,23 @@ class TriageForm(forms.ModelForm):
                 'min': '0',
                 'step': '0.01',
                 'placeholder': '€',
+            }),
+            'vendor': forms.TextInput(attrs={
+                'class': 'form-control form-control-lg',
+                'placeholder': _('Naam leverancier'),
+            }),
+            'quote_amount': forms.NumberInput(attrs={
+                'class': 'form-control form-control-lg',
+                'min': '0',
+                'step': '0.01',
+                'placeholder': '€',
+            }),
+            'quote_status': forms.Select(attrs={
+                'class': 'form-select form-select-lg',
+            }),
+            'po_number': forms.TextInput(attrs={
+                'class': 'form-control form-control-lg',
+                'placeholder': _('PO-nummer'),
             }),
             'resolution_summary': forms.Textarea(attrs={
                 'class': 'form-control form-control-lg',

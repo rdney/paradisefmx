@@ -38,6 +38,12 @@ class RepairRequest(models.Model):
         EMAIL = 'email', _('E-mail')
         PHONE = 'phone', _('Telefoon')
 
+    class QuoteStatus(models.TextChoices):
+        NONE = 'none', _('Geen')
+        REQUESTED = 'requested', _('Aangevraagd')
+        RECEIVED = 'received', _('Ontvangen')
+        APPROVED = 'approved', _('Goedgekeurd')
+
     # Request details
     title = models.CharField(_('titel'), max_length=200)
     description = models.TextField(_('omschrijving'))
@@ -126,6 +132,24 @@ class RepairRequest(models.Model):
         blank=True,
         help_text=_('Werkelijke kosten in euro\'s')
     )
+
+    # Procurement
+    vendor = models.CharField(_('leverancier'), max_length=200, blank=True)
+    quote_amount = models.DecimalField(
+        _('offertebedrag'),
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+    quote_status = models.CharField(
+        _('offertestatus'),
+        max_length=15,
+        choices=QuoteStatus.choices,
+        default=QuoteStatus.NONE
+    )
+    po_number = models.CharField(_('inkoopordernummer'), max_length=50, blank=True)
+
     closed_at = models.DateTimeField(_('afgesloten op'), null=True, blank=True)
 
     # Timestamps

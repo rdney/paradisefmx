@@ -149,6 +149,27 @@ a {
     color: #fff;
 }
 
+/* Quote status colors */
+.badge-quote-none {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.badge-quote-requested {
+    background-color: #0dcaf0;
+    color: #000;
+}
+
+.badge-quote-received {
+    background-color: #fd7e14;
+    color: #000;
+}
+
+.badge-quote-approved {
+    background-color: #198754;
+    color: #fff;
+}
+
 /* Priority colors */
 .badge-low {
     background-color: #6c757d;

@@ -75,6 +75,33 @@
                         <dd class="col-sm-8">€ {{ request.actual_cost }}</dd>
                     {% endif %}
 
+                    {% if request.vendor or request.quote_status != 'none' %}
+                        <dt class="col-sm-4 mt-3 border-top pt-3">{% trans "Inkoop" %}</dt>
+                        <dd class="col-sm-8 mt-3 border-top pt-3"></dd>
+
+                        {% if request.vendor %}
+                            <dt class="col-sm-4">{% trans "Leverancier" %}</dt>
+                            <dd class="col-sm-8">{{ request.vendor }}</dd>
+                        {% endif %}
+
+                        {% if request.quote_status != 'none' %}
+                            <dt class="col-sm-4">{% trans "Offertestatus" %}</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge badge-quote-{{ request.quote_status }}">{{ request.get_quote_status_display }}</span>
+                            </dd>
+                        {% endif %}
+
+                        {% if request.quote_amount %}
+                            <dt class="col-sm-4">{% trans "Offertebedrag" %}</dt>
+                            <dd class="col-sm-8">€ {{ request.quote_amount }}</dd>
+                        {% endif %}
+
+                        {% if request.po_number %}
+                            <dt class="col-sm-4">{% trans "PO-nummer" %}</dt>
+                            <dd class="col-sm-8">{{ request.po_number }}</dd>
+                        {% endif %}
+                    {% endif %}
+
                     <dt class="col-sm-4">{% trans "Ingediend" %}</dt>
                     <dd class="col-sm-8">{{ request.created_at|date:"d-m-Y H:i" }}</dd>
 
@@ -222,6 +249,31 @@
                             {{ triage_form.actual_cost }}
                         </div>
 
+                        <hr>
+                        <h3 class="h5 mb-3">{% trans "Inkoop" %}</h3>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="id_vendor">{% trans "Leverancier" %}</label>
+                            {{ triage_form.vendor }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="id_quote_status">{% trans "Offertestatus" %}</label>
+                                {{ triage_form.quote_status }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="id_quote_amount">{% trans "Offertebedrag (€)" %}</label>
+                                {{ triage_form.quote_amount }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="id_po_number">{% trans "PO-nummer" %}</label>
+                            {{ triage_form.po_number }}
+                        </div>
+
+                        <hr>
                         <div class="mb-3">
                             <label class="form-label" for="id_resolution_summary">{% trans "Oplossing" %}</label>
                             {{ triage_form.resolution_summary }}
