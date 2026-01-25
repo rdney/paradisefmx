@@ -166,11 +166,11 @@ class RequestListView(LoginRequiredMixin, ListView):
             except (ValueError, TypeError):
                 pass
 
-        # Filter by has estimated/actual cost
+        # Filter by has estimated/actual cost (only show tickets with actual values > 0)
         if self.request.GET.get('has_estimated') == '1':
-            qs = qs.filter(estimated_cost__isnull=False)
+            qs = qs.filter(estimated_cost__isnull=False, estimated_cost__gt=0)
         if self.request.GET.get('has_actual') == '1':
-            qs = qs.filter(actual_cost__isnull=False)
+            qs = qs.filter(actual_cost__isnull=False, actual_cost__gt=0)
 
         return qs
 
