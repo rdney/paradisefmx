@@ -118,6 +118,14 @@ class RepairRequest(models.Model):
         blank=True,
         help_text=_('Geschatte kosten in euro\'s')
     )
+    actual_cost = models.DecimalField(
+        _('werkelijke kosten'),
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text=_('Werkelijke kosten in euro\'s')
+    )
     closed_at = models.DateTimeField(_('afgesloten op'), null=True, blank=True)
 
     # Timestamps

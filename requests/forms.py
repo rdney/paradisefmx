@@ -156,7 +156,7 @@ class TriageForm(forms.ModelForm):
 
     class Meta:
         model = RepairRequest
-        fields = ['status', 'priority', 'assigned_to', 'due_date', 'estimated_cost', 'resolution_summary']
+        fields = ['status', 'priority', 'assigned_to', 'due_date', 'estimated_cost', 'actual_cost', 'resolution_summary']
         widgets = {
             'status': forms.Select(attrs={
                 'class': 'form-select form-select-lg',
@@ -172,6 +172,12 @@ class TriageForm(forms.ModelForm):
                 'type': 'date',
             }),
             'estimated_cost': forms.NumberInput(attrs={
+                'class': 'form-control form-control-lg',
+                'min': '0',
+                'step': '0.01',
+                'placeholder': '€',
+            }),
+            'actual_cost': forms.NumberInput(attrs={
                 'class': 'form-control form-control-lg',
                 'min': '0',
                 'step': '0.01',

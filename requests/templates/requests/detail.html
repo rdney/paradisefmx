@@ -78,6 +78,11 @@
                         <dd class="col-sm-8">€ {{ request.estimated_cost }}</dd>
                     {% endif %}
 
+                    {% if request.actual_cost %}
+                        <dt class="col-sm-4">{% trans "Werkelijke kosten" %}</dt>
+                        <dd class="col-sm-8">€ {{ request.actual_cost }}</dd>
+                    {% endif %}
+
                     <dt class="col-sm-4">{% trans "Ingediend" %}</dt>
                     <dd class="col-sm-8">{{ request.created_at|date:"d-m-Y H:i" }}</dd>
 
@@ -213,6 +218,11 @@
                         <div class="mb-3">
                             <label class="form-label" for="id_estimated_cost">{% trans "Geschatte kosten (€)" %}</label>
                             {{ triage_form.estimated_cost }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="id_actual_cost">{% trans "Werkelijke kosten (€)" %}</label>
+                            {{ triage_form.actual_cost }}
                         </div>
 
                         <div class="mb-3">

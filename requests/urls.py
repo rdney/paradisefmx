@@ -14,4 +14,5 @@ urlpatterns = [
     path('<int:pk>/update/', views.update_request, name='update'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('planner/', views.PlannerView.as_view(), name='planner'),
+    path('kosten/', views.CostOverviewView.as_view(), name='costs'),
 ]

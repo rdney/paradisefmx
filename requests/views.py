@@ -1,5 +1,6 @@
 import calendar
 from datetime import date
+from decimal import Decimal
 
 from django.conf import settings
 from django.contrib import messages
@@ -7,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -454,5 +455,76 @@ class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         ctx['next_year'] = next_year
         ctx['next_month'] = next_month
         ctx['today'] = today
+
+        return ctx
+
+
+class CostOverviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    """Monthly cost overview: estimated vs actual."""
+    template_name = 'requests/cost_overview.html'
+
+    def test_func(self):
+        return (
+            self.request.user.is_staff or
+            self.request.user.groups.filter(name__in=['Facilitair', 'Beheerders']).exists()
+        )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        # Get year from query params or use current
+        today = timezone.now().date()
+        try:
+            year = int(self.request.GET.get('year', today.year))
+        except (ValueError, TypeError):
+            year = today.year
+
+        # Build monthly data
+        months_data = []
+        total_estimated = Decimal('0')
+        total_actual = Decimal('0')
+
+        for month in range(1, 13):
+            first_day = date(year, month, 1)
+            last_day = date(year, month, calendar.monthrange(year, month)[1])
+
+            # Aggregate costs for requests completed in this month
+            agg = RepairRequest.objects.filter(
+                Q(closed_at__date__gte=first_day, closed_at__date__lte=last_day) |
+                Q(status=RepairRequest.Status.COMPLETED, updated_at__date__gte=first_day, updated_at__date__lte=last_day)
+            ).aggregate(
+                estimated=Sum('estimated_cost'),
+                actual=Sum('actual_cost'),
+            )
+
+            estimated = agg['estimated'] or Decimal('0')
+            actual = agg['actual'] or Decimal('0')
+
+            # Count requests
+            count = RepairRequest.objects.filter(
+                Q(closed_at__date__gte=first_day, closed_at__date__lte=last_day) |
+                Q(status=RepairRequest.Status.COMPLETED, updated_at__date__gte=first_day, updated_at__date__lte=last_day)
+            ).count()
+
+            months_data.append({
+                'month': month,
+                'month_name': calendar.month_name[month],
+                'estimated': estimated,
+                'actual': actual,
+                'difference': actual - estimated,
+                'count': count,
+                'is_current': month == today.month and year == today.year,
+            })
+
+            total_estimated += estimated
+            total_actual += actual
+
+        ctx['year'] = year
+        ctx['months_data'] = months_data
+        ctx['total_estimated'] = total_estimated
+        ctx['total_actual'] = total_actual
+        ctx['total_difference'] = total_actual - total_estimated
+        ctx['prev_year'] = year - 1
+        ctx['next_year'] = year + 1
 
         return ctx
