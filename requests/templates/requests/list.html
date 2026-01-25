@@ -5,7 +5,16 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0">{% trans "Verzoeken" %}</h1>
+    <div>
+        <h1 class="h3 mb-0">{% trans "Verzoeken" %}</h1>
+        {% if current_filters.month and current_filters.year %}
+            <small class="text-muted">
+                <a href="{% url 'requests:costs' %}?year={{ current_filters.year }}" class="text-decoration-none">
+                    <i class="bi bi-arrow-left"></i> {% trans "Terug naar kostenoverzicht" %}
+                </a>
+            </small>
+        {% endif %}
+    </div>
     <a href="{% url 'requests:create' %}" class="btn btn-primary d-none d-md-inline-flex">
         <i class="bi bi-plus-circle"></i> {% trans "Nieuw" %}
     </a>
@@ -86,6 +95,18 @@
                             </div>
                             <small class="text-muted">{{ req.requester_name }} · {{ req.created_at|date:"d-m-Y" }}</small>
                         </div>
+                        {% if show_costs %}
+                            <div class="text-end me-3">
+                                {% if req.estimated_cost %}
+                                    <small class="text-muted d-block">{% trans "Geschat" %}</small>
+                                    <span class="fw-bold">€ {{ req.estimated_cost|floatformat:2 }}</span>
+                                {% endif %}
+                                {% if req.actual_cost %}
+                                    <small class="text-muted d-block">{% trans "Werkelijk" %}</small>
+                                    <span class="fw-bold text-success">€ {{ req.actual_cost|floatformat:2 }}</span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                         <div class="text-end flex-shrink-0">
                             <span class="badge badge-{{ req.priority }} mb-1">{{ req.get_priority_display }}</span>
                             <br>

@@ -153,6 +153,25 @@ class RequestListView(LoginRequiredMixin, ListView):
                 Q(requester_name__icontains=search)
             )
 
+        # Month/year filter (from cost overview drill-down)
+        month = self.request.GET.get('month')
+        year = self.request.GET.get('year')
+        if month and year:
+            try:
+                month = int(month)
+                year = int(year)
+                first_day = date(year, month, 1)
+                last_day = date(year, month, calendar.monthrange(year, month)[1])
+                qs = qs.filter(created_at__date__gte=first_day, created_at__date__lte=last_day)
+            except (ValueError, TypeError):
+                pass
+
+        # Filter by has estimated/actual cost
+        if self.request.GET.get('has_estimated') == '1':
+            qs = qs.filter(estimated_cost__isnull=False)
+        if self.request.GET.get('has_actual') == '1':
+            qs = qs.filter(actual_cost__isnull=False)
+
         return qs
 
     def get_context_data(self, **kwargs):
@@ -167,7 +186,13 @@ class RequestListView(LoginRequiredMixin, ListView):
             'location': self.request.GET.get('location', ''),
             'assigned': self.request.GET.get('assigned', ''),
             'q': self.request.GET.get('q', ''),
+            'month': self.request.GET.get('month', ''),
+            'year': self.request.GET.get('year', ''),
+            'has_estimated': self.request.GET.get('has_estimated', ''),
+            'has_actual': self.request.GET.get('has_actual', ''),
         }
+        # Show cost columns if filtering by cost
+        ctx['show_costs'] = bool(self.request.GET.get('has_estimated') or self.request.GET.get('has_actual') or self.request.GET.get('month'))
         return ctx
 
 

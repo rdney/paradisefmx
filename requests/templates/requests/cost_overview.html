@@ -75,14 +75,36 @@
                     {% for m in months_data %}
                         <tr class="{% if m.is_current %}table-primary{% endif %}">
                             <td>
-                                {{ m.month_name }}
+                                <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}" class="text-decoration-none">
+                                    {{ m.month_name }}
+                                </a>
                                 {% if m.is_current %}
                                     <span class="badge bg-primary ms-2">{% trans "Huidig" %}</span>
                                 {% endif %}
                             </td>
-                            <td class="text-end">{{ m.count }}</td>
-                            <td class="text-end">€ {{ m.estimated|floatformat:2 }}</td>
-                            <td class="text-end">€ {{ m.actual|floatformat:2 }}</td>
+                            <td class="text-end">
+                                <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}" class="text-decoration-none">
+                                    {{ m.count }}
+                                </a>
+                            </td>
+                            <td class="text-end">
+                                {% if m.estimated > 0 %}
+                                    <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}&has_estimated=1" class="text-decoration-none">
+                                        € {{ m.estimated|floatformat:2 }}
+                                    </a>
+                                {% else %}
+                                    € {{ m.estimated|floatformat:2 }}
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if m.actual > 0 %}
+                                    <a href="{% url 'requests:list' %}?month={{ m.month }}&year={{ year }}&has_actual=1" class="text-decoration-none">
+                                        € {{ m.actual|floatformat:2 }}
+                                    </a>
+                                {% else %}
+                                    € {{ m.actual|floatformat:2 }}
+                                {% endif %}
+                            </td>
                             <td class="text-end {% if m.difference > 0 %}text-danger{% elif m.difference < 0 %}text-success{% endif %}">
                                 {% if m.difference != 0 %}
                                     {% if m.difference >= 0 %}+{% endif %}€ {{ m.difference|floatformat:2 }}
