@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Handleiding" %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <h1 class="mb-4">{% trans "Handleiding Paradise FMX" %}</h1>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "Inhoudsopgave" %}</h2>
+            </div>
+            <div class="card-body">
+                <ol class="fs-5">
+                    <li><a href="#intro">{% trans "Wat is Paradise FMX?" %}</a></li>
+                    <li><a href="#request">{% trans "Een reparatieverzoek indienen" %}</a></li>
+                    <li><a href="#status">{% trans "Status van uw verzoek bekijken" %}</a></li>
+                    <li><a href="#mentions">{% trans "@Vermeldingen gebruiken" %}</a></li>
+                    <li><a href="#assets">{% trans "Objecten bekijken" %}</a></li>
+                    <li><a href="#staff">{% trans "Voor medewerkers" %}</a></li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Intro -->
+        <div class="card mb-4" id="intro">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "1. Wat is Paradise FMX?" %}</h2>
+            </div>
+            <div class="card-body">
+                <p class="fs-5">
+                    {% blocktrans %}
+                    Paradise FMX is het facilitair beheersysteem van de Paradijskerk.
+                    Hiermee kunt u:
+                    {% endblocktrans %}
+                </p>
+                <ul class="fs-5">
+                    <li>{% trans "Reparatieverzoeken indienen" %}</li>
+                    <li>{% trans "De status van uw verzoeken volgen" %}</li>
+                    <li>{% trans "Foto's en documenten toevoegen" %}</li>
+                    <li>{% trans "Communiceren met het facilitair team" %}</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Submit request -->
+        <div class="card mb-4" id="request">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "2. Een reparatieverzoek indienen" %}</h2>
+            </div>
+            <div class="card-body">
+                <p class="fs-5">{% trans "Zo dient u een verzoek in:" %}</p>
+                <ol class="fs-5">
+                    <li>
+                        {% blocktrans %}
+                        Klik op <strong>"Reparatie melden"</strong> op de homepage of in het menu.
+                        {% endblocktrans %}
+                    </li>
+                    <li>
+                        {% blocktrans %}
+                        Vul een duidelijke <strong>titel</strong> in (bijv. "Lamp kapot in consistorie").
+                        {% endblocktrans %}
+                    </li>
+                    <li>
+                        {% blocktrans %}
+                        Beschrijf het probleem in de <strong>omschrijving</strong>.
+                        Hoe meer details, hoe beter.
+                        {% endblocktrans %}
+                    </li>
+                    <li>
+                        {% blocktrans %}
+                        Selecteer de <strong>locatie</strong> waar het probleem zich bevindt.
+                        {% endblocktrans %}
+                    </li>
+                    <li>
+                        {% blocktrans %}
+                        Kies de <strong>prioriteit</strong>:
+                        {% endblocktrans %}
+                        <ul>
+                            <li><strong>{% trans "Laag" %}</strong> - {% trans "Kan wachten" %}</li>
+                            <li><strong>{% trans "Normaal" %}</strong> - {% trans "Binnen een week" %}</li>
+                            <li><strong>{% trans "Hoog" %}</strong> - {% trans "Zo snel mogelijk" %}</li>
+                            <li><strong>{% trans "Spoed" %}</strong> - {% trans "Direct actie nodig" %}</li>
+                        </ul>
+                    </li>
+                    <li>
+                        {% blocktrans %}
+                        Vul uw <strong>naam</strong> in zodat we contact kunnen opnemen.
+                        {% endblocktrans %}
+                    </li>
+                    <li>
+                        {% blocktrans %}
+                        Voeg eventueel <strong>foto's</strong> toe om het probleem te verduidelijken.
+                        {% endblocktrans %}
+                    </li>
+                    <li>
+                        {% blocktrans %}
+                        Klik op <strong>"Indienen"</strong>.
+                        {% endblocktrans %}
+                    </li>
+                </ol>
+                <div class="alert alert-info fs-5">
+                    <i class="bi bi-lightbulb"></i>
+                    {% blocktrans %}
+                    <strong>Tip:</strong> U ontvangt een werkbonnummer. Bewaar dit nummer om de status te kunnen volgen.
+                    {% endblocktrans %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Check status -->
+        <div class="card mb-4" id="status">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "3. Status van uw verzoek bekijken" %}</h2>
+            </div>
+            <div class="card-body">
+                <p class="fs-5">{% trans "De verschillende statussen zijn:" %}</p>
+                <table class="table fs-5">
+                    <tr>
+                        <td><span class="badge bg-secondary">{% trans "Nieuw" %}</span></td>
+                        <td>{% trans "Uw verzoek is ontvangen en wacht op beoordeling." %}</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-info">{% trans "Getriageerd" %}</span></td>
+                        <td>{% trans "Uw verzoek is beoordeeld en ingepland." %}</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-primary">{% trans "Bezig" %}</span></td>
+                        <td>{% trans "Er wordt aan gewerkt." %}</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-warning text-dark">{% trans "Wacht" %}</span></td>
+                        <td>{% trans "Wacht op onderdelen, leverancier of goedkeuring." %}</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-success">{% trans "Gereed" %}</span></td>
+                        <td>{% trans "De reparatie is uitgevoerd." %}</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-dark">{% trans "Gesloten" %}</span></td>
+                        <td>{% trans "Het verzoek is afgehandeld en gearchiveerd." %}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mentions -->
+        <div class="card mb-4" id="mentions">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "4. @Vermeldingen gebruiken" %}</h2>
+            </div>
+            <div class="card-body">
+                <p class="fs-5">
+                    {% blocktrans %}
+                    U kunt collega's vermelden in notities door <strong>@gebruikersnaam</strong> te typen.
+                    {% endblocktrans %}
+                </p>
+                <ol class="fs-5">
+                    <li>{% trans "Typ @ in het notitieveld" %}</li>
+                    <li>{% trans "Begin met typen van een naam" %}</li>
+                    <li>{% trans "Selecteer de juiste persoon uit de lijst" %}</li>
+                    <li>{% trans "De persoon ontvangt een e-mailnotificatie" %}</li>
+                </ol>
+                <div class="alert alert-info fs-5">
+                    <i class="bi bi-envelope"></i>
+                    {% blocktrans %}
+                    Vermelde personen ontvangen automatisch een e-mail met de notitie.
+                    {% endblocktrans %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Assets -->
+        <div class="card mb-4" id="assets">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "5. Objecten bekijken" %}</h2>
+            </div>
+            <div class="card-body">
+                <p class="fs-5">
+                    {% blocktrans %}
+                    Onder "Objecten" vindt u een overzicht van alle installaties en apparatuur
+                    in de kerk, zoals:
+                    {% endblocktrans %}
+                </p>
+                <ul class="fs-5">
+                    <li>{% trans "Verwarmingsinstallaties" %}</li>
+                    <li>{% trans "Elektrische systemen" %}</li>
+                    <li>{% trans "Meubilair en inventaris" %}</li>
+                    <li>{% trans "Monumentale onderdelen" %}</li>
+                </ul>
+                <p class="fs-5">
+                    {% blocktrans %}
+                    Bij elk object ziet u de status, locatie en eventuele openstaande reparatieverzoeken.
+                    {% endblocktrans %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Staff section -->
+        <div class="card mb-4" id="staff">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "6. Voor medewerkers" %}</h2>
+            </div>
+            <div class="card-body">
+                <p class="fs-5">{% trans "Als facilitair medewerker heeft u extra functies:" %}</p>
+
+                <h3 class="h5 mt-4">{% trans "Dashboard" %}</h3>
+                <p class="fs-5">
+                    {% blocktrans %}
+                    Het dashboard toont alle openstaande verzoeken, gesorteerd op prioriteit.
+                    Hier kunt u verzoeken toewijzen en de status bijwerken.
+                    {% endblocktrans %}
+                </p>
+
+                <h3 class="h5 mt-4">{% trans "Verzoek bewerken" %}</h3>
+                <ul class="fs-5">
+                    <li>{% trans "Status wijzigen" %}</li>
+                    <li>{% trans "Prioriteit aanpassen" %}</li>
+                    <li>{% trans "Toewijzen aan een medewerker" %}</li>
+                    <li>{% trans "Streefdatum instellen" %}</li>
+                    <li>{% trans "Geschatte en werkelijke kosten invoeren" %}</li>
+                </ul>
+
+                <h3 class="h5 mt-4">{% trans "Planner" %}</h3>
+                <p class="fs-5">
+                    {% blocktrans %}
+                    De planner toont een maandoverzicht van alle ingeplande werkzaamheden.
+                    {% endblocktrans %}
+                </p>
+
+                <h3 class="h5 mt-4">{% trans "Kostenoverzicht" %}</h3>
+                <p class="fs-5">
+                    {% blocktrans %}
+                    Het kostenoverzicht toont per maand de geschatte en werkelijke kosten.
+                    Klik op een bedrag om de bijbehorende verzoeken te zien.
+                    {% endblocktrans %}
+                </p>
+            </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h4 mb-0">{% trans "Hulp nodig?" %}</h2>
+            </div>
+            <div class="card-body">
+                <p class="fs-5">
+                    {% blocktrans %}
+                    Heeft u vragen of problemen met het systeem?
+                    Neem contact op met het facilitair team.
+                    {% endblocktrans %}
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center mb-4">
+            <a href="{% url 'core:home' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-house"></i> {% trans "Terug naar home" %}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -20,6 +20,11 @@ class HomeView(TemplateView):
     template_name = 'core/home.html'
 
 
+class HelpView(TemplateView):
+    """Help page / user manual."""
+    template_name = 'core/help.html'
+
+
 class AssetListView(LoginRequiredMixin, ListView):
     """List all assets with filters."""
     model = Asset
