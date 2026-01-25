@@ -59,8 +59,6 @@ class AssetListView(LoginRequiredMixin, ListView):
         monument = self.request.GET.get('monument')
         if monument == '1':
             qs = qs.filter(is_monument=True)
-        elif monument == '0':
-            qs = qs.filter(is_monument=False)
 
         return qs
 

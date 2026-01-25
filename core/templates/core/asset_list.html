@@ -53,13 +53,13 @@
                 <label class="form-label" for="q">{% trans "Zoeken" %}</label>
                 <input type="text" name="q" id="q" value="{{ current_filters.q }}" class="form-control form-control-lg" placeholder="{% trans 'Zoeken...' %}">
             </div>
-            <div class="col-md-3">
-                <label class="form-label" for="monument">{% trans "Monument" %}</label>
-                <select name="monument" id="monument" class="form-select form-select-lg">
-                    <option value="">{% trans "Alle" %}</option>
-                    <option value="1" {% if current_filters.monument == '1' %}selected{% endif %}>{% trans "Alleen monumenten" %}</option>
-                    <option value="0" {% if current_filters.monument == '0' %}selected{% endif %}>{% trans "Geen monumenten" %}</option>
-                </select>
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check mb-2">
+                    <input type="checkbox" name="monument" id="monument" value="1" class="form-check-input" style="width: 1.5em; height: 1.5em;" {% if current_filters.monument == '1' %}checked{% endif %}>
+                    <label class="form-check-label fs-5 ms-2" for="monument">
+                        <img src="{% static 'img/monument.svg' %}" alt="" style="height: 24px;"> {% trans "Alleen monumenten" %}
+                    </label>
+                </div>
             </div>
             <div class="col-12">
                 <button type="submit" class="btn btn-primary btn-lg">
