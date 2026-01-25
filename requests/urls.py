@@ -17,4 +17,7 @@ urlpatterns = [
     path('planner/', views.PlannerView.as_view(), name='planner'),
     path('kosten/', views.CostOverviewView.as_view(), name='costs'),
     path('api/users/', views.user_search, name='user_search'),
+    path('notifications/', views.NotificationListView.as_view(), name='notifications'),
+    path('notifications/<int:pk>/read/', views.mark_notification_read, name='mark_notification_read'),
+    path('notifications/read-all/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
 ]

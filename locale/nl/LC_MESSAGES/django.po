@@ -601,4 +601,49 @@ msgstr "Ontvangen"
 msgid "Goedgekeurd"
 msgstr "Goedgekeurd"
 
+# Notifications
+msgid "Notificaties"
+msgstr "Notificaties"
+
+msgid "notificatie"
+msgstr "notificatie"
+
+msgid "notificaties"
+msgstr "notificaties"
+
+msgid "Alles gelezen"
+msgstr "Alles gelezen"
+
+msgid "Geen notificaties"
+msgstr "Geen notificaties"
+
+msgid "geleden"
+msgstr "geleden"
+
+msgid "Vermelding"
+msgstr "Vermelding"
+
+msgid "gebruiker"
+msgstr "gebruiker"
+
+msgid "bericht"
+msgstr "bericht"
+
+msgid "gelezen"
+msgstr "gelezen"
+
+msgid "Alle notificaties gemarkeerd als gelezen."
+msgstr "Alle notificaties gemarkeerd als gelezen."
+
+#, python-format
+msgid "%(author)s heeft je genoemd"
+msgstr "%(author)s heeft je genoemd"
+
+#, python-format
+msgid "In verzoek #%(id)s: %(title)s\n\n\"%(note)s\""
+msgstr "In verzoek #%(id)s: %(title)s\n\n\"%(note)s\""
+
+msgid "Iemand"
+msgstr "Iemand"
+
 # Model fields (already in Dutch in models.py)

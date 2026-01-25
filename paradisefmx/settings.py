@@ -6,8 +6,12 @@ import os
 from pathlib import Path
 
 from django.utils.translation import gettext_lazy as _
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env file if it exists
+load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
@@ -53,6 +57,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.i18n',
+                'requests.context_processors.notifications',
             ],
         },
     },

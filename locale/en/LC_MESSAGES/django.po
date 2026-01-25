@@ -838,3 +838,48 @@ msgstr "Received"
 
 msgid "Goedgekeurd"
 msgstr "Approved"
+
+# Notifications
+msgid "Notificaties"
+msgstr "Notifications"
+
+msgid "notificatie"
+msgstr "notification"
+
+msgid "notificaties"
+msgstr "notifications"
+
+msgid "Alles gelezen"
+msgstr "Mark all read"
+
+msgid "Geen notificaties"
+msgstr "No notifications"
+
+msgid "geleden"
+msgstr "ago"
+
+msgid "Vermelding"
+msgstr "Mention"
+
+msgid "gebruiker"
+msgstr "user"
+
+msgid "bericht"
+msgstr "message"
+
+msgid "gelezen"
+msgstr "read"
+
+msgid "Alle notificaties gemarkeerd als gelezen."
+msgstr "All notifications marked as read."
+
+#, python-format
+msgid "%(author)s heeft je genoemd"
+msgstr "%(author)s mentioned you"
+
+#, python-format
+msgid "In verzoek #%(id)s: %(title)s\n\n\"%(note)s\""
+msgstr "In request #%(id)s: %(title)s\n\n\"%(note)s\""
+
+msgid "Iemand"
+msgstr "Someone"

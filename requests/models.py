@@ -268,3 +268,45 @@ class WorkLog(models.Model):
 
     def __str__(self):
         return f"{self.get_entry_type_display()} - {self.created_at}"
+
+
+class Notification(models.Model):
+    """In-app notification for users."""
+
+    class NotificationType(models.TextChoices):
+        MENTION = 'mention', _('Vermelding')
+        ASSIGNMENT = 'assignment', _('Toewijzing')
+        STATUS_CHANGE = 'status_change', _('Statuswijziging')
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='notifications',
+        verbose_name=_('gebruiker')
+    )
+    notification_type = models.CharField(
+        _('type'),
+        max_length=20,
+        choices=NotificationType.choices,
+        default=NotificationType.MENTION
+    )
+    title = models.CharField(_('titel'), max_length=200)
+    message = models.TextField(_('bericht'))
+    repair_request = models.ForeignKey(
+        RepairRequest,
+        on_delete=models.CASCADE,
+        related_name='notifications',
+        verbose_name=_('reparatieverzoek'),
+        null=True,
+        blank=True
+    )
+    is_read = models.BooleanField(_('gelezen'), default=False)
+    created_at = models.DateTimeField(_('aangemaakt op'), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('notificatie')
+        verbose_name_plural = _('notificaties')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} - {self.user.username}"

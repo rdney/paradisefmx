@@ -61,6 +61,18 @@
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link fs-5 position-relative" href="{% url 'requests:notifications' %}">
+                                <i class="bi bi-bell"></i>
+                                {% if unread_notifications_count > 0 %}
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        {{ unread_notifications_count }}
+                                    </span>
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link fs-5" href="{% url 'core:help' %}">
                             <i class="bi bi-question-circle"></i> {% trans "Help" %}

@@ -774,3 +774,44 @@ def user_search(request):
             for u in users
         ]
     })
+
+
+class NotificationListView(LoginRequiredMixin, ListView):
+    """List user's notifications."""
+    model = None  # Set in get_queryset
+    template_name = 'requests/notifications.html'
+    context_object_name = 'notifications'
+    paginate_by = 25
+
+    def get_queryset(self):
+        from .models import Notification
+        return Notification.objects.filter(user=self.request.user).order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        from .models import Notification
+        ctx['unread_count'] = Notification.objects.filter(user=self.request.user, is_read=False).count()
+        return ctx
+
+
+@login_required
+def mark_notification_read(request, pk):
+    """Mark a notification as read."""
+    from .models import Notification
+    notification = get_object_or_404(Notification, pk=pk, user=request.user)
+    notification.is_read = True
+    notification.save()
+
+    # Redirect to the related request if it exists
+    if notification.repair_request:
+        return redirect('requests:detail', pk=notification.repair_request.pk)
+    return redirect('requests:notifications')
+
+
+@login_required
+def mark_all_notifications_read(request):
+    """Mark all notifications as read."""
+    from .models import Notification
+    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    messages.success(request, _('Alle notificaties gemarkeerd als gelezen.'))
+    return redirect('requests:notifications')
