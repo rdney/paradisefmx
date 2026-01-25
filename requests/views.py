@@ -1,3 +1,6 @@
+import calendar
+from datetime import date
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -9,7 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 
 from .forms import AttachmentForm, RepairRequestForm, TriageForm, WorkLogForm
 from .models import Attachment, RepairRequest, WorkLog
@@ -360,3 +363,96 @@ def update_request(request, pk):
             messages.success(request, _('Verzoek bijgewerkt.'))
 
     return redirect('requests:detail', pk=pk)
+
+
+class PlannerView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    """Monthly planner view showing scheduled repairs."""
+    template_name = 'requests/planner.html'
+
+    def test_func(self):
+        return (
+            self.request.user.is_staff or
+            self.request.user.groups.filter(name__in=['Facilitair', 'Beheerders']).exists()
+        )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        # Get year and month from query params or use current
+        today = timezone.now().date()
+        try:
+            year = int(self.request.GET.get('year', today.year))
+            month = int(self.request.GET.get('month', today.month))
+        except (ValueError, TypeError):
+            year, month = today.year, today.month
+
+        # Clamp values
+        if month < 1:
+            month = 12
+            year -= 1
+        elif month > 12:
+            month = 1
+            year += 1
+
+        # Get calendar data
+        cal = calendar.Calendar(firstweekday=0)  # Monday first
+        month_days = cal.monthdayscalendar(year, month)
+
+        # Get requests with due_date in this month
+        first_day = date(year, month, 1)
+        last_day = date(year, month, calendar.monthrange(year, month)[1])
+
+        requests_by_day = {}
+        requests = RepairRequest.objects.filter(
+            due_date__gte=first_day,
+            due_date__lte=last_day
+        ).exclude(
+            status__in=[RepairRequest.Status.CLOSED]
+        ).select_related('location', 'assigned_to').order_by('due_date', 'priority')
+
+        for req in requests:
+            day = req.due_date.day
+            if day not in requests_by_day:
+                requests_by_day[day] = []
+            requests_by_day[day].append(req)
+
+        # Build calendar weeks
+        weeks = []
+        for week in month_days:
+            week_data = []
+            for day in week:
+                if day == 0:
+                    week_data.append({'day': 0, 'requests': []})
+                else:
+                    week_data.append({
+                        'day': day,
+                        'requests': requests_by_day.get(day, []),
+                        'is_today': day == today.day and month == today.month and year == today.year,
+                    })
+            weeks.append(week_data)
+
+        # Navigation
+        prev_month = month - 1
+        prev_year = year
+        if prev_month < 1:
+            prev_month = 12
+            prev_year -= 1
+
+        next_month = month + 1
+        next_year = year
+        if next_month > 12:
+            next_month = 1
+            next_year += 1
+
+        ctx['year'] = year
+        ctx['month'] = month
+        ctx['month_name'] = calendar.month_name[month]
+        ctx['weeks'] = weeks
+        ctx['weekdays'] = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo']
+        ctx['prev_year'] = prev_year
+        ctx['prev_month'] = prev_month
+        ctx['next_year'] = next_year
+        ctx['next_month'] = next_month
+        ctx['today'] = today
+
+        return ctx

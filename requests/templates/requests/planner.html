@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Planner" %} - {{ month_name }} {{ year }} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2 mb-0">{% trans "Planner" %}</h1>
+    <a href="{% url 'requests:dashboard' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-speedometer2"></i> {% trans "Dashboard" %}
+    </a>
+</div>
+
+<!-- Month navigation -->
+<div class="card mb-4">
+    <div class="card-body d-flex justify-content-between align-items-center">
+        <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-chevron-left"></i> {% trans "Vorige" %}
+        </a>
+        <h2 class="h3 mb-0">{{ month_name }} {{ year }}</h2>
+        <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-outline-primary btn-lg">
+            {% trans "Volgende" %} <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+</div>
+
+<!-- Calendar -->
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-bordered mb-0 planner-table">
+            <thead>
+                <tr>
+                    {% for day in weekdays %}
+                        <th class="text-center bg-light {% if forloop.counter > 5 %}text-muted{% endif %}">{{ day }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for week in weeks %}
+                    <tr>
+                        {% for day_data in week %}
+                            <td class="{% if day_data.day == 0 %}bg-light{% endif %}{% if day_data.is_today %} today{% endif %}" style="vertical-align: top; min-width: 120px; height: 120px;">
+                                {% if day_data.day != 0 %}
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <span class="day-number {% if day_data.is_today %}badge bg-primary{% else %}fw-bold{% endif %}">
+                                            {{ day_data.day }}
+                                        </span>
+                                        {% if day_data.requests %}
+                                            <span class="badge bg-secondary">{{ day_data.requests|length }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="day-requests">
+                                        {% for req in day_data.requests %}
+                                            <a href="{% url 'requests:detail' req.pk %}"
+                                               class="d-block small mb-1 text-decoration-none planner-item priority-{{ req.priority }}">
+                                                <span class="badge badge-{{ req.priority }} me-1">#{{ req.id }}</span>
+                                                <span class="text-truncate d-inline-block" style="max-width: 80px;">{{ req.title }}</span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Legend -->
+<div class="card mt-4">
+    <div class="card-body">
+        <h3 class="h5">{% trans "Legenda" %}</h3>
+        <div class="d-flex flex-wrap gap-3">
+            <span><span class="badge badge-low">{% trans "Laag" %}</span></span>
+            <span><span class="badge badge-normal">{% trans "Normaal" %}</span></span>
+            <span><span class="badge badge-high">{% trans "Hoog" %}</span></span>
+            <span><span class="badge badge-urgent">{% trans "Spoed" %}</span></span>
+        </div>
+    </div>
+</div>
+
+<style>
+.planner-table td {
+    padding: 0.5rem;
+}
+.planner-table .today {
+    background-color: #e8f4fd;
+}
+.planner-item {
+    padding: 2px 4px;
+    border-radius: 4px;
+    background: #f8f9fa;
+}
+.planner-item.priority-urgent {
+    background: #fee2e2;
+}
+.planner-item.priority-high {
+    background: #fef3c7;
+}
+.day-number {
+    font-size: 1.1rem;
+}
+@media (max-width: 768px) {
+    .planner-table {
+        font-size: 0.85rem;
+    }
+    .planner-table td {
+        min-width: auto !important;
+        height: auto !important;
+        padding: 0.25rem;
+    }
+    .day-requests {
+        display: none;
+    }
+    .planner-table .badge {
+        font-size: 0.7rem;
+    }
+}
+</style>
+{% endblock %}
