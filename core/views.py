@@ -56,6 +56,12 @@ class AssetListView(LoginRequiredMixin, ListView):
                 Q(model__icontains=search)
             )
 
+        monument = self.request.GET.get('monument')
+        if monument == '1':
+            qs = qs.filter(is_monument=True)
+        elif monument == '0':
+            qs = qs.filter(is_monument=False)
+
         return qs
 
     def get_context_data(self, **kwargs):
@@ -70,6 +76,7 @@ class AssetListView(LoginRequiredMixin, ListView):
             'criticality': self.request.GET.get('criticality', ''),
             'location': self.request.GET.get('location', ''),
             'q': self.request.GET.get('q', ''),
+            'monument': self.request.GET.get('monument', ''),
         }
         return ctx
 
