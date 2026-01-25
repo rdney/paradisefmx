@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
 from django.db.models import Case, Q, Sum, When, IntegerField
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -598,3 +599,27 @@ class RequestDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, _('Verzoek verwijderd.'))
         return super().form_valid(form)
+
+
+@login_required
+def user_search(request):
+    """API endpoint to search users for @mention autocomplete."""
+    q = request.GET.get('q', '').strip()
+    if len(q) < 1:
+        return JsonResponse({'users': []})
+
+    users = User.objects.filter(
+        Q(username__icontains=q) |
+        Q(first_name__icontains=q) |
+        Q(last_name__icontains=q)
+    )[:10]
+
+    return JsonResponse({
+        'users': [
+            {
+                'username': u.username,
+                'name': u.get_full_name() or u.username,
+            }
+            for u in users
+        ]
+    })

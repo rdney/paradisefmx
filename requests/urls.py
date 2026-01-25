@@ -16,4 +16,5 @@ urlpatterns = [
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('planner/', views.PlannerView.as_view(), name='planner'),
     path('kosten/', views.CostOverviewView.as_view(), name='costs'),
+    path('api/users/', views.user_search, name='user_search'),
 ]

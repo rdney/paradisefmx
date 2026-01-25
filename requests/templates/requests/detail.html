@@ -266,3 +266,133 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_css %}
+<style>
+    .mention-dropdown {
+        position: absolute;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+    }
+    .mention-dropdown.show { display: block; }
+    .mention-item {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+    .mention-item:hover, .mention-item.active {
+        background: #f0f0f0;
+    }
+    .mention-item strong { color: #0d6efd; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const textarea = document.querySelector('textarea[name="note"]');
+    if (!textarea) return;
+
+    // Create dropdown
+    const dropdown = document.createElement('div');
+    dropdown.className = 'mention-dropdown';
+    textarea.parentNode.style.position = 'relative';
+    textarea.parentNode.appendChild(dropdown);
+
+    let mentionStart = -1;
+    let activeIndex = 0;
+
+    textarea.addEventListener('input', function(e) {
+        const text = this.value;
+        const cursor = this.selectionStart;
+
+        // Find @ before cursor
+        const beforeCursor = text.slice(0, cursor);
+        const atIndex = beforeCursor.lastIndexOf('@');
+
+        if (atIndex >= 0) {
+            const afterAt = beforeCursor.slice(atIndex + 1);
+            // Check if we're in a mention (no space after @)
+            if (!/\s/.test(afterAt)) {
+                mentionStart = atIndex;
+                searchUsers(afterAt);
+                return;
+            }
+        }
+        hideDropdown();
+    });
+
+    textarea.addEventListener('keydown', function(e) {
+        if (!dropdown.classList.contains('show')) return;
+
+        const items = dropdown.querySelectorAll('.mention-item');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIndex = Math.min(activeIndex + 1, items.length - 1);
+            updateActive(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIndex = Math.max(activeIndex - 1, 0);
+            updateActive(items);
+        } else if (e.key === 'Enter' || e.key === 'Tab') {
+            if (items.length > 0) {
+                e.preventDefault();
+                selectUser(items[activeIndex].dataset.username);
+            }
+        } else if (e.key === 'Escape') {
+            hideDropdown();
+        }
+    });
+
+    function searchUsers(query) {
+        fetch(`{% url 'requests:user_search' %}?q=${encodeURIComponent(query)}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.users.length === 0) {
+                    hideDropdown();
+                    return;
+                }
+                activeIndex = 0;
+                dropdown.innerHTML = data.users.map((u, i) =>
+                    `<div class="mention-item ${i === 0 ? 'active' : ''}" data-username="${u.username}">
+                        <strong>@${u.username}</strong> ${u.name !== u.username ? '- ' + u.name : ''}
+                    </div>`
+                ).join('');
+
+                dropdown.querySelectorAll('.mention-item').forEach(item => {
+                    item.addEventListener('click', () => selectUser(item.dataset.username));
+                });
+
+                dropdown.classList.add('show');
+            });
+    }
+
+    function selectUser(username) {
+        const text = textarea.value;
+        const before = text.slice(0, mentionStart);
+        const after = text.slice(textarea.selectionStart);
+        textarea.value = before + '@' + username + ' ' + after;
+        textarea.focus();
+        const newPos = mentionStart + username.length + 2;
+        textarea.setSelectionRange(newPos, newPos);
+        hideDropdown();
+    }
+
+    function hideDropdown() {
+        dropdown.classList.remove('show');
+        mentionStart = -1;
+    }
+
+    function updateActive(items) {
+        items.forEach((item, i) => {
+            item.classList.toggle('active', i === activeIndex);
+        });
+    }
+})();
+</script>
+{% endblock %}
