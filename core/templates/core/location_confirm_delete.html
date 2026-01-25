@@ -13,7 +13,7 @@
             <div class="card-body">
                 <p class="lead">{% blocktrans with name=object.name %}Weet u zeker dat u de locatie "{{ name }}" wilt verwijderen?{% endblocktrans %}</p>
 
-                <form method="post">
+                <form method="post" data-no-warn>
                     {% csrf_token %}
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{% url 'core:location_list' %}" class="btn btn-outline-secondary btn-lg">{% trans "Annuleren" %}</a>

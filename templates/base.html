@@ -74,7 +74,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
-                                <form action="{% url 'set_language' %}" method="post">
+                                <form action="{% url 'set_language' %}" method="post" data-no-warn>
                                     {% csrf_token %}
                                     <input type="hidden" name="language" value="nl">
                                     <input type="hidden" name="next" value="{% translate_url 'nl' %}">
@@ -84,7 +84,7 @@
                                 </form>
                             </li>
                             <li>
-                                <form action="{% url 'set_language' %}" method="post">
+                                <form action="{% url 'set_language' %}" method="post" data-no-warn>
                                     {% csrf_token %}
                                     <input type="hidden" name="language" value="en">
                                     <input type="hidden" name="next" value="{% translate_url 'en' %}">
@@ -106,7 +106,7 @@
                                     <li><hr class="dropdown-divider"></li>
                                 {% endif %}
                                 <li>
-                                    <form action="{% url 'accounts:logout' %}" method="post">
+                                    <form action="{% url 'accounts:logout' %}" method="post" data-no-warn>
                                         {% csrf_token %}
                                         <button type="submit" class="dropdown-item fs-5">{% trans "Uitloggen" %}</button>
                                     </form>

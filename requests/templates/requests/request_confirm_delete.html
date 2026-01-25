@@ -22,7 +22,7 @@
                     <strong>{% trans "Let op:" %}</strong> {% trans "Dit kan niet ongedaan worden gemaakt. Alle bijlagen en logboekregels worden ook verwijderd." %}
                 </p>
 
-                <form method="post">
+                <form method="post" data-no-warn>
                     {% csrf_token %}
                     <div class="d-flex gap-3">
                         <a href="{% url 'requests:detail' object.pk %}" class="btn btn-outline-secondary btn-lg">
