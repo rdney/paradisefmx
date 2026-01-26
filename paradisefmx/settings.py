@@ -122,7 +122,7 @@ STORAGES = {
 # Cloudinary for production media storage
 if os.environ.get('CLOUDINARY_URL'):
     STORAGES["default"] = {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        "BACKEND": "core.storage.FixedMediaCloudinaryStorage",
     }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
