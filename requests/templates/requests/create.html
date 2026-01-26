@@ -129,6 +129,7 @@
                             <span class="text-muted fw-normal fs-6">{% trans "(optioneel)" %}</span>
                         </label>
                         <input type="file" name="photos" id="id_photos" multiple accept="image/*,.pdf" class="form-control form-control-lg">
+                        <div id="photo_preview" class="mt-2"></div>
                         <div class="form-text">{% trans "Een foto zegt vaak meer dan woorden. Max 10MB per bestand." %}</div>
                     </div>
                 </div>
@@ -190,8 +191,9 @@
 
             <!-- Submit -->
             <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary btn-lg py-3">
-                    <i class="bi bi-send me-2"></i> {% trans "Verzoek indienen" %}
+                <button type="submit" id="submit_btn" class="btn btn-primary btn-lg py-3">
+                    <span id="btn_icon"><i class="bi bi-send me-2"></i></span>
+                    <span id="btn_text">{% trans "Verzoek indienen" %}</span>
                 </button>
                 <a href="{% url 'core:home' %}" class="btn btn-link text-muted">{% trans "Annuleren" %}</a>
             </div>
@@ -357,10 +359,99 @@
         items.forEach((item, i) => {
             item.classList.toggle('active', i === activeIndex);
         });
-        if (activeIndex >= 0) {
-            items[activeIndex].scrollIntoView({ block: 'nearest' });
+        if (activeIndex >= 0 && items[activeIndex]) {
+            // Scroll within dropdown only, not the page
+            const item = items[activeIndex];
+            const container = dropdown;
+            const itemTop = item.offsetTop;
+            const itemBottom = itemTop + item.offsetHeight;
+            if (itemTop < container.scrollTop) {
+                container.scrollTop = itemTop;
+            } else if (itemBottom > container.scrollTop + container.clientHeight) {
+                container.scrollTop = itemBottom - container.clientHeight;
+            }
         }
     }
+})();
+
+// File preview and upload progress
+(function() {
+    const fileInput = document.getElementById('id_photos');
+    const preview = document.getElementById('photo_preview');
+    const form = document.querySelector('form');
+    const submitBtn = document.getElementById('submit_btn');
+    const btnIcon = document.getElementById('btn_icon');
+    const btnText = document.getElementById('btn_text');
+
+    // Show file preview when files are selected
+    fileInput.addEventListener('change', function() {
+        preview.innerHTML = '';
+        if (this.files.length === 0) return;
+
+        const list = document.createElement('div');
+        list.className = 'd-flex flex-wrap gap-2';
+
+        Array.from(this.files).forEach(file => {
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-light text-dark border p-2';
+            const icon = file.type.startsWith('image/') ? 'bi-image' : 'bi-file-pdf';
+            const size = (file.size / 1024 / 1024).toFixed(1);
+            badge.innerHTML = `<i class="bi ${icon} me-1"></i>${file.name} <small class="text-muted">(${size}MB)</small>`;
+            list.appendChild(badge);
+        });
+
+        preview.appendChild(list);
+    });
+
+    // Handle form submission with progress
+    form.addEventListener('submit', function(e) {
+        const files = fileInput.files;
+
+        // Only use XHR if files are selected (for progress)
+        if (files.length === 0) return; // Let normal form submission happen
+
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        // Show progress in button
+        submitBtn.disabled = true;
+        btnIcon.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>';
+        btnText.textContent = '{% trans "Uploaden..." %} 0%';
+
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                btnText.textContent = `{% trans "Uploaden..." %} ${percent}%`;
+            }
+        });
+
+        xhr.addEventListener('load', function() {
+            if (xhr.status >= 200 && xhr.status < 400) {
+                btnText.textContent = '{% trans "Voltooid!" %}';
+                window.location.href = xhr.responseURL;
+            } else {
+                resetForm();
+                alert('{% trans "Er is iets misgegaan. Probeer het opnieuw." %}');
+            }
+        });
+
+        xhr.addEventListener('error', function() {
+            resetForm();
+            alert('{% trans "Er is iets misgegaan. Probeer het opnieuw." %}');
+        });
+
+        function resetForm() {
+            submitBtn.disabled = false;
+            btnIcon.innerHTML = '<i class="bi bi-send me-2"></i>';
+            btnText.textContent = '{% trans "Verzoek indienen" %}';
+        }
+
+        xhr.open('POST', form.action || window.location.href);
+        xhr.send(formData);
+    });
 })();
 </script>
 {% endblock %}

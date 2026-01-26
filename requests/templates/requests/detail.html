@@ -371,7 +371,7 @@
                 <h2 class="h4 mb-0">{% trans "Bijlage uploaden" %}</h2>
             </div>
             <div class="card-body">
-                <form method="post" action="{% url 'requests:add_attachment' request.pk %}" enctype="multipart/form-data">
+                <form method="post" action="{% url 'requests:add_attachment' request.pk %}" enctype="multipart/form-data" id="attachment_form">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label class="form-label" for="id_title">{% trans "Titel" %}</label>
@@ -381,8 +381,14 @@
                         <label class="form-label" for="id_file">{% trans "Bestand" %}</label>
                         {{ attachment_form.file }}
                     </div>
+                    <div id="attachment_progress" class="mb-3" style="display: none;">
+                        <div class="progress" style="height: 8px;">
+                            <div id="attachment_progress_bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <small class="text-muted" id="attachment_progress_text">0%</small>
+                    </div>
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-outline-primary btn-lg">
+                        <button type="submit" id="attachment_submit_btn" class="btn btn-outline-primary btn-lg">
                             <i class="bi bi-upload"></i> {% trans "Uploaden" %}
                         </button>
                     </div>
@@ -578,5 +584,62 @@ function hideResolutionEdit() {
     document.getElementById('resolution-display').style.display = 'block';
     document.getElementById('resolution-edit').style.display = 'none';
 }
+
+// Attachment upload with progress
+(function() {
+    const form = document.getElementById('attachment_form');
+    if (!form) return;
+
+    const submitBtn = document.getElementById('attachment_submit_btn');
+    const progressDiv = document.getElementById('attachment_progress');
+    const progressBar = document.getElementById('attachment_progress_bar');
+    const progressText = document.getElementById('attachment_progress_text');
+    const fileInput = form.querySelector('input[type="file"]');
+
+    form.addEventListener('submit', function(e) {
+        if (!fileInput.files.length) return; // Let normal submission happen for empty
+
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{% trans "Bezig..." %}';
+        progressDiv.style.display = 'block';
+
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                progressBar.style.width = percent + '%';
+                progressText.textContent = percent + '%';
+            }
+        });
+
+        xhr.addEventListener('load', function() {
+            if (xhr.status >= 200 && xhr.status < 400) {
+                progressBar.style.width = '100%';
+                progressText.textContent = '{% trans "Voltooid!" %}';
+                window.location.reload();
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="bi bi-upload"></i> {% trans "Uploaden" %}';
+                progressDiv.style.display = 'none';
+                alert('{% trans "Er is iets misgegaan. Probeer het opnieuw." %}');
+            }
+        });
+
+        xhr.addEventListener('error', function() {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="bi bi-upload"></i> {% trans "Uploaden" %}';
+            progressDiv.style.display = 'none';
+            alert('{% trans "Er is iets misgegaan. Probeer het opnieuw." %}');
+        });
+
+        xhr.open('POST', form.action);
+        xhr.send(formData);
+    });
+})();
 </script>
 {% endblock %}
