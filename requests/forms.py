@@ -24,15 +24,8 @@ class MultipleFileInput(FileInput):
 class RepairRequestForm(forms.ModelForm):
     """Form for submitting a new repair request."""
 
-    photos = forms.FileField(
-        required=False,
-        widget=MultipleFileInput(attrs={
-            'class': 'form-control form-control-lg',
-            'accept': 'image/*,.pdf',
-        }),
-        label=_("Foto's toevoegen"),
-        help_text=_('Optioneel: voeg foto\'s toe van het probleem (max 10MB per bestand)')
-    )
+    # Note: photos are handled directly in the view via request.FILES.getlist('photos')
+    # to avoid Django FileField validation issues with multiple files
 
     class Meta:
         model = RepairRequest
