@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n user_tags %}
 
 {% block title %}{% trans "Dashboard" %} - Paradise FMX{% endblock %}
 
@@ -75,7 +75,7 @@
                             <div class="text-muted small">
                                 <i class="bi bi-geo-alt"></i> {{ req.location|default:"-" }}
                                 {% if req.assigned_to %}
-                                    · <i class="bi bi-person"></i> {{ req.assigned_to.get_full_name|default:req.assigned_to.username }}
+                                    · <i class="bi bi-person"></i> {{ req.assigned_to|user_display }}
                                 {% endif %}
                             </div>
                         </div>

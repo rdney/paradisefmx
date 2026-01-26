@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n mention_tags %}
+{% load i18n mention_tags user_tags %}
 
 {% block title %}#{{ request.id }} {{ request.title }} - Paradise FMX{% endblock %}
 
@@ -97,7 +97,7 @@
 
                     {% if request.assigned_to %}
                         <dt class="col-sm-4">{% trans "Toegewezen aan" %}</dt>
-                        <dd class="col-sm-8">{{ request.assigned_to.get_full_name|default:request.assigned_to.username }}</dd>
+                        <dd class="col-sm-8">{{ request.assigned_to|user_display }}</dd>
                     {% endif %}
 
                     {% if request.due_date %}
@@ -206,7 +206,7 @@
                                     <div>
                                         <strong>
                                             {% if log.author %}
-                                                {{ log.author.get_full_name|default:log.author.username }}
+                                                {{ log.author|user_display }}
                                             {% else %}
                                                 {% trans "Systeem" %}
                                             {% endif %}

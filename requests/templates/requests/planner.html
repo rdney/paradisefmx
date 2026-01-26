@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n user_tags %}
 
 {% block title %}{% trans "Planner" %} - Paradise FMX{% endblock %}
 
@@ -60,7 +60,7 @@
                                 <small class="text-muted">
                                     <i class="bi bi-geo-alt"></i> {{ req.location|default:"-" }}
                                     {% if req.assigned_to %}
-                                        · <i class="bi bi-person"></i> {{ req.assigned_to.get_full_name|default:req.assigned_to.username }}
+                                        · <i class="bi bi-person"></i> {{ req.assigned_to|user_display }}
                                     {% endif %}
                                 </small>
                                 {% if req.description %}
@@ -132,7 +132,7 @@
                             <small class="text-muted">
                                 <i class="bi bi-geo-alt"></i> {{ req.location|default:"-" }}
                                 {% if req.assigned_to %}
-                                    · <i class="bi bi-person"></i> {{ req.assigned_to.get_full_name|default:req.assigned_to.username }}
+                                    · <i class="bi bi-person"></i> {{ req.assigned_to|user_display }}
                                 {% endif %}
                             </small>
                             {% if req.description %}
@@ -255,7 +255,7 @@
                                 <span class="badge badge-{{ req.priority }}">#{{ req.id }}</span>
                                 <small class="d-block mt-1">{{ req.title|truncatechars:30 }}</small>
                                 {% if req.assigned_to %}
-                                    <small class="text-muted"><i class="bi bi-person"></i> {{ req.assigned_to.get_full_name|default:req.assigned_to.username }}</small>
+                                    <small class="text-muted"><i class="bi bi-person"></i> {{ req.assigned_to|user_display }}</small>
                                 {% endif %}
                             </a>
                         {% endfor %}

@@ -4,6 +4,8 @@ from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
+
+from . import admin as custom_admin  # noqa: F401 - restricts admin to superusers
 from django.urls import include, path
 
 urlpatterns = [

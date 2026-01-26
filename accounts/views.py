@@ -202,13 +202,14 @@ class AcceptInvitationView(FormView):
         return initial
 
     def form_valid(self, form):
-        # Create user
+        # Create user with staff status for app access
         user = User.objects.create_user(
             username=form.cleaned_data['username'],
             email=self.invitation.email,
             password=form.cleaned_data['password1'],
             first_name=form.cleaned_data['first_name'],
             last_name=form.cleaned_data.get('last_name', ''),
+            is_staff=True,
         )
 
         # Add to group if specified

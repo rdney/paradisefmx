@@ -110,7 +110,11 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 {% if user.is_staff or user.is_superuser %}
                                     <li><a class="dropdown-item fs-5" href="{% url 'accounts:invitations' %}"><i class="bi bi-envelope-paper me-2"></i>{% trans "Uitnodigingen" %}</a></li>
+                                {% endif %}
+                                {% if user.is_superuser %}
                                     <li><a class="dropdown-item fs-5" href="{% url 'admin:index' %}"><i class="bi bi-gear me-2"></i>{% trans "Beheer" %}</a></li>
+                                {% endif %}
+                                {% if user.is_staff or user.is_superuser %}
                                     <li><hr class="dropdown-divider"></li>
                                 {% endif %}
                                 <li>
