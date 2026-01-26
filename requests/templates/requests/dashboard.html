@@ -4,7 +4,13 @@
 {% block title %}{% trans "Dashboard" %} - Paradise FMX{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">{% trans "Dashboard" %}</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">{% trans "Dashboard" %}</h1>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="mineToggle" {% if mine_only %}checked{% endif %} onchange="toggleMine(this)">
+        <label class="form-check-label" for="mineToggle">{% trans "Alleen mijn taken" %}</label>
+    </div>
+</div>
 
 <!-- Stats - scrollable on mobile -->
 <div class="stats-row mb-4">
@@ -96,6 +102,18 @@
         <p>{% trans "Er zijn geen openstaande verzoeken." %}</p>
     </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleMine(checkbox) {
+    if (checkbox.checked) {
+        window.location.href = '?mine=1';
+    } else {
+        window.location.href = '?';
+    }
+}
+</script>
 {% endblock %}
 
 {% block extra_css %}

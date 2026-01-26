@@ -222,11 +222,17 @@ class DashboardView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         )
 
     def get_queryset(self):
-        return RepairRequest.objects.select_related(
+        qs = RepairRequest.objects.select_related(
             'location', 'asset', 'assigned_to'
         ).exclude(
             status__in=[RepairRequest.Status.COMPLETED, RepairRequest.Status.CLOSED]
-        ).annotate(
+        )
+
+        # Filter by assigned to me
+        if self.request.GET.get('mine') == '1':
+            qs = qs.filter(assigned_to=self.request.user)
+
+        return qs.annotate(
             priority_order=Case(
                 When(priority=RepairRequest.Priority.URGENT, then=0),
                 When(priority=RepairRequest.Priority.HIGH, then=1),
@@ -239,7 +245,15 @@ class DashboardView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+
+        # Filter state
+        mine_only = self.request.GET.get('mine') == '1'
+        ctx['mine_only'] = mine_only
+
+        # Counts - optionally filtered by user
         qs = RepairRequest.objects.all()
+        if mine_only:
+            qs = qs.filter(assigned_to=self.request.user)
 
         ctx['counts'] = {
             'new': qs.filter(status=RepairRequest.Status.NEW).count(),
