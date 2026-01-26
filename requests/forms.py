@@ -14,6 +14,12 @@ class MultipleFileInput(FileInput):
     """File input that allows multiple files."""
     allow_multiple_selected = True
 
+    def __init__(self, attrs=None):
+        default_attrs = {'multiple': True}
+        if attrs:
+            default_attrs.update(attrs)
+        super().__init__(attrs=default_attrs)
+
 
 class RepairRequestForm(forms.ModelForm):
     """Form for submitting a new repair request."""
