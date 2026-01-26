@@ -71,10 +71,7 @@
                         <label for="id_photos" class="form-label">
                             <i class="bi bi-camera"></i> {% trans "Foto's toevoegen" %}
                         </label>
-                        {{ form.photos }}
-                        {% if form.photos.errors %}
-                            <div class="invalid-feedback d-block">{{ form.photos.errors.0 }}</div>
-                        {% endif %}
+                        <input type="file" name="photos" id="id_photos" multiple accept="image/*,.pdf" class="form-control form-control-lg">
                         <div class="form-text">{% trans "Optioneel: voeg foto's toe van het probleem (max 10MB per bestand)" %}</div>
                     </div>
 
