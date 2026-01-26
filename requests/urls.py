@@ -15,6 +15,7 @@ urlpatterns = [
     path('<int:pk>/update-description/', views.update_description, name='update_description'),
     path('<int:pk>/update-resolution/', views.update_resolution, name='update_resolution'),
     path('<int:pk>/delete/', views.RequestDeleteView.as_view(), name='delete'),
+    path('<int:pk>/duplicate/', views.duplicate_request, name='duplicate'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('planner/', views.PlannerView.as_view(), name='planner'),
     path('kosten/', views.CostOverviewView.as_view(), name='costs'),

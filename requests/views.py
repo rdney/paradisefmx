@@ -951,6 +951,43 @@ class RequestDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 @login_required
+def duplicate_request(request, pk):
+    """Duplicate a repair request (staff only)."""
+    original = get_object_or_404(RepairRequest, pk=pk)
+
+    # Permission check
+    user = request.user
+    if not (user.is_staff or user.is_superuser) and not user.groups.filter(name='Facilitair').exists():
+        messages.error(request, _('U heeft geen toegang tot deze actie.'))
+        return redirect('requests:detail', pk=pk)
+
+    # Create duplicate
+    new_request = RepairRequest.objects.create(
+        title=original.title,
+        description=original.description,
+        location=original.location,
+        asset=original.asset,
+        priority=original.priority,
+        status=RepairRequest.Status.NEW,
+        requester_name=original.requester_name,
+        requester_email=original.requester_email,
+        requester_phone=original.requester_phone,
+        preferred_contact_method=original.preferred_contact_method,
+    )
+
+    # Log creation
+    WorkLog.objects.create(
+        repair_request=new_request,
+        entry_type=WorkLog.EntryType.CREATED,
+        note=_('Gedupliceerd van #%(id)s') % {'id': original.pk},
+        author=user,
+    )
+
+    messages.success(request, _('Ticket gedupliceerd. Pas de locatie en titel aan.'))
+    return redirect('requests:detail', pk=new_request.pk)
+
+
+@login_required
 def user_search(request):
     """API endpoint to search users for @mention autocomplete."""
     q = request.GET.get('q', '').strip()
