@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Uitnodiging" %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="mb-4">
+            <a href="{% url 'accounts:invitations' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> {% trans "Terug naar overzicht" %}
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1 class="h4 mb-0">{% trans "Uitnodiging voor" %} {{ invitation.email }}</h1>
+            </div>
+            <div class="card-body">
+                {% if invitation.status == 'pending' %}
+                    <div class="alert alert-success">
+                        <i class="bi bi-check-circle"></i>
+                        {% trans "Deze uitnodiging is actief en kan worden gedeeld." %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fs-5">{% trans "Uitnodigingslink" %}</label>
+                        <div class="input-group input-group-lg">
+                            <input type="text" class="form-control" value="{{ invite_url }}" id="invite_url" readonly>
+                            <button class="btn btn-primary" type="button" onclick="copyLink()">
+                                <i class="bi bi-clipboard"></i> {% trans "Kopiëren" %}
+                            </button>
+                        </div>
+                        <div class="form-text">{% trans "Deel deze link met de persoon die u wilt uitnodigen." %}</div>
+                    </div>
+
+                    <div id="copy_feedback" class="alert alert-success d-none">
+                        <i class="bi bi-check"></i> {% trans "Link gekopieerd!" %}
+                    </div>
+
+                    <hr>
+
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">{% trans "E-mail" %}</dt>
+                        <dd class="col-sm-8">{{ invitation.email }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Groep" %}</dt>
+                        <dd class="col-sm-8">{{ invitation.group.name|default:"-" }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Aangemaakt" %}</dt>
+                        <dd class="col-sm-8">{{ invitation.created_at|date:"d-m-Y H:i" }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Verloopt" %}</dt>
+                        <dd class="col-sm-8">{{ invitation.expires_at|date:"d-m-Y H:i" }}</dd>
+
+                        {% if invitation.message %}
+                            <dt class="col-sm-4">{% trans "Bericht" %}</dt>
+                            <dd class="col-sm-8">{{ invitation.message }}</dd>
+                        {% endif %}
+                    </dl>
+
+                    <hr>
+
+                    <form method="post" action="{% url 'accounts:invitation_cancel' invitation.token %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('{% trans 'Weet u zeker dat u deze uitnodiging wilt annuleren?' %}')">
+                            <i class="bi bi-x-circle"></i> {% trans "Annuleren" %}
+                        </button>
+                    </form>
+
+                {% elif invitation.status == 'accepted' %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-person-check"></i>
+                        {% trans "Deze uitnodiging is geaccepteerd." %}
+                    </div>
+
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">{% trans "E-mail" %}</dt>
+                        <dd class="col-sm-8">{{ invitation.email }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Geaccepteerd door" %}</dt>
+                        <dd class="col-sm-8">{{ invitation.accepted_user.get_full_name|default:invitation.accepted_user.username }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Geaccepteerd op" %}</dt>
+                        <dd class="col-sm-8">{{ invitation.accepted_at|date:"d-m-Y H:i" }}</dd>
+                    </dl>
+
+                {% else %}
+                    <div class="alert alert-secondary">
+                        <i class="bi bi-x-circle"></i>
+                        {% trans "Deze uitnodiging is niet meer geldig." %}
+                        ({{ invitation.get_status_display }})
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyLink() {
+    const input = document.getElementById('invite_url');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value);
+
+    const feedback = document.getElementById('copy_feedback');
+    feedback.classList.remove('d-none');
+    setTimeout(() => feedback.classList.add('d-none'), 3000);
+}
+</script>
+{% endblock %}

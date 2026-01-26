@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Uitnodigingen" %} - Paradise FMX{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2 mb-0">{% trans "Uitnodigingen" %}</h1>
+    <a href="{% url 'accounts:invitation_create' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle"></i> {% trans "Nieuwe uitnodiging" %}
+    </a>
+</div>
+
+{% if invitations %}
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>{% trans "E-mail" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Groep" %}</th>
+                        <th>{% trans "Uitgenodigd door" %}</th>
+                        <th>{% trans "Datum" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inv in invitations %}
+                        <tr>
+                            <td class="align-middle">
+                                <strong>{{ inv.email }}</strong>
+                                {% if inv.accepted_user %}
+                                    <br><small class="text-muted">
+                                        <i class="bi bi-person-check"></i>
+                                        {{ inv.accepted_user.get_full_name|default:inv.accepted_user.username }}
+                                    </small>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">
+                                {% if inv.status == 'pending' %}
+                                    <span class="badge bg-warning text-dark">{{ inv.get_status_display }}</span>
+                                {% elif inv.status == 'accepted' %}
+                                    <span class="badge bg-success">{{ inv.get_status_display }}</span>
+                                {% elif inv.status == 'expired' %}
+                                    <span class="badge bg-secondary">{{ inv.get_status_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{{ inv.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">{{ inv.group.name|default:"-" }}</td>
+                            <td class="align-middle">{{ inv.invited_by.get_full_name|default:inv.invited_by.username }}</td>
+                            <td class="align-middle">
+                                {{ inv.created_at|date:"d-m-Y" }}
+                                {% if inv.status == 'pending' %}
+                                    <br><small class="text-muted">{% trans "Verloopt" %} {{ inv.expires_at|date:"d-m-Y" }}</small>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle text-end">
+                                {% if inv.status == 'pending' %}
+                                    <a href="{% url 'accounts:invitation_detail' inv.token %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-link-45deg"></i> {% trans "Link" %}
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-envelope-paper text-muted" style="font-size: 4rem;"></i>
+            <h2 class="h4 mt-3">{% trans "Geen uitnodigingen" %}</h2>
+            <p class="text-muted mb-4">{% trans "U heeft nog geen uitnodigingen verstuurd." %}</p>
+            <a href="{% url 'accounts:invitation_create' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle"></i> {% trans "Eerste uitnodiging maken" %}
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
