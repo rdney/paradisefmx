@@ -347,7 +347,7 @@
         selectedDiv.style.display = 'none';
         searchInput.parentElement.style.display = 'flex';
         searchInput.value = '';
-        searchInput.focus();
+        searchInput.focus({ preventScroll: true });
     };
 
     function hideDropdown() {
@@ -359,18 +359,6 @@
         items.forEach((item, i) => {
             item.classList.toggle('active', i === activeIndex);
         });
-        if (activeIndex >= 0 && items[activeIndex]) {
-            // Scroll within dropdown only, not the page
-            const item = items[activeIndex];
-            const container = dropdown;
-            const itemTop = item.offsetTop;
-            const itemBottom = itemTop + item.offsetHeight;
-            if (itemTop < container.scrollTop) {
-                container.scrollTop = itemTop;
-            } else if (itemBottom > container.scrollTop + container.clientHeight) {
-                container.scrollTop = itemBottom - container.clientHeight;
-            }
-        }
     }
 })();
 
@@ -383,75 +371,86 @@
     const btnIcon = document.getElementById('btn_icon');
     const btnText = document.getElementById('btn_text');
 
-    // Show file preview when files are selected
-    fileInput.addEventListener('change', function() {
-        preview.innerHTML = '';
-        if (this.files.length === 0) return;
+    // File preview when files are selected
+    if (fileInput && preview) {
+        fileInput.addEventListener('change', function() {
+            preview.innerHTML = '';
+            if (this.files.length === 0) return;
 
-        const list = document.createElement('div');
-        list.className = 'd-flex flex-wrap gap-2';
+            const list = document.createElement('div');
+            list.className = 'd-flex flex-wrap gap-2';
 
-        Array.from(this.files).forEach(file => {
-            const badge = document.createElement('span');
-            badge.className = 'badge bg-light text-dark border p-2';
-            const icon = file.type.startsWith('image/') ? 'bi-image' : 'bi-file-pdf';
-            const size = (file.size / 1024 / 1024).toFixed(1);
-            badge.innerHTML = `<i class="bi ${icon} me-1"></i>${file.name} <small class="text-muted">(${size}MB)</small>`;
-            list.appendChild(badge);
+            Array.from(this.files).forEach(file => {
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-light text-dark border p-2';
+                const icon = file.type.startsWith('image/') ? 'bi-image' : 'bi-file-pdf';
+                const size = (file.size / 1024 / 1024).toFixed(1);
+                badge.innerHTML = `<i class="bi ${icon} me-1"></i>${file.name} <small class="text-muted">(${size}MB)</small>`;
+                list.appendChild(badge);
+            });
+
+            preview.appendChild(list);
         });
+    }
 
-        preview.appendChild(list);
-    });
+    // Handle form submission with progress indicator
+    if (form && submitBtn && btnIcon && btnText) {
+        form.addEventListener('submit', function(e) {
+            const hasFiles = fileInput && fileInput.files.length > 0;
 
-    // Handle form submission with progress
-    form.addEventListener('submit', function(e) {
-        const files = fileInput.files;
+            // Blur to prevent scroll when disabling
+            submitBtn.blur();
 
-        // Only use XHR if files are selected (for progress)
-        if (files.length === 0) return; // Let normal form submission happen
+            // Show spinner in button
+            submitBtn.disabled = true;
+            btnIcon.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>';
+            btnText.textContent = hasFiles ? '{% trans "Uploaden..." %} 0%' : '{% trans "Bezig..." %}';
 
-        e.preventDefault();
-
-        const formData = new FormData(form);
-
-        // Show progress in button
-        submitBtn.disabled = true;
-        btnIcon.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>';
-        btnText.textContent = '{% trans "Uploaden..." %} 0%';
-
-        const xhr = new XMLHttpRequest();
-
-        xhr.upload.addEventListener('progress', function(e) {
-            if (e.lengthComputable) {
-                const percent = Math.round((e.loaded / e.total) * 100);
-                btnText.textContent = `{% trans "Uploaden..." %} ${percent}%`;
+            if (!hasFiles) {
+                return true;
             }
-        });
 
-        xhr.addEventListener('load', function() {
-            if (xhr.status >= 200 && xhr.status < 400) {
-                btnText.textContent = '{% trans "Voltooid!" %}';
-                window.location.href = xhr.responseURL;
-            } else {
+            // Has files - use XHR for progress
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', function(evt) {
+                if (evt.lengthComputable) {
+                    const percent = Math.round((evt.loaded / evt.total) * 100);
+                    btnText.textContent = '{% trans "Uploaden..." %} ' + percent + '%';
+                }
+            });
+
+            xhr.addEventListener('load', function() {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    btnIcon.innerHTML = '<i class="bi bi-check-lg me-2"></i>';
+                    btnText.textContent = '{% trans "Voltooid!" %}';
+                    setTimeout(function() {
+                        window.location.href = xhr.responseURL;
+                    }, 500);
+                } else {
+                    resetForm();
+                    alert('{% trans "Er is iets misgegaan. Probeer het opnieuw." %}');
+                }
+            });
+
+            xhr.addEventListener('error', function() {
                 resetForm();
                 alert('{% trans "Er is iets misgegaan. Probeer het opnieuw." %}');
+            });
+
+            function resetForm() {
+                submitBtn.disabled = false;
+                btnIcon.innerHTML = '<i class="bi bi-send me-2"></i>';
+                btnText.textContent = '{% trans "Verzoek indienen" %}';
             }
+
+            xhr.open('POST', form.action || window.location.href);
+            xhr.send(formData);
         });
-
-        xhr.addEventListener('error', function() {
-            resetForm();
-            alert('{% trans "Er is iets misgegaan. Probeer het opnieuw." %}');
-        });
-
-        function resetForm() {
-            submitBtn.disabled = false;
-            btnIcon.innerHTML = '<i class="bi bi-send me-2"></i>';
-            btnText.textContent = '{% trans "Verzoek indienen" %}';
-        }
-
-        xhr.open('POST', form.action || window.location.href);
-        xhr.send(formData);
-    });
+    }
 })();
 </script>
 {% endblock %}

@@ -155,7 +155,7 @@
 
         <!-- Attachments -->
         {% if attachments %}
-            <div class="card mb-4">
+            <div class="card mb-4" id="bijlagen">
                 <div class="card-header">
                     <h2 class="h4 mb-0">{% trans "Bijlagen" %}</h2>
                 </div>
@@ -366,7 +366,7 @@
         {% endif %}
 
         <!-- Upload attachment -->
-        <div class="card no-print">
+        <div class="card no-print" id="upload">
             <div class="card-header">
                 <h2 class="h4 mb-0">{% trans "Bijlage uploaden" %}</h2>
             </div>
@@ -381,15 +381,10 @@
                         <label class="form-label" for="id_file">{% trans "Bestand" %}</label>
                         {{ attachment_form.file }}
                     </div>
-                    <div id="attachment_progress" class="mb-3" style="display: none;">
-                        <div class="progress" style="height: 8px;">
-                            <div id="attachment_progress_bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
-                        </div>
-                        <small class="text-muted" id="attachment_progress_text">0%</small>
-                    </div>
                     <div class="d-grid">
                         <button type="submit" id="attachment_submit_btn" class="btn btn-outline-primary btn-lg">
-                            <i class="bi bi-upload"></i> {% trans "Uploaden" %}
+                            <span id="attachment_btn_icon"><i class="bi bi-upload"></i></span>
+                            <span id="attachment_btn_text">{% trans "Uploaden" %}</span>
                         </button>
                     </div>
                 </form>
@@ -543,7 +538,7 @@
         const before = text.slice(0, mentionStart);
         const after = text.slice(textarea.selectionStart);
         textarea.value = before + '@' + username + ' ' + after;
-        textarea.focus();
+        textarea.focus({ preventScroll: true });
         const newPos = mentionStart + username.length + 2;
         textarea.setSelectionRange(newPos, newPos);
         hideDropdown();
@@ -565,7 +560,7 @@
 function showDescriptionEdit() {
     document.getElementById('description-display').style.display = 'none';
     document.getElementById('description-edit').style.display = 'block';
-    document.querySelector('#description-edit textarea').focus();
+    document.querySelector('#description-edit textarea').focus({ preventScroll: true });
 }
 
 function hideDescriptionEdit() {
@@ -577,7 +572,7 @@ function hideDescriptionEdit() {
 function showResolutionEdit() {
     document.getElementById('resolution-display').style.display = 'none';
     document.getElementById('resolution-edit').style.display = 'block';
-    document.querySelector('#resolution-edit textarea').focus();
+    document.querySelector('#resolution-edit textarea').focus({ preventScroll: true });
 }
 
 function hideResolutionEdit() {
@@ -591,51 +586,58 @@ function hideResolutionEdit() {
     if (!form) return;
 
     const submitBtn = document.getElementById('attachment_submit_btn');
-    const progressDiv = document.getElementById('attachment_progress');
-    const progressBar = document.getElementById('attachment_progress_bar');
-    const progressText = document.getElementById('attachment_progress_text');
+    const btnIcon = document.getElementById('attachment_btn_icon');
+    const btnText = document.getElementById('attachment_btn_text');
     const fileInput = form.querySelector('input[type="file"]');
 
     form.addEventListener('submit', function(e) {
-        if (!fileInput.files.length) return; // Let normal submission happen for empty
+        if (!fileInput.files.length) return;
 
         e.preventDefault();
 
+        // Blur to prevent scroll when disabling
+        submitBtn.blur();
+
         const formData = new FormData(form);
 
+        // Show spinner in button
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{% trans "Bezig..." %}';
-        progressDiv.style.display = 'block';
+        btnIcon.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        btnText.textContent = ' 0%';
 
         const xhr = new XMLHttpRequest();
 
-        xhr.upload.addEventListener('progress', function(e) {
-            if (e.lengthComputable) {
-                const percent = Math.round((e.loaded / e.total) * 100);
-                progressBar.style.width = percent + '%';
-                progressText.textContent = percent + '%';
+        xhr.upload.addEventListener('progress', function(evt) {
+            if (evt.lengthComputable) {
+                const percent = Math.round((evt.loaded / evt.total) * 100);
+                btnText.textContent = ' ' + percent + '%';
             }
         });
 
         xhr.addEventListener('load', function() {
             if (xhr.status >= 200 && xhr.status < 400) {
-                progressBar.style.width = '100%';
-                progressText.textContent = '{% trans "Voltooid!" %}';
-                window.location.reload();
+                btnIcon.innerHTML = '<i class="bi bi-check-lg"></i>';
+                btnText.textContent = ' {% trans "Voltooid!" %}';
+                setTimeout(function() {
+                    window.location.hash = 'bijlagen';
+                    window.location.reload();
+                }, 500);
             } else {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="bi bi-upload"></i> {% trans "Uploaden" %}';
-                progressDiv.style.display = 'none';
+                resetBtn();
                 alert('{% trans "Er is iets misgegaan. Probeer het opnieuw." %}');
             }
         });
 
         xhr.addEventListener('error', function() {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="bi bi-upload"></i> {% trans "Uploaden" %}';
-            progressDiv.style.display = 'none';
+            resetBtn();
             alert('{% trans "Er is iets misgegaan. Probeer het opnieuw." %}');
         });
+
+        function resetBtn() {
+            submitBtn.disabled = false;
+            btnIcon.innerHTML = '<i class="bi bi-upload"></i>';
+            btnText.textContent = ' {% trans "Uploaden" %}';
+        }
 
         xhr.open('POST', form.action);
         xhr.send(formData);
