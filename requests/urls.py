@@ -12,6 +12,7 @@ urlpatterns = [
     path('<int:pk>/worklog/', views.add_worklog, name='add_worklog'),
     path('<int:pk>/attachment/', views.add_attachment, name='add_attachment'),
     path('<int:pk>/attachment/<int:attachment_pk>/delete/', views.delete_attachment, name='delete_attachment'),
+    path('<int:pk>/attachment/<int:attachment_pk>/view/', views.serve_attachment, name='serve_attachment'),
     path('<int:pk>/update/', views.update_request, name='update'),
     path('<int:pk>/update-description/', views.update_description, name='update_description'),
     path('<int:pk>/update-resolution/', views.update_resolution, name='update_resolution'),

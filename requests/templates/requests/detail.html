@@ -165,11 +165,11 @@
                             <div class="col-6 col-md-3">
                                 <div class="attachment-card text-center">
                                     {% if attachment.is_image %}
-                                        <a href="{{ attachment.file.url }}" target="_blank" class="d-block">
+                                        <a href="{{ attachment.secure_url }}" target="_blank" class="d-block">
                                             <img src="{{ attachment.thumbnail_url }}" class="img-thumbnail" alt="{{ attachment.display_name }}" style="width: 100%; height: 120px; object-fit: cover;">
                                         </a>
                                     {% else %}
-                                        <a href="{{ attachment.file.url }}" class="d-block p-3 border rounded text-decoration-none" target="_blank" style="height: 120px;">
+                                        <a href="{{ attachment.secure_url }}" class="d-block p-3 border rounded text-decoration-none" target="_blank" style="height: 120px;">
                                             <i class="bi bi-file-pdf text-danger" style="font-size: 3rem;"></i>
                                         </a>
                                     {% endif %}

@@ -9,7 +9,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
 from django.db.models import Case, Q, Sum, When, IntegerField
-from django.http import JsonResponse
+from django.http import FileResponse, HttpResponse, JsonResponse
+from urllib.request import urlopen
+from urllib.error import URLError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -242,16 +244,27 @@ class DashboardView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         if self.request.GET.get('mine') == '1':
             qs = qs.filter(assigned_to=self.request.user)
 
-        return qs.annotate(
-            priority_order=Case(
-                When(priority=RepairRequest.Priority.URGENT, then=0),
-                When(priority=RepairRequest.Priority.HIGH, then=1),
-                When(priority=RepairRequest.Priority.NORMAL, then=2),
-                When(priority=RepairRequest.Priority.LOW, then=3),
-                default=4,
-                output_field=IntegerField(),
-            )
-        ).order_by('priority_order', '-created_at')
+        # Ordering
+        order = self.request.GET.get('order', 'newest')
+        if order == 'oldest':
+            qs = qs.order_by('created_at')
+        elif order == 'priority':
+            qs = qs.annotate(
+                priority_order=Case(
+                    When(priority=RepairRequest.Priority.URGENT, then=0),
+                    When(priority=RepairRequest.Priority.HIGH, then=1),
+                    When(priority=RepairRequest.Priority.NORMAL, then=2),
+                    When(priority=RepairRequest.Priority.LOW, then=3),
+                    default=4,
+                    output_field=IntegerField(),
+                )
+            ).order_by('priority_order', '-created_at')
+        elif order == 'due_date':
+            qs = qs.order_by('due_date', '-created_at')
+        else:  # newest (default)
+            qs = qs.order_by('-created_at')
+
+        return qs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -259,6 +272,7 @@ class DashboardView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         # Filter state
         mine_only = self.request.GET.get('mine') == '1'
         ctx['mine_only'] = mine_only
+        ctx['current_order'] = self.request.GET.get('order', 'newest')
 
         # Counts - optionally filtered by user
         qs = RepairRequest.objects.all()
@@ -430,6 +444,44 @@ def delete_attachment(request, pk, attachment_pk):
         messages.success(request, _('Bijlage verwijderd.'))
 
     return redirect('requests:detail', pk=pk)
+
+
+@login_required
+def serve_attachment(request, pk, attachment_pk):
+    """Proxy view to serve attachments - requires authentication."""
+    repair_request = get_object_or_404(RepairRequest, pk=pk)
+    attachment = get_object_or_404(Attachment, pk=attachment_pk, repair_request=repair_request)
+
+    # Get the file URL
+    file_url = attachment.file.url
+
+    # Check if it's a full URL (Cloudinary) or local path
+    if file_url.startswith('http'):
+        # Production: fetch from Cloudinary
+        try:
+            response = urlopen(file_url, timeout=30)
+            content = response.read()
+            content_type = response.headers.get('Content-Type', 'application/octet-stream')
+        except URLError:
+            return HttpResponse(_('Bestand niet gevonden.'), status=404)
+
+        http_response = HttpResponse(content, content_type=content_type)
+    else:
+        # Local development: serve from disk
+        import mimetypes
+        try:
+            file_path = attachment.file.path
+            content_type, _ = mimetypes.guess_type(file_path)
+            content_type = content_type or 'application/octet-stream'
+            return FileResponse(open(file_path, 'rb'), content_type=content_type)
+        except FileNotFoundError:
+            return HttpResponse(_('Bestand niet gevonden.'), status=404)
+
+    # Set filename for display
+    filename = attachment.display_name
+    http_response['Content-Disposition'] = f'inline; filename="{filename}"'
+
+    return http_response
 
 
 @login_required

@@ -240,6 +240,23 @@ class Attachment(models.Model):
             return url.replace('/upload/', '/upload/c_thumb,w_200,h_200/')
         return url
 
+    @property
+    def secure_url(self):
+        """Return URL that goes through auth proxy."""
+        return reverse('requests:serve_attachment', kwargs={
+            'pk': self.repair_request_id,
+            'attachment_pk': self.pk
+        })
+
+    @property
+    def secure_thumbnail_url(self):
+        """Return proxied thumbnail URL for images."""
+        if not self.is_image:
+            return None
+        # For thumbnails, we still use Cloudinary directly as they're small previews
+        # The full image requires authentication
+        return self.thumbnail_url
+
 
 class WorkLog(models.Model):
     """Activity log entry for a repair request."""
