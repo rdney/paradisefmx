@@ -5,41 +5,65 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-8">
-        <h1 class="mb-4">{% trans "Reparatie melden" %}</h1>
+    <div class="col-lg-7">
+        <div class="text-center mb-4">
+            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px;">
+                <i class="bi bi-tools fs-2"></i>
+            </div>
+            <h1 class="h2 mb-2">{% trans "Reparatie melden" %}</h1>
+            <p class="text-muted fs-5">{% trans "Vul het formulier in en wij gaan ermee aan de slag" %}</p>
+        </div>
 
-        <div class="card">
-            <div class="card-body">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
 
+            <!-- Section 1: Het probleem -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h2 class="h5 mb-0">
+                        <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                        {% trans "Het probleem" %}
+                    </h2>
+                </div>
+                <div class="card-body">
                     <!-- Title -->
                     <div class="mb-4">
-                        <label for="id_title" class="form-label">
-                            {% trans "Wat is het probleem?" %} <span class="text-danger">*</span>
+                        <label for="id_title" class="form-label fs-5 fw-semibold">
+                            {% trans "Wat is er kapot of moet gerepareerd worden?" %}
                         </label>
                         {{ form.title }}
                         {% if form.title.errors %}
                             <div class="invalid-feedback d-block">{{ form.title.errors.0 }}</div>
                         {% endif %}
-                        <div class="form-text">{% trans "Beschrijf in het kort wat er aan de hand is" %}</div>
+                        <div class="form-text">{% trans "Bijv. 'Lekkende kraan', 'Lamp doet het niet', 'Deur klemt'" %}</div>
                     </div>
 
                     <!-- Description -->
-                    <div class="mb-4">
-                        <label for="id_description" class="form-label">
-                            {% trans "Meer details" %} <span class="text-danger">*</span>
+                    <div class="mb-0">
+                        <label for="id_description" class="form-label fs-5 fw-semibold">
+                            {% trans "Kunt u het probleem verder toelichten?" %}
                         </label>
                         {{ form.description }}
                         {% if form.description.errors %}
                             <div class="invalid-feedback d-block">{{ form.description.errors.0 }}</div>
                         {% endif %}
                     </div>
+                </div>
+            </div>
 
+            <!-- Section 2: Locatie -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h2 class="h5 mb-0">
+                        <i class="bi bi-geo-alt text-primary me-2"></i>
+                        {% trans "Locatie" %}
+                    </h2>
+                </div>
+                <div class="card-body">
                     <!-- Location -->
                     <div class="mb-4">
-                        <label for="id_location" class="form-label">
-                            {% trans "Waar is het probleem?" %} <span class="text-danger">*</span>
+                        <label for="id_location" class="form-label fs-5 fw-semibold">
+                            {% trans "Waar is het probleem?" %}
                         </label>
                         {{ form.location }}
                         {% if form.location.errors %}
@@ -48,16 +72,23 @@
                     </div>
 
                     <!-- Asset (optional) - search autocomplete -->
-                    <div class="mb-4">
-                        <label for="asset_search" class="form-label">{% trans "Welk object/installatie?" %}</label>
+                    <div class="mb-0">
+                        <label for="asset_search" class="form-label fs-5 fw-semibold">
+                            {% trans "Welk apparaat of installatie?" %}
+                            <span class="text-muted fw-normal fs-6">{% trans "(optioneel)" %}</span>
+                        </label>
                         <div class="position-relative">
-                            <input type="text" id="asset_search" class="form-control form-control-lg"
-                                   placeholder="{% trans 'Zoek op naam of code...' %}" autocomplete="off">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                <input type="text" id="asset_search" class="form-control"
+                                       placeholder="{% trans 'Typ om te zoeken...' %}" autocomplete="off">
+                            </div>
                             <input type="hidden" name="asset" id="id_asset" value="">
                             <div id="asset_dropdown" class="asset-dropdown"></div>
                         </div>
                         <div id="asset_selected" class="mt-2" style="display: none;">
                             <span class="badge bg-primary fs-6 p-2">
+                                <i class="bi bi-box-seam me-1"></i>
                                 <span id="asset_selected_name"></span>
                                 <button type="button" class="btn-close btn-close-white ms-2" aria-label="{% trans 'Verwijderen' %}" onclick="clearAsset()"></button>
                             </span>
@@ -65,12 +96,25 @@
                         {% if form.asset.errors %}
                             <div class="invalid-feedback d-block">{{ form.asset.errors.0 }}</div>
                         {% endif %}
-                        <div class="form-text">{% trans "Optioneel: zoek naar een specifiek apparaat" %}</div>
+                        <div class="form-text">{% trans "Weet u welk apparaat het betreft? Zoek op naam of code." %}</div>
                     </div>
+                </div>
+            </div>
 
+            <!-- Section 3: Extra info -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h2 class="h5 mb-0">
+                        <i class="bi bi-info-circle text-info me-2"></i>
+                        {% trans "Extra informatie" %}
+                    </h2>
+                </div>
+                <div class="card-body">
                     <!-- Priority -->
                     <div class="mb-4">
-                        <label for="id_priority" class="form-label">{% trans "Hoe dringend is het?" %}</label>
+                        <label for="id_priority" class="form-label fs-5 fw-semibold">
+                            {% trans "Hoe urgent is dit?" %}
+                        </label>
                         {{ form.priority }}
                         {% if form.priority.errors %}
                             <div class="invalid-feedback d-block">{{ form.priority.errors.0 }}</div>
@@ -78,22 +122,31 @@
                     </div>
 
                     <!-- Photos -->
-                    <div class="mb-4">
-                        <label for="id_photos" class="form-label">
-                            <i class="bi bi-camera"></i> {% trans "Foto's toevoegen" %}
+                    <div class="mb-0">
+                        <label for="id_photos" class="form-label fs-5 fw-semibold">
+                            <i class="bi bi-camera me-1"></i>
+                            {% trans "Foto's toevoegen" %}
+                            <span class="text-muted fw-normal fs-6">{% trans "(optioneel)" %}</span>
                         </label>
                         <input type="file" name="photos" id="id_photos" multiple accept="image/*,.pdf" class="form-control form-control-lg">
-                        <div class="form-text">{% trans "Optioneel: voeg foto's toe van het probleem (max 10MB per bestand)" %}</div>
+                        <div class="form-text">{% trans "Een foto zegt vaak meer dan woorden. Max 10MB per bestand." %}</div>
                     </div>
+                </div>
+            </div>
 
-                    <hr class="my-4">
-
-                    <h2 class="h4 mb-3">{% trans "Uw gegevens" %}</h2>
-
+            <!-- Section 4: Contact -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h2 class="h5 mb-0">
+                        <i class="bi bi-person text-success me-2"></i>
+                        {% trans "Uw gegevens" %}
+                    </h2>
+                </div>
+                <div class="card-body">
                     <!-- Requester name -->
                     <div class="mb-4">
-                        <label for="id_requester_name" class="form-label">
-                            {% trans "Uw naam" %} <span class="text-danger">*</span>
+                        <label for="id_requester_name" class="form-label fs-5 fw-semibold">
+                            {% trans "Uw naam" %}
                         </label>
                         {{ form.requester_name }}
                         {% if form.requester_name.errors %}
@@ -104,7 +157,9 @@
                     <div class="row">
                         <!-- Email -->
                         <div class="col-md-6 mb-4">
-                            <label for="id_requester_email" class="form-label">{% trans "E-mailadres" %}</label>
+                            <label for="id_requester_email" class="form-label fs-5 fw-semibold">
+                                <i class="bi bi-envelope me-1"></i> {% trans "E-mail" %}
+                            </label>
                             {{ form.requester_email }}
                             {% if form.requester_email.errors %}
                                 <div class="invalid-feedback d-block">{{ form.requester_email.errors.0 }}</div>
@@ -113,7 +168,9 @@
 
                         <!-- Phone -->
                         <div class="col-md-6 mb-4">
-                            <label for="id_requester_phone" class="form-label">{% trans "Telefoonnummer" %}</label>
+                            <label for="id_requester_phone" class="form-label fs-5 fw-semibold">
+                                <i class="bi bi-telephone me-1"></i> {% trans "Telefoon" %}
+                            </label>
                             {{ form.requester_phone }}
                             {% if form.requester_phone.errors %}
                                 <div class="invalid-feedback d-block">{{ form.requester_phone.errors.0 }}</div>
@@ -122,26 +179,39 @@
                     </div>
 
                     <!-- Preferred contact -->
-                    <div class="mb-4">
-                        <label for="id_preferred_contact_method" class="form-label">{% trans "Hoe kunnen we u bereiken?" %}</label>
+                    <div class="mb-0">
+                        <label for="id_preferred_contact_method" class="form-label fs-5 fw-semibold">
+                            {% trans "Voorkeur voor contact" %}
+                        </label>
                         {{ form.preferred_contact_method }}
                     </div>
-
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
-                        <a href="{% url 'core:home' %}" class="btn btn-outline-secondary btn-lg">{% trans "Annuleren" %}</a>
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="bi bi-send"></i> {% trans "Verzoek indienen" %}
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
+
+            <!-- Submit -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg py-3">
+                    <i class="bi bi-send me-2"></i> {% trans "Verzoek indienen" %}
+                </button>
+                <a href="{% url 'core:home' %}" class="btn btn-link text-muted">{% trans "Annuleren" %}</a>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_css %}
 <style>
+.card {
+    border-radius: 12px;
+}
+.card-header {
+    border-radius: 12px 12px 0 0;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
 .asset-dropdown {
     position: absolute;
     left: 0;
@@ -149,8 +219,8 @@
     top: 100%;
     background: white;
     border: 1px solid #ddd;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     max-height: 300px;
     overflow-y: auto;
     z-index: 1050;
@@ -164,7 +234,7 @@
 }
 .asset-item:last-child { border-bottom: none; }
 .asset-item:hover, .asset-item.active {
-    background: #e9ecef;
+    background: #f0f7ff;
 }
 .asset-item .asset-tag { font-weight: bold; color: #0d6efd; }
 .asset-item .asset-location { font-size: 0.875rem; color: #6c757d; }
@@ -229,7 +299,6 @@
     function searchAssets(query) {
         let url = `{% url 'core:asset_search' %}?q=${encodeURIComponent(query)}`;
 
-        // Optionally filter by selected location
         if (locationSelect && locationSelect.value) {
             url += `&location=${locationSelect.value}`;
         }
@@ -238,7 +307,7 @@
             .then(r => r.json())
             .then(data => {
                 if (data.assets.length === 0) {
-                    dropdown.innerHTML = '<div class="asset-item text-muted">{% trans "Geen resultaten" %}</div>';
+                    dropdown.innerHTML = '<div class="asset-item text-muted"><i class="bi bi-search me-2"></i>{% trans "Geen resultaten gevonden" %}</div>';
                     dropdown.classList.add('show');
                     return;
                 }
@@ -267,14 +336,14 @@
         selectedName.textContent = display;
         selectedDiv.style.display = 'block';
         searchInput.value = '';
-        searchInput.style.display = 'none';
+        searchInput.parentElement.style.display = 'none';
         hideDropdown();
     }
 
     window.clearAsset = function() {
         hiddenInput.value = '';
         selectedDiv.style.display = 'none';
-        searchInput.style.display = 'block';
+        searchInput.parentElement.style.display = 'flex';
         searchInput.value = '';
         searchInput.focus();
     };
