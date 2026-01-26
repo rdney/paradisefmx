@@ -379,6 +379,33 @@ def add_attachment(request, pk):
 
 
 @login_required
+def delete_attachment(request, pk, attachment_pk):
+    """Delete an attachment from a request."""
+    repair_request = get_object_or_404(RepairRequest, pk=pk)
+    attachment = get_object_or_404(Attachment, pk=attachment_pk, repair_request=repair_request)
+
+    # Permission check
+    user = request.user
+    is_staff = (user.is_staff or user.is_superuser) or user.groups.filter(name='Facilitair').exists()
+    is_owner = (
+        repair_request.requester_user == user or
+        repair_request.requester_email == user.email
+    )
+    is_uploader = attachment.uploaded_by == user
+
+    if not is_staff and not is_owner and not is_uploader:
+        messages.error(request, _('U heeft geen toegang tot deze actie.'))
+        return redirect('requests:detail', pk=pk)
+
+    if request.method == 'POST':
+        attachment.file.delete(save=False)
+        attachment.delete()
+        messages.success(request, _('Bijlage verwijderd.'))
+
+    return redirect('requests:detail', pk=pk)
+
+
+@login_required
 def update_request(request, pk):
     """Update request status/assignment (staff only)."""
     repair_request = get_object_or_404(RepairRequest, pk=pk)

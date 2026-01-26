@@ -197,6 +197,7 @@ class Attachment(models.Model):
         verbose_name=_('reparatieverzoek')
     )
     file = models.FileField(_('bestand'), upload_to=attachment_path)
+    title = models.CharField(_('titel'), max_length=200, blank=True)
     uploaded_at = models.DateTimeField(_('geüpload op'), auto_now_add=True)
     uploaded_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -212,11 +213,16 @@ class Attachment(models.Model):
         ordering = ['-uploaded_at']
 
     def __str__(self):
-        return os.path.basename(self.file.name)
+        return self.title or os.path.basename(self.file.name)
 
     @property
     def filename(self):
         return os.path.basename(self.file.name)
+
+    @property
+    def display_name(self):
+        """Return title if set, otherwise filename."""
+        return self.title or self.filename
 
     @property
     def is_image(self):

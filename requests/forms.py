@@ -109,8 +109,12 @@ class AttachmentForm(forms.ModelForm):
 
     class Meta:
         model = Attachment
-        fields = ['file']
+        fields = ['title', 'file']
         widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control form-control-lg',
+                'placeholder': _('Beschrijving van het bestand'),
+            }),
             'file': forms.ClearableFileInput(attrs={
                 'class': 'form-control form-control-lg',
                 'accept': 'image/*,.pdf',
