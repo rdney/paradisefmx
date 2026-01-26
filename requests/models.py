@@ -229,6 +229,17 @@ class Attachment(models.Model):
         ext = os.path.splitext(self.file.name)[1].lower()
         return ext in ['.jpg', '.jpeg', '.png', '.gif', '.webp']
 
+    @property
+    def thumbnail_url(self):
+        """Return Cloudinary thumbnail URL for images."""
+        if not self.is_image:
+            return None
+        url = self.file.url
+        # Insert Cloudinary transformation for thumbnail
+        if 'res.cloudinary.com' in url and '/upload/' in url:
+            return url.replace('/upload/', '/upload/c_thumb,w_200,h_200/')
+        return url
+
 
 class WorkLog(models.Model):
     """Activity log entry for a repair request."""
