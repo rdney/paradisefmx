@@ -324,3 +324,38 @@ def perform_maintenance(request, pk):
     schedule.save(update_fields=['last_performed'])
     messages.success(request, _('Onderhoud geregistreerd voor: %(name)s') % {'name': schedule.name})
     return redirect('assets:detail', pk=schedule.asset.pk)
+
+
+def asset_search(request):
+    """API endpoint to search assets for autocomplete."""
+    q = request.GET.get('q', '').strip()
+    location_id = request.GET.get('location')
+
+    if len(q) < 1:
+        return JsonResponse({'assets': []})
+
+    assets = Asset.objects.filter(
+        Q(asset_tag__icontains=q) |
+        Q(name__icontains=q) |
+        Q(manufacturer__icontains=q) |
+        Q(model__icontains=q)
+    ).select_related('location')
+
+    # Filter by location if provided
+    if location_id:
+        assets = assets.filter(location_id=location_id)
+
+    assets = assets[:15]
+
+    return JsonResponse({
+        'assets': [
+            {
+                'id': a.pk,
+                'name': a.name,
+                'asset_tag': a.asset_tag,
+                'location': str(a.location) if a.location else '',
+                'display': f"{a.asset_tag} - {a.name}" if a.asset_tag else a.name,
+            }
+            for a in assets
+        ]
+    })

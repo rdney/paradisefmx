@@ -13,4 +13,5 @@ urlpatterns = [
     path('locations/<int:pk>/', views.LocationDetailView.as_view(), name='location_detail'),
     path('locations/<int:pk>/edit/', views.LocationUpdateView.as_view(), name='location_update'),
     path('locations/<int:pk>/delete/', views.LocationDeleteView.as_view(), name='location_delete'),
+    path('api/assets/', views.asset_search, name='asset_search'),
 ]

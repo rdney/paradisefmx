@@ -47,14 +47,25 @@
                         {% endif %}
                     </div>
 
-                    <!-- Asset (optional) -->
+                    <!-- Asset (optional) - search autocomplete -->
                     <div class="mb-4">
-                        <label for="id_asset" class="form-label">{% trans "Welk object/installatie?" %}</label>
-                        {{ form.asset }}
+                        <label for="asset_search" class="form-label">{% trans "Welk object/installatie?" %}</label>
+                        <div class="position-relative">
+                            <input type="text" id="asset_search" class="form-control form-control-lg"
+                                   placeholder="{% trans 'Zoek op naam of code...' %}" autocomplete="off">
+                            <input type="hidden" name="asset" id="id_asset" value="">
+                            <div id="asset_dropdown" class="asset-dropdown"></div>
+                        </div>
+                        <div id="asset_selected" class="mt-2" style="display: none;">
+                            <span class="badge bg-primary fs-6 p-2">
+                                <span id="asset_selected_name"></span>
+                                <button type="button" class="btn-close btn-close-white ms-2" aria-label="{% trans 'Verwijderen' %}" onclick="clearAsset()"></button>
+                            </span>
+                        </div>
                         {% if form.asset.errors %}
                             <div class="invalid-feedback d-block">{{ form.asset.errors.0 }}</div>
                         {% endif %}
-                        <div class="form-text">{% trans "Optioneel: selecteer als het om een specifiek apparaat gaat" %}</div>
+                        <div class="form-text">{% trans "Optioneel: zoek naar een specifiek apparaat" %}</div>
                     </div>
 
                     <!-- Priority -->
@@ -127,4 +138,160 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.asset-dropdown {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1050;
+    display: none;
+}
+.asset-dropdown.show { display: block; }
+.asset-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+.asset-item:last-child { border-bottom: none; }
+.asset-item:hover, .asset-item.active {
+    background: #e9ecef;
+}
+.asset-item .asset-tag { font-weight: bold; color: #0d6efd; }
+.asset-item .asset-location { font-size: 0.875rem; color: #6c757d; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const searchInput = document.getElementById('asset_search');
+    const hiddenInput = document.getElementById('id_asset');
+    const dropdown = document.getElementById('asset_dropdown');
+    const selectedDiv = document.getElementById('asset_selected');
+    const selectedName = document.getElementById('asset_selected_name');
+    const locationSelect = document.getElementById('id_location');
+
+    let debounceTimer = null;
+    let activeIndex = -1;
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        if (query.length < 1) {
+            hideDropdown();
+            return;
+        }
+
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => searchAssets(query), 200);
+    });
+
+    searchInput.addEventListener('keydown', function(e) {
+        const items = dropdown.querySelectorAll('.asset-item');
+        if (!dropdown.classList.contains('show') || items.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIndex = Math.min(activeIndex + 1, items.length - 1);
+            updateActive(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIndex = Math.max(activeIndex - 1, 0);
+            updateActive(items);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (activeIndex >= 0 && items[activeIndex]) {
+                selectAsset(
+                    items[activeIndex].dataset.id,
+                    items[activeIndex].dataset.display
+                );
+            }
+        } else if (e.key === 'Escape') {
+            hideDropdown();
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            hideDropdown();
+        }
+    });
+
+    function searchAssets(query) {
+        let url = `{% url 'core:asset_search' %}?q=${encodeURIComponent(query)}`;
+
+        // Optionally filter by selected location
+        if (locationSelect && locationSelect.value) {
+            url += `&location=${locationSelect.value}`;
+        }
+
+        fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                if (data.assets.length === 0) {
+                    dropdown.innerHTML = '<div class="asset-item text-muted">{% trans "Geen resultaten" %}</div>';
+                    dropdown.classList.add('show');
+                    return;
+                }
+
+                activeIndex = -1;
+                dropdown.innerHTML = data.assets.map(a => `
+                    <div class="asset-item" data-id="${a.id}" data-display="${a.display}">
+                        <div class="asset-tag">${a.asset_tag || ''}</div>
+                        <div>${a.name}</div>
+                        ${a.location ? `<div class="asset-location"><i class="bi bi-geo-alt"></i> ${a.location}</div>` : ''}
+                    </div>
+                `).join('');
+
+                dropdown.querySelectorAll('.asset-item[data-id]').forEach(item => {
+                    item.addEventListener('click', () => {
+                        selectAsset(item.dataset.id, item.dataset.display);
+                    });
+                });
+
+                dropdown.classList.add('show');
+            });
+    }
+
+    function selectAsset(id, display) {
+        hiddenInput.value = id;
+        selectedName.textContent = display;
+        selectedDiv.style.display = 'block';
+        searchInput.value = '';
+        searchInput.style.display = 'none';
+        hideDropdown();
+    }
+
+    window.clearAsset = function() {
+        hiddenInput.value = '';
+        selectedDiv.style.display = 'none';
+        searchInput.style.display = 'block';
+        searchInput.value = '';
+        searchInput.focus();
+    };
+
+    function hideDropdown() {
+        dropdown.classList.remove('show');
+        activeIndex = -1;
+    }
+
+    function updateActive(items) {
+        items.forEach((item, i) => {
+            item.classList.toggle('active', i === activeIndex);
+        });
+        if (activeIndex >= 0) {
+            items[activeIndex].scrollIntoView({ block: 'nearest' });
+        }
+    }
+})();
+</script>
 {% endblock %}
