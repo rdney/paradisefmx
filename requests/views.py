@@ -39,6 +39,7 @@ class CreateRequestView(CreateView):
 
         # Handle uploaded photos
         files = self.request.FILES.getlist('photos')
+        uploaded_count = 0
         for f in files:
             # Validate file size
             if f.size <= 10 * 1024 * 1024:  # 10MB
@@ -47,6 +48,15 @@ class CreateRequestView(CreateView):
                     file=f,
                     uploaded_by=self.request.user if self.request.user.is_authenticated else None,
                 )
+                uploaded_count += 1
+
+        if uploaded_count > 0:
+            WorkLog.objects.create(
+                repair_request=self.object,
+                entry_type=WorkLog.EntryType.NOTE,
+                note=_('%(count)d bijlage(n) toegevoegd') % {'count': uploaded_count},
+                author=self.request.user if self.request.user.is_authenticated else None,
+            )
 
         # Create initial work log
         WorkLog.objects.create(
@@ -373,6 +383,14 @@ def add_attachment(request, pk):
             attachment.repair_request = repair_request
             attachment.uploaded_by = user
             attachment.save()
+
+            # Log the upload
+            WorkLog.objects.create(
+                repair_request=repair_request,
+                author=user,
+                entry_type=WorkLog.EntryType.NOTE,
+                note=_('Bijlage toegevoegd: %(name)s') % {'name': attachment.display_name},
+            )
             messages.success(request, _('Bijlage geüpload.'))
 
     return redirect('requests:detail', pk=pk)
@@ -398,8 +416,17 @@ def delete_attachment(request, pk, attachment_pk):
         return redirect('requests:detail', pk=pk)
 
     if request.method == 'POST':
+        display_name = attachment.display_name
         attachment.file.delete(save=False)
         attachment.delete()
+
+        # Log the deletion
+        WorkLog.objects.create(
+            repair_request=repair_request,
+            author=user,
+            entry_type=WorkLog.EntryType.NOTE,
+            note=_('Bijlage verwijderd: %(name)s') % {'name': display_name},
+        )
         messages.success(request, _('Bijlage verwijderd.'))
 
     return redirect('requests:detail', pk=pk)
