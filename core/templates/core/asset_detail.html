@@ -32,7 +32,7 @@
             <div class="card-body">
                 <dl class="row mb-0">
                     <dt class="col-sm-4">{% trans "Categorie" %}</dt>
-                    <dd class="col-sm-8">{{ asset.get_category_display }}</dd>
+                    <dd class="col-sm-8">{{ asset.category.name|default:"-" }}</dd>
 
                     <dt class="col-sm-4">{% trans "Locatie" %}</dt>
                     <dd class="col-sm-8">{{ asset.location|default:"-" }}</dd>

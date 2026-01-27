@@ -35,8 +35,8 @@
                 <label class="form-label" for="category">{% trans "Categorie" %}</label>
                 <select name="category" id="category" class="form-select form-select-lg">
                     <option value="">{% trans "Alle" %}</option>
-                    {% for value, label in category_choices %}
-                        <option value="{{ value }}" {% if current_filters.category == value %}selected{% endif %}>{{ label }}</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if current_filters.category == cat.id|stringformat:"d" %}selected{% endif %}>{{ cat.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -97,7 +97,7 @@
                             <br>
                             <span class="text-muted">{{ asset.name }}</span>
                         </td>
-                        <td>{{ asset.get_category_display }}</td>
+                        <td>{{ asset.category.name|default:"-" }}</td>
                         <td>{{ asset.location|default:"-" }}</td>
                         <td>
                             <span class="badge badge-{{ asset.status }}">

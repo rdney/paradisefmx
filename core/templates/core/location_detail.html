@@ -70,7 +70,7 @@
                         <div>
                             <strong>{{ asset.asset_tag }}</strong> - {{ asset.name }}
                             <br>
-                            <small class="text-muted">{{ asset.get_category_display }}</small>
+                            <small class="text-muted">{{ asset.category.name|default:"-" }}</small>
                         </div>
                         <span class="badge badge-{{ asset.status }}">{{ asset.get_status_display }}</span>
                     </a>

@@ -213,16 +213,18 @@ class Asset(models.Model):
             import uuid
             # Auto-generate asset tag based on category + UUID fragment
             prefix_map = {
-                'hvac': 'HVAC',
-                'electrical': 'ELEK',
-                'plumbing': 'SAN',
-                'safety': 'VEIL',
-                'av': 'AV',
-                'furniture': 'MEUB',
-                'building': 'GEB',
-                'other': 'OBJ',
+                'HVAC / Klimaat': 'HVAC',
+                'Elektrisch': 'ELEK',
+                'Sanitair': 'SAN',
+                'Veiligheid': 'VEIL',
+                'Audio/Video': 'AV',
+                'Meubilair': 'MEUB',
+                'Gebouw': 'GEB',
+                'Luidklokken': 'KLOK',
+                'Overig': 'OBJ',
             }
-            prefix = prefix_map.get(self.category, 'OBJ')
+            cat_name = self.category.name if self.category else ''
+            prefix = prefix_map.get(cat_name, 'OBJ')
             # Use first 6 chars of UUID (uppercase)
             uid = uuid.uuid4().hex[:6].upper()
             self.asset_tag = f"{prefix}-{uid}"

@@ -13,7 +13,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 
 from .forms import AssetForm, LocationForm, MaintenanceScheduleForm
-from .models import Asset, Location, MaintenanceSchedule
+from .models import Asset, Category, Location, MaintenanceSchedule
 
 
 class AdminRequiredMixin(UserPassesTestMixin):
@@ -39,7 +39,7 @@ class AssetListView(LoginRequiredMixin, ListView):
     paginate_by = 25
 
     def get_queryset(self):
-        qs = Asset.objects.select_related('location')
+        qs = Asset.objects.select_related('location', 'category')
 
         # Filters
         status = self.request.GET.get('status')
@@ -48,7 +48,7 @@ class AssetListView(LoginRequiredMixin, ListView):
 
         category = self.request.GET.get('category')
         if category:
-            qs = qs.filter(category=category)
+            qs = qs.filter(category_id=category)
 
         criticality = self.request.GET.get('criticality')
         if criticality:
@@ -77,7 +77,7 @@ class AssetListView(LoginRequiredMixin, ListView):
         ctx = super().get_context_data(**kwargs)
         ctx['locations'] = Location.objects.all()
         ctx['status_choices'] = Asset.Status.choices
-        ctx['category_choices'] = Asset.Category.choices
+        ctx['categories'] = Category.objects.all()
         ctx['criticality_choices'] = Asset.Criticality.choices
         ctx['current_filters'] = {
             'status': self.request.GET.get('status', ''),
