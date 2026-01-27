@@ -1,7 +1,15 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import Asset, Location, MaintenanceSchedule
+from .models import Asset, Category, Location, MaintenanceSchedule
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'icon', 'order']
+    list_editable = ['order']
+    search_fields = ['name']
+    ordering = ['order', 'name']
 
 
 @admin.register(Location)

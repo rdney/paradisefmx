@@ -49,11 +49,6 @@
                             </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link fs-5" href="{% url 'requests:list' %}">
-                                <i class="bi bi-list-ul"></i> {% trans "Verzoeken" %}
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link fs-5" href="{% url 'assets:list' %}">
                                 <i class="bi bi-box-seam"></i> {% trans "Objecten" %}
                             </a>
@@ -163,16 +158,16 @@
             <span>{% trans "Melden" %}</span>
         </a>
         {% if user.is_authenticated %}
-            <a href="{% url 'requests:list' %}" class="btn btn-outline-primary">
-                <i class="bi bi-list-ul"></i>
-                <span>{% trans "Lijst" %}</span>
-            </a>
             {% if user.is_staff or user.is_superuser %}
                 <a href="{% url 'requests:dashboard' %}" class="btn btn-outline-primary">
                     <i class="bi bi-speedometer2"></i>
-                    <span>{% trans "Overzicht" %}</span>
+                    <span>{% trans "Dashboard" %}</span>
                 </a>
             {% endif %}
+            <a href="{% url 'assets:list' %}" class="btn btn-outline-primary">
+                <i class="bi bi-box-seam"></i>
+                <span>{% trans "Objecten" %}</span>
+            </a>
             <a href="{% url 'core:home' %}" class="btn btn-outline-secondary">
                 <i class="bi bi-house"></i>
                 <span>{% trans "Home" %}</span>

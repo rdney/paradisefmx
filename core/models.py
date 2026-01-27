@@ -38,6 +38,21 @@ class Location(models.Model):
         return ' > '.join(parts)
 
 
+class Category(models.Model):
+    """Category for assets."""
+    name = models.CharField(_('naam'), max_length=100)
+    icon = models.CharField(_('icoon'), max_length=50, blank=True, help_text=_('Bootstrap icon class, bijv. bi-gear'))
+    order = models.PositiveIntegerField(_('volgorde'), default=0)
+
+    class Meta:
+        verbose_name = _('categorie')
+        verbose_name_plural = _('categorieën')
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
+
 class Asset(models.Model):
     """Equipment or installation tracked for maintenance."""
 
@@ -52,16 +67,6 @@ class Asset(models.Model):
         MEDIUM = 'medium', _('Middel')
         HIGH = 'high', _('Hoog')
 
-    class Category(models.TextChoices):
-        HVAC = 'hvac', _('HVAC / Klimaat')
-        ELECTRICAL = 'electrical', _('Elektrisch')
-        PLUMBING = 'plumbing', _('Sanitair')
-        SAFETY = 'safety', _('Veiligheid')
-        AV = 'av', _('Audio/Video')
-        FURNITURE = 'furniture', _('Meubilair')
-        BUILDING = 'building', _('Gebouw')
-        OTHER = 'other', _('Overig')
-
     asset_tag = models.CharField(
         _('objectnummer'),
         max_length=50,
@@ -69,11 +74,13 @@ class Asset(models.Model):
         help_text=_('Uniek identificatienummer, bijv. HVAC-01')
     )
     name = models.CharField(_('naam'), max_length=200)
-    category = models.CharField(
-        _('categorie'),
-        max_length=20,
-        choices=Category.choices,
-        default=Category.OTHER
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='assets',
+        verbose_name=_('categorie')
     )
     location = models.ForeignKey(
         Location,

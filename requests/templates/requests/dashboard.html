@@ -8,8 +8,16 @@
     <h1 class="mb-0">{% trans "Dashboard" %}</h1>
     <div class="d-flex align-items-center gap-3 flex-wrap">
         <div class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0 text-muted small">{% trans "Status:" %}</label>
+            <select class="form-select form-select-sm" style="min-width: 150px;" onchange="changeStatus(this.value)">
+                <option value="open" {% if current_status == 'open' %}selected{% endif %}>{% trans "Openstaand" %}</option>
+                <option value="closed" {% if current_status == 'closed' %}selected{% endif %}>{% trans "Afgehandeld" %}</option>
+                <option value="all" {% if current_status == 'all' %}selected{% endif %}>{% trans "Alles" %}</option>
+            </select>
+        </div>
+        <div class="d-flex align-items-center gap-2">
             <label class="form-label mb-0 text-muted small">{% trans "Sorteren:" %}</label>
-            <select class="form-select form-select-sm" style="min-width: 180px;" onchange="changeOrder(this.value)">
+            <select class="form-select form-select-sm" style="min-width: 160px;" onchange="changeOrder(this.value)">
                 <option value="newest" {% if current_order == 'newest' %}selected{% endif %}>{% trans "Nieuwste eerst" %}</option>
                 <option value="oldest" {% if current_order == 'oldest' %}selected{% endif %}>{% trans "Oudste eerst" %}</option>
                 <option value="priority" {% if current_order == 'priority' %}selected{% endif %}>{% trans "Prioriteit" %}</option>
@@ -18,7 +26,7 @@
         </div>
         <div class="form-check form-switch mb-0">
             <input class="form-check-input" type="checkbox" role="switch" id="mineToggle" {% if mine_only %}checked{% endif %} onchange="toggleMine(this)">
-            <label class="form-check-label" for="mineToggle">{% trans "Alleen mijn taken" %}</label>
+            <label class="form-check-label" for="mineToggle">{% trans "Mijn taken" %}</label>
         </div>
     </div>
 </div>
@@ -92,10 +100,14 @@
     </div>
 </div>
 
-<!-- Open requests -->
+<!-- Requests -->
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="h4 mb-0">{% trans "Openstaande verzoeken" %}</h2>
-    <a href="{% url 'requests:list' %}" class="btn btn-outline-primary btn-sm">{% trans "Alle" %}</a>
+    <h2 class="h4 mb-0">
+        {% if current_status == 'open' %}{% trans "Openstaande verzoeken" %}
+        {% elif current_status == 'closed' %}{% trans "Afgehandelde verzoeken" %}
+        {% else %}{% trans "Alle verzoeken" %}{% endif %}
+    </h2>
+    <span class="badge bg-secondary">{{ requests|length }}</span>
 </div>
 
 {% if requests %}
@@ -157,6 +169,16 @@ function changeOrder(order) {
         params.delete('order');
     } else {
         params.set('order', order);
+    }
+    window.location.href = '?' + params.toString();
+}
+
+function changeStatus(status) {
+    const params = new URLSearchParams(window.location.search);
+    if (status === 'open') {
+        params.delete('status');
+    } else {
+        params.set('status', status);
     }
     window.location.href = '?' + params.toString();
 }

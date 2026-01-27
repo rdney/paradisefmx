@@ -236,9 +236,17 @@ class DashboardView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_queryset(self):
         qs = RepairRequest.objects.select_related(
             'location', 'asset', 'assigned_to'
-        ).exclude(
-            status__in=[RepairRequest.Status.COMPLETED, RepairRequest.Status.CLOSED]
         )
+
+        # Filter by status
+        status = self.request.GET.get('status', 'open')
+        if status == 'open':
+            qs = qs.exclude(status__in=[RepairRequest.Status.COMPLETED, RepairRequest.Status.CLOSED])
+        elif status == 'closed':
+            qs = qs.filter(status__in=[RepairRequest.Status.COMPLETED, RepairRequest.Status.CLOSED])
+        elif status != 'all':
+            # Specific status filter
+            qs = qs.filter(status=status)
 
         # Filter by assigned to me
         if self.request.GET.get('mine') == '1':
@@ -273,6 +281,8 @@ class DashboardView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         mine_only = self.request.GET.get('mine') == '1'
         ctx['mine_only'] = mine_only
         ctx['current_order'] = self.request.GET.get('order', 'newest')
+        ctx['current_status'] = self.request.GET.get('status', 'open')
+        ctx['status_choices'] = RepairRequest.Status.choices
 
         # Counts - optionally filtered by user
         qs = RepairRequest.objects.all()
