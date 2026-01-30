@@ -230,6 +230,35 @@ class Attachment(models.Model):
         return ext in ['.jpg', '.jpeg', '.png', '.gif', '.webp']
 
     @property
+    def file_icon(self):
+        """Return Bootstrap icon class based on file type."""
+        ext = os.path.splitext(self.file.name)[1].lower()
+        icons = {
+            '.pdf': 'bi-file-earmark-pdf',
+            '.doc': 'bi-file-earmark-word',
+            '.docx': 'bi-file-earmark-word',
+            '.xls': 'bi-file-earmark-excel',
+            '.xlsx': 'bi-file-earmark-excel',
+            '.txt': 'bi-file-earmark-text',
+            '.zip': 'bi-file-earmark-zip',
+            '.rar': 'bi-file-earmark-zip',
+        }
+        return icons.get(ext, 'bi-file-earmark')
+
+    @property
+    def icon_color(self):
+        """Return color class based on file type."""
+        ext = os.path.splitext(self.file.name)[1].lower()
+        colors = {
+            '.pdf': 'text-danger',
+            '.doc': 'text-primary',
+            '.docx': 'text-primary',
+            '.xls': 'text-success',
+            '.xlsx': 'text-success',
+        }
+        return colors.get(ext, 'text-secondary')
+
+    @property
     def thumbnail_url(self):
         """Return Cloudinary thumbnail URL for images."""
         if not self.is_image:

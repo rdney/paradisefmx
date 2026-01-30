@@ -86,6 +86,7 @@ class AssetListView(LoginRequiredMixin, ListView):
             'location': self.request.GET.get('location', ''),
             'q': self.request.GET.get('q', ''),
             'monument': self.request.GET.get('monument', ''),
+            'view': self.request.GET.get('view', ''),
         }
         return ctx
 
