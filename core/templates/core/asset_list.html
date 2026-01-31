@@ -21,7 +21,7 @@
 <!-- Filters -->
 <div class="card mb-4">
     <div class="card-body">
-        <form method="get" class="row g-3">
+        <form method="get" class="row g-3" data-no-warn>
             <div class="col-md-3">
                 <label class="form-label" for="status">{% trans "Status" %}</label>
                 <select name="status" id="status" class="form-select form-select-lg">
@@ -200,4 +200,15 @@
         <p>{% trans "Pas de filters aan of neem contact op met de beheerder." %}</p>
     </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-submit form when view toggle changes
+document.querySelectorAll('input[name="view"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        this.closest('form').submit();
+    });
+});
+</script>
 {% endblock %}
