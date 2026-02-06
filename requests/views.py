@@ -10,6 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
 from django.db.models import Case, Q, Sum, When, IntegerField
 from django.http import FileResponse, HttpResponse, JsonResponse
+from urllib.request import urlopen, Request
+from urllib.error import URLError, HTTPError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -456,21 +458,67 @@ def delete_attachment(request, pk, attachment_pk):
 
 @login_required
 def serve_attachment(request, pk, attachment_pk):
-    """Serve attachments - redirects to Cloudinary URL or serves local files."""
+    """Serve attachments - proxies raw files, redirects images."""
+    import mimetypes
+    import os
+
     repair_request = get_object_or_404(RepairRequest, pk=pk)
     attachment = get_object_or_404(Attachment, pk=attachment_pk, repair_request=repair_request)
 
-    # Get the file URL
+    # Get the file URL and determine file type
     file_url = attachment.file.url
+    filename = attachment.display_name
+    ext = os.path.splitext(filename)[1].lower()
+
+    # Raw file types that need proxying due to Cloudinary ACL issues
+    RAW_EXTENSIONS = {'.pdf', '.doc', '.docx', '.xls', '.xlsx', '.txt', '.csv', '.zip'}
 
     # Check if it's a full URL (Cloudinary) or local path
     if file_url.startswith('http'):
-        # Production: redirect to Cloudinary URL directly
-        # This is more efficient than proxying and avoids memory/timeout issues
-        return redirect(file_url)
+        if ext in RAW_EXTENSIONS:
+            # Proxy raw files using Cloudinary API to bypass ACL
+            try:
+                import cloudinary
+                import cloudinary.utils
+
+                # Extract public_id from URL
+                # URL: https://res.cloudinary.com/{cloud}/raw/upload/s--sig--/path
+                parts = file_url.split('/raw/upload/')
+                if len(parts) == 2:
+                    public_id = parts[1]
+                    # Remove signature prefix if present
+                    if public_id.startswith('s--'):
+                        public_id = '/'.join(public_id.split('/')[1:])
+                else:
+                    # Fallback: try to get from file name
+                    public_id = attachment.file.name
+
+                # Generate a fresh signed URL with type=upload
+                signed_url, _ = cloudinary.utils.cloudinary_url(
+                    public_id,
+                    resource_type='raw',
+                    type='upload',
+                    sign_url=True,
+                    secure=True,
+                )
+
+                req = Request(signed_url, headers={'User-Agent': 'Mozilla/5.0'})
+                response = urlopen(req, timeout=30)
+                content = response.read()
+                content_type = response.headers.get('Content-Type', 'application/octet-stream')
+
+                http_response = HttpResponse(content, content_type=content_type)
+                http_response['Content-Disposition'] = f'inline; filename="{filename}"'
+                return http_response
+            except (URLError, HTTPError, Exception) as e:
+                import logging
+                logging.error(f"Error fetching attachment {attachment_pk}: {e}")
+                return HttpResponse(_('Bestand niet gevonden.'), status=404)
+        else:
+            # Redirect images/videos directly
+            return redirect(file_url)
     else:
         # Local development: serve from disk
-        import mimetypes
         try:
             file_path = attachment.file.path
             content_type, _ = mimetypes.guess_type(file_path)
