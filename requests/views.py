@@ -10,8 +10,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail
 from django.db.models import Case, Q, Sum, When, IntegerField
 from django.http import FileResponse, HttpResponse, JsonResponse
-from urllib.request import urlopen
-from urllib.error import URLError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -458,7 +456,7 @@ def delete_attachment(request, pk, attachment_pk):
 
 @login_required
 def serve_attachment(request, pk, attachment_pk):
-    """Proxy view to serve attachments - requires authentication."""
+    """Serve attachments - redirects to Cloudinary URL or serves local files."""
     repair_request = get_object_or_404(RepairRequest, pk=pk)
     attachment = get_object_or_404(Attachment, pk=attachment_pk, repair_request=repair_request)
 
@@ -467,15 +465,9 @@ def serve_attachment(request, pk, attachment_pk):
 
     # Check if it's a full URL (Cloudinary) or local path
     if file_url.startswith('http'):
-        # Production: fetch from Cloudinary
-        try:
-            response = urlopen(file_url, timeout=30)
-            content = response.read()
-            content_type = response.headers.get('Content-Type', 'application/octet-stream')
-        except URLError:
-            return HttpResponse(_('Bestand niet gevonden.'), status=404)
-
-        http_response = HttpResponse(content, content_type=content_type)
+        # Production: redirect to Cloudinary URL directly
+        # This is more efficient than proxying and avoids memory/timeout issues
+        return redirect(file_url)
     else:
         # Local development: serve from disk
         import mimetypes
@@ -486,12 +478,6 @@ def serve_attachment(request, pk, attachment_pk):
             return FileResponse(open(file_path, 'rb'), content_type=content_type)
         except FileNotFoundError:
             return HttpResponse(_('Bestand niet gevonden.'), status=404)
-
-    # Set filename for display
-    filename = attachment.display_name
-    http_response['Content-Disposition'] = f'inline; filename="{filename}"'
-
-    return http_response
 
 
 @login_required
