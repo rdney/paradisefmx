@@ -3,7 +3,6 @@ import os
 
 import cloudinary
 import cloudinary.uploader
-import cloudinary.utils
 from cloudinary_storage.storage import MediaCloudinaryStorage
 
 
@@ -38,14 +37,8 @@ class FixedMediaCloudinaryStorage(MediaCloudinaryStorage):
         return cloudinary.uploader.upload(content, **options)
 
     def _get_url(self, name):
-        """Generate signed URL to bypass ACL restrictions."""
+        """Generate URL for the uploaded file."""
         name = self._prepend_prefix(name)
         resource_type = self._get_resource_type(name)
-        # Generate signed URL to access files with ACL restrictions
-        url, _ = cloudinary.utils.cloudinary_url(
-            name,
-            resource_type=resource_type,
-            sign_url=True,
-            secure=True,
-        )
-        return url
+        cloud_name = cloudinary.config().cloud_name
+        return f"https://res.cloudinary.com/{cloud_name}/{resource_type}/upload/{name}"
