@@ -21,13 +21,14 @@ class WorkLogInline(admin.TabularInline):
 class RepairRequestAdmin(admin.ModelAdmin):
     list_display = [
         'id', 'title', 'status', 'priority', 'location',
-        'requester_name', 'assigned_to', 'created_at'
+        'requester_name', 'assigned_to', 'created_at', 'is_deleted'
     ]
-    list_filter = ['status', 'priority', 'location', 'assigned_to']
+    list_filter = ['status', 'priority', 'location', 'assigned_to', 'is_deleted']
     search_fields = ['title', 'description', 'requester_name', 'requester_email']
     ordering = ['-created_at']
     date_hierarchy = 'created_at'
     inlines = [AttachmentInline, WorkLogInline]
+    actions = ['restore_requests']
 
     fieldsets = [
         (None, {
@@ -46,8 +47,24 @@ class RepairRequestAdmin(admin.ModelAdmin):
             'fields': ['resolution_summary', 'closed_at'],
             'classes': ['collapse']
         }),
+        (_('Verwijdering'), {
+            'fields': ['is_deleted', 'deleted_at', 'deleted_by'],
+            'classes': ['collapse']
+        }),
     ]
-    readonly_fields = ['closed_at']
+    readonly_fields = ['closed_at', 'deleted_at', 'deleted_by']
+
+    def get_queryset(self, request):
+        """Show all requests including deleted ones in admin."""
+        return RepairRequest.all_objects.all()
+
+    @admin.action(description=_('Herstel geselecteerde verzoeken'))
+    def restore_requests(self, request, queryset):
+        """Restore soft-deleted requests."""
+        count = queryset.filter(is_deleted=True).update(
+            is_deleted=False, deleted_at=None, deleted_by=None
+        )
+        self.message_user(request, _(f'{count} verzoek(en) hersteld.'))
 
 
 @admin.register(WorkLog)

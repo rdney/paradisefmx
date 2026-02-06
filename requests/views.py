@@ -1036,7 +1036,7 @@ class CostOverviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
 
 class RequestDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    """Delete a repair request (staff only)."""
+    """Soft-delete a repair request (staff only)."""
     model = RepairRequest
     template_name = 'requests/request_confirm_delete.html'
     success_url = reverse_lazy('requests:list')
@@ -1045,8 +1045,13 @@ class RequestDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user.is_staff or self.request.user.is_superuser
 
     def form_valid(self, form):
+        # Soft delete instead of hard delete
+        self.object.is_deleted = True
+        self.object.deleted_at = timezone.now()
+        self.object.deleted_by = self.request.user
+        self.object.save()
         messages.success(self.request, _('Verzoek verwijderd.'))
-        return super().form_valid(form)
+        return redirect(self.success_url)
 
 
 @login_required

@@ -10,6 +10,13 @@ from django.utils.translation import gettext_lazy as _
 from core.models import Asset, Location
 
 
+class ActiveRequestManager(models.Manager):
+    """Manager that excludes soft-deleted requests."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+
+
 def attachment_path(instance, filename):
     """Generate safe upload path for attachments."""
     ext = os.path.splitext(filename)[1].lower()
@@ -19,6 +26,10 @@ def attachment_path(instance, filename):
 
 class RepairRequest(models.Model):
     """A repair or maintenance request (work order)."""
+
+    # Managers
+    objects = ActiveRequestManager()  # Default: excludes deleted
+    all_objects = models.Manager()    # Includes deleted (for admin)
 
     class Priority(models.TextChoices):
         LOW = 'low', _('Laag')
@@ -155,6 +166,18 @@ class RepairRequest(models.Model):
     # Timestamps
     created_at = models.DateTimeField(_('aangemaakt op'), auto_now_add=True)
     updated_at = models.DateTimeField(_('bijgewerkt op'), auto_now=True)
+
+    # Soft delete
+    is_deleted = models.BooleanField(_('verwijderd'), default=False)
+    deleted_at = models.DateTimeField(_('verwijderd op'), null=True, blank=True)
+    deleted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='deleted_requests',
+        verbose_name=_('verwijderd door')
+    )
 
     class Meta:
         verbose_name = _('reparatieverzoek')
