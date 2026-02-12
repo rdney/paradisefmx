@@ -27,6 +27,23 @@
     </a>
 </div>
 
+{% if show_costs %}
+<div class="card mb-3 border-primary">
+    <div class="card-body">
+        <div class="row text-center">
+            <div class="col-6">
+                <small class="text-muted d-block">{% trans "Geschat totaal" %}</small>
+                <span class="h4 mb-0">€ {{ cost_total_estimated|floatformat:2 }}</span>
+            </div>
+            <div class="col-6">
+                <small class="text-muted d-block">{% trans "Werkelijk totaal" %}</small>
+                <span class="h4 mb-0">€ {{ cost_total_actual|floatformat:2 }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- Filters - collapsible on mobile -->
 <div class="card mb-3">
     <div class="card-header d-md-none">

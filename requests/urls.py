@@ -1,12 +1,11 @@
 from django.urls import path
-from django.views.generic import RedirectView
 
 from . import views
 
 app_name = 'requests'
 
 urlpatterns = [
-    path('', RedirectView.as_view(pattern_name='requests:dashboard', permanent=False), name='list'),
+    path('', views.RequestListView.as_view(), name='list'),
     path('new/', views.CreateRequestView.as_view(), name='create'),
     path('<int:pk>/', views.RequestDetailView.as_view(), name='detail'),
     path('<int:pk>/confirmation/', views.RequestConfirmationView.as_view(), name='confirmation'),

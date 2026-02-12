@@ -215,7 +215,16 @@ class RequestListView(LoginRequiredMixin, ListView):
             'has_actual': self.request.GET.get('has_actual', ''),
         }
         # Show cost columns if filtering by cost
-        ctx['show_costs'] = bool(self.request.GET.get('has_estimated') or self.request.GET.get('has_actual') or self.request.GET.get('month'))
+        show_costs = bool(self.request.GET.get('has_estimated') or self.request.GET.get('has_actual') or self.request.GET.get('month'))
+        ctx['show_costs'] = show_costs
+        if show_costs:
+            qs = self.get_queryset()
+            totals = qs.aggregate(
+                total_estimated=Sum('estimated_cost'),
+                total_actual=Sum('actual_cost'),
+            )
+            ctx['cost_total_estimated'] = totals['total_estimated'] or Decimal('0')
+            ctx['cost_total_actual'] = totals['total_actual'] or Decimal('0')
         return ctx
 
 
